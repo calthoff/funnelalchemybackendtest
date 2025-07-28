@@ -1,0 +1,17 @@
+fastapi
+uvicorn[standard]
+sqlalchemy
+psycopg2-binary
+alembic
+pydantic>=2.0.0
+pydantic-settings>=2.0.0
+passlib[bcrypt]
+bcrypt<4.0.0
+python-jose[cryptography]
+email-validator
+python-multipart
+httpx
+PyJWT
+sendgrid
+openai
+APScheduler
