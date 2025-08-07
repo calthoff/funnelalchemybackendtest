@@ -1,35 +1,37 @@
 from pydantic import BaseModel
 from uuid import UUID
-from typing import Optional, List
+from typing import Optional, List, Dict, Any
 from datetime import datetime
 
 class ICPBase(BaseModel):
     name: str
-    criteria: dict
+    industries: Optional[Dict[str, Any]] = None
+    employee_size_range: Optional[Dict[str, Any]] = None
+    arr_range: Optional[Dict[str, Any]] = None
+    funding_stage: Optional[Dict[str, Any]] = None
+    location: Optional[Dict[str, Any]] = None
+    description: Optional[str] = None
+    accounts: Optional[str] = None
+    is_primary: Optional[bool] = False
 
 class ICPCreate(ICPBase):
     pass
 
 class ICPUpdate(BaseModel):
-    name: Optional[str]
-    criteria: Optional[dict]
+    name: Optional[str] = None
+    industries: Optional[Dict[str, Any]] = None
+    employee_size_range: Optional[Dict[str, Any]] = None
+    arr_range: Optional[Dict[str, Any]] = None
+    funding_stage: Optional[Dict[str, Any]] = None
+    location: Optional[Dict[str, Any]] = None
+    description: Optional[str] = None
+    accounts: Optional[str] = None
+    is_primary: Optional[bool] = None
 
 class ICPRead(ICPBase):
     id: UUID
     created_at: datetime
-    updated_at: Optional[datetime]
+    updated_at: Optional[datetime] = None
 
     class Config:
         from_attributes = True
-
-class ICPDashboardStats(BaseModel):
-    icp_name: str
-    deals_closed: int
-    positive_replies: int
-    meetings_booked: int
-    close_rate: float
-    sdrs_assigned: List[str]
-
-class ICPDashboardStatsPage(BaseModel):
-    items: List[ICPDashboardStats]
-    total: int 

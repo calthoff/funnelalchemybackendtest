@@ -7,9 +7,10 @@ class SDRBase(BaseModel):
     name: str
     role: Optional[str] = None
     territory: Optional[str] = None
-    max_capacity: Optional[int] = 100
     notes: Optional[str] = None
     status: Optional[str] = None
+    headshot_url: Optional[str] = None
+    headshot_filename: Optional[str] = None
 
 class SDRCreate(SDRBase):
     pass
@@ -18,9 +19,10 @@ class SDRUpdate(BaseModel):
     name: Optional[str] = None
     role: Optional[str] = None
     territory: Optional[str] = None
-    max_capacity: Optional[int] = None
     notes: Optional[str] = None
     status: Optional[str] = None
+    headshot_url: Optional[str] = None
+    headshot_filename: Optional[str] = None
 
 class SDR(SDRBase):
     id: UUID
@@ -36,7 +38,6 @@ class SDRDashboardStats(BaseModel):
     positive_replies: int
     meetings_booked: int
     deals_closed: int
-    campaigns_touched: int
 
 class SDRDashboardStatsPage(BaseModel):
     items: list[SDRDashboardStats]

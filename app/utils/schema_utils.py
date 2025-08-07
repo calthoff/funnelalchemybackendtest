@@ -1,27 +1,18 @@
 from sqlalchemy import text
 from app.db import Base, engine
-from app.models.companies import Company
 from app.models.users import User
-from app.models.products import Product
-from app.models.leads import Lead
-from app.models.leads_temp import LeadTemp
-from app.models.campaigns import Campaign
-from app.models.campaign_leads import CampaignLead
-from app.models.lead_activities import LeadActivity
 from app.models.icps import ICP
-from app.models.campaign_icps import CampaignICP
-from app.models.campaign_managers import CampaignManager
-from app.models.lead_handlers import LeadHandler
-from app.models.crm_data import CRMData
-from app.models.api_info import APIInfo
-from app.models.campaign_companies import CampaignCompany
-from app.models.sdr_msg import SDRMsg
-from app.models.companies_process import CompaniesProcess
-from app.models.lead_process import LeadProcess
-from app.models.log import Log
-from app.models.campaign_company_campaign_map import CampaignCompanyCampaignMap
 from app.models.sdrs import SDR
-from app.models.campaign_upload_mode import CampaignUploadMode
+from app.models.prospects import Prospect
+from app.models.personas import Persona
+from app.models.high_intent_triggers import HighIntentTrigger
+from app.models.high_intent_events import HighIntentEvent
+from app.models.prospect_activities import ProspectActivity
+from app.models.prospect_score_history import ProspectScoreHistory
+from app.models.scoring_weights import ScoringWeight
+from app.models.notifications import Notification
+from app.models.companies import Company
+from app.models.company_description import CompanyDescription
 
 def create_company_schema(engine, schema_name: str):
 
@@ -31,11 +22,8 @@ def create_company_schema(engine, schema_name: str):
             conn.commit()
 
         models = [
-            Company, User, Product, Lead, LeadTemp, Campaign, CampaignLead,
-            LeadActivity, ICP, CampaignICP, CampaignManager, LeadHandler,
-            CRMData, APIInfo, CampaignCompany, SDRMsg,
-            CompaniesProcess, Log, CampaignCompanyCampaignMap,
-            LeadProcess, SDR, CampaignUploadMode
+            ICP, SDR, User, Prospect, Persona, HighIntentTrigger, HighIntentEvent,
+            ProspectActivity, ProspectScoreHistory, ScoringWeight, Notification, Company, CompanyDescription
         ]
 
         original_schemas = {}

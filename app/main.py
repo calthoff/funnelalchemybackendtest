@@ -1,27 +1,23 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
+from fastapi.staticfiles import StaticFiles
 from .db import Base, engine
+import sqlalchemy
 from .api.auth import router as auth_router
 from app.models.user_directory import UserDirectory
-import sqlalchemy
-from app.api.api_info import router as api_info_router
-from app.api.campaign import router as campaign_router
-from app.api.campaign_company import router as campaign_company_router
-from app.api.leads import router as leads_router
-from app.api.icps import router as icps_router
 from app.api.sdrs import router as sdrs_router
 from app.api.users import router as users_router
-# from app.api.webhook import router as webhook_router
-from app.api.ai_coaching import router as ai_coaching_router
+from app.api.icps import router as icps_router
+from app.api.personas import router as personas_router
+from app.api.notifications import router as notifications_router
+from app.api.prospects import router as prospects_router
+from app.api.scoring_weights import router as scoring_weights_router
+from app.api.company_description import router as company_description_router
 import os
 import logging
 from dotenv import load_dotenv
-from apscheduler.schedulers.asyncio import AsyncIOScheduler
-from apscheduler.triggers.cron import CronTrigger
-from app.services.multi_tenant_batch import run_multi_tenant_batch
-from app.services.campaign import process_midnight_batch
-from app.services.timeline_bounce import timeline_bounce_job
+
 from app.utils.db_utils import get_table
 from app.db import engine
 from sqlalchemy import text
@@ -36,6 +32,9 @@ app = FastAPI(
     description="API for managing sales pipeline and lead generation",
     version="1.0.0"
 )
+
+if os.path.exists("uploads"):
+    app.mount("/uploads", StaticFiles(directory="uploads"), name="uploads")
 
 origins = [
     "https://funnelalchemy.onrender.com",
@@ -76,75 +75,31 @@ async def startup_db_client():
 
 SCHEMAS = ["public"]
 TABLES = [
-    "campaigns", "campaign_upload_mode", "leads_temp", "leads", "lead_activities",
-    "campaign_leads", "sdrs", "campaign_icps", "icps", "companies_process",
-    "campaign_company_campaign_map", "campaign_companies", "crm_data", "api_info"
+    "icps", "sdrs", "prospects", "personas", "high_intent_triggers",
+    "high_intent_events", "prospect_activities", "prospect_score_history",
+    "scoring_weights", "notifications", "companies"
 ]
 
 @app.on_event("startup")
 def preload_all_tenant_tables():
     with engine.connect() as conn:
         schemas = [row[0] for row in conn.execute(text("SELECT schema_name FROM public.user_directory"))]
-    table_names = [
-        "campaigns", "campaign_upload_mode", "leads_temp", "leads", "lead_activities",
-        "campaign_leads", "sdrs", "campaign_icps", "icps", "companies_process",
-        "campaign_company_campaign_map", "campaign_companies", "crm_data", "api_info"
-    ]
     for schema in schemas:
-        for table in table_names:
+        for table in TABLES:
             try:
                 get_table(table, schema, engine)
             except Exception as e:
                 print(f"Failed to preload {table} in schema {schema}: {e}")
 
 app.include_router(auth_router)
-app.include_router(api_info_router)
-app.include_router(campaign_router)
-app.include_router(campaign_company_router)
-app.include_router(leads_router)
-app.include_router(icps_router)
 app.include_router(sdrs_router)
 app.include_router(users_router)
-# app.include_router(webhook_router)
-app.include_router(ai_coaching_router)
-
-# scheduler = AsyncIOScheduler()
-
-# async def run_midnight_batch_processing():
-#     try:
-#         await run_multi_tenant_batch(process_midnight_batch)
-#     except Exception as e:
-#         logger.error(f"Error in midnight batch processing: {str(e)}")
-
-# async def run_timeline_bounce_batch():
-#     try:
-#         await run_multi_tenant_batch(timeline_bounce_job)
-#     except Exception as e:
-#         logger.error(f"Error in timeline bounce batch: {str(e)}")
-
-# scheduler.add_job(
-#     run_midnight_batch_processing,
-#     CronTrigger(hour="0", minute="0"),
-#     id="midnight_batch_processing",
-#     name="Process midnight batch for all campaigns",
-#     replace_existing=True
-# )
-
-# scheduler.add_job(
-#     run_timeline_bounce_batch,
-#     CronTrigger(hour="1", minute="0"),
-#     id="timeline_bounce_batch",
-#     name="Process timeline-based bounces for all campaigns",
-#     replace_existing=True
-# )
-
-# @app.on_event("startup")
-# async def start_scheduler():
-#     scheduler.start()
-
-# @app.on_event("shutdown")
-# async def shutdown_scheduler():
-#     scheduler.shutdown()
+app.include_router(icps_router)
+app.include_router(personas_router)
+app.include_router(notifications_router)
+app.include_router(prospects_router)
+app.include_router(scoring_weights_router)
+app.include_router(company_description_router)
 
 if __name__ == "__main__":
     import uvicorn

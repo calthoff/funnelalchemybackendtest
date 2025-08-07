@@ -14,6 +14,13 @@ class Settings(BaseSettings):
     # Database
     DATABASE_URL: str
 
+    # SendGrid
+    SENDGRID_API_KEY: Optional[str] = None
+    FROM_EMAIL: str = "lauren@funnelalchemyhq.com"
+
+    # OpenAI
+    OPENAI_API_KEY: Optional[str] = None
+
     # SMTP
     SMTP_HOST: Optional[str] = None
     SMTP_PORT: Optional[int] = None

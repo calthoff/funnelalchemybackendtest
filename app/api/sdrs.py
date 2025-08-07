@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException, Query
+from fastapi import APIRouter, Depends, HTTPException, Query, UploadFile, File, Form
 from sqlalchemy.orm import Session
 from sqlalchemy import select, func
 from typing import List
@@ -6,10 +6,30 @@ from app.db import get_db
 from app.utils.auth import get_current_user
 from app.models.users import User
 from app.schemas.sdrs import SDRCreate, SDRUpdate, SDR as SDRSchema, SDRDashboardStats, SDRDashboardStatsPage
+from app.utils.file_utils import save_headshot_image, delete_headshot_image
 import uuid
 from app.utils.db_utils import get_table
 
 router = APIRouter(prefix="/sdrs", tags=["sdrs"], redirect_slashes=False)
+
+@router.post("/upload-headshot")
+async def upload_headshot(
+    file: UploadFile = File(...),
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+    """Upload headshot image for SDR"""
+    try:
+        filename, url = await save_headshot_image(file)
+        return {
+            "filename": filename,
+            "url": url,
+            "message": "Headshot uploaded successfully"
+        }
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail="Failed to upload headshot")
 
 @router.get("/", response_model=List[SDRSchema])
 def get_sdrs(
@@ -34,139 +54,38 @@ def create_sdr(
     try:
         sdr_table = get_table('sdrs', current_user.schema_name, db.bind)
         with db.bind.connect() as conn:
-            result = conn.execute(
-                sdr_table.select().where(sdr_table.c.email == sdr_data.email)
-            )
-            existing_sdr = result.fetchone()
-            if existing_sdr:
-                raise HTTPException(status_code=400, detail="SDR with this email already exists")
             sdr_dict = sdr_data.dict()
             sdr_dict['id'] = uuid.uuid4()
-            insert_stmt = sdr_table.insert().values(**sdr_dict)
+            sdr_dict['status'] = 'active'
+            
+            # Filter out None values but allow empty strings for headshot fields
+            existing_columns = [col.name for col in sdr_table.columns]
+            filtered_dict = {}
+            for k, v in sdr_dict.items():
+                if k in existing_columns:
+                    if k in ['headshot_url', 'headshot_filename']:
+                        # Allow empty strings for headshot fields
+                        filtered_dict[k] = v
+                    elif v is not None:
+                        # For other fields, only include non-None values
+                        filtered_dict[k] = v
+            
+            print(f"Original data: {sdr_dict}")
+            print(f"Filtered data: {filtered_dict}")
+            print(f"Existing columns: {existing_columns}")
+            
+            insert_stmt = sdr_table.insert().values(**filtered_dict)
             result = conn.execute(insert_stmt)
             conn.commit()
             new_sdr = conn.execute(
-                sdr_table.select().where(sdr_table.c.email == sdr_data.email)
+                sdr_table.select().where(sdr_table.c.id == sdr_dict['id'])
             ).fetchone()
         return SDRSchema(**{k: new_sdr._mapping[k] for k in new_sdr._mapping.keys() if k in SDRSchema.__fields__})
     except HTTPException:
         raise
     except Exception as e:
         db.rollback()
-        raise HTTPException(status_code=500, detail="Failed to create SDR")
-
-@router.get("/dashboard", response_model=SDRDashboardStatsPage)
-def get_sdr_dashboard_stats(
-    offset: int = Query(0, ge=0),
-    limit: int = Query(30, ge=1, le=100),
-    db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_user)
-):
-    sdr_table = get_table('sdrs', current_user.schema_name, db.bind)
-    campaign_company_table = get_table('campaign_companies', current_user.schema_name, db.bind)
-    mapping_table = get_table('campaign_company_campaign_map', current_user.schema_name, db.bind)
-    lead_table = get_table('leads', current_user.schema_name, db.bind)
-    campaign_lead_table = get_table('campaign_leads', current_user.schema_name, db.bind)
-    lead_activity_table = get_table('lead_activities', current_user.schema_name, db.bind)
-
-    with db.bind.connect() as conn:
-        sdrs = conn.execute(sdr_table.select()).fetchall()
-        sdr_ids = [s.id for s in sdrs]
-
-        leads_emailed_rows = conn.execute(
-            select(
-                campaign_company_table.c.assigned_sdr,
-                func.count(lead_table.c.id).label('leads_emailed')
-            )
-            .select_from(
-                campaign_company_table
-                .join(mapping_table, campaign_company_table.c.id == mapping_table.c.campaign_company_id)
-                .join(lead_table, lead_table.c.campaign_company_campaign_map_id == mapping_table.c.id)
-            )
-            .where(campaign_company_table.c.assigned_sdr.in_(sdr_ids))
-            .group_by(campaign_company_table.c.assigned_sdr)
-        ).fetchall()
-        leads_emailed_map = {row.assigned_sdr: row.leads_emailed for row in leads_emailed_rows}
-
-        campaigns_touched_rows = conn.execute(
-            select(
-                campaign_company_table.c.assigned_sdr,
-                func.count(func.distinct(campaign_lead_table.c.campaign_id)).label('campaigns_touched')
-            )
-            .select_from(
-                campaign_company_table
-                .join(mapping_table, campaign_company_table.c.id == mapping_table.c.campaign_company_id)
-                .join(lead_table, lead_table.c.campaign_company_campaign_map_id == mapping_table.c.id)
-                .join(campaign_lead_table, campaign_lead_table.c.lead_id == lead_table.c.id)
-            )
-            .where(campaign_company_table.c.assigned_sdr.in_(sdr_ids))
-            .group_by(campaign_company_table.c.assigned_sdr)
-        ).fetchall()
-        campaigns_touched_map = {row.assigned_sdr: row.campaigns_touched for row in campaigns_touched_rows}
-
-        activity_rows = conn.execute(
-            select(
-                campaign_company_table.c.assigned_sdr,
-                lead_activity_table.c.type,
-                func.count().label('count')
-            )
-            .select_from(
-                campaign_company_table
-                .join(mapping_table, campaign_company_table.c.id == mapping_table.c.campaign_company_id)
-                .join(lead_table, lead_table.c.campaign_company_campaign_map_id == mapping_table.c.id)
-                .join(campaign_lead_table, campaign_lead_table.c.lead_id == lead_table.c.id)
-                .join(lead_activity_table, lead_activity_table.c.campaign_lead_id == campaign_lead_table.c.id)
-            )
-            .where(campaign_company_table.c.assigned_sdr.in_(sdr_ids))
-            .group_by(campaign_company_table.c.assigned_sdr, lead_activity_table.c.type)
-        ).fetchall()
-        activity_map = {sdr_id: {'positive_replies': 0, 'meetings_booked': 0, 'deals_closed': 0} for sdr_id in sdr_ids}
-        for row in activity_rows:
-            sdr_id = row.assigned_sdr
-            if row.type == 'replied':
-                continue
-            if row.type == 'meeting_booked':
-                activity_map[sdr_id]['meetings_booked'] += row.count
-            if row.type == 'deal_won' or row.type == 'deal_lost':
-                activity_map[sdr_id]['deals_closed'] += row.count
-        positive_reply_rows = conn.execute(
-            select(
-                campaign_company_table.c.assigned_sdr,
-                func.count().label('count')
-            )
-            .select_from(
-                campaign_company_table
-                .join(mapping_table, campaign_company_table.c.id == mapping_table.c.campaign_company_id)
-                .join(lead_table, lead_table.c.campaign_company_campaign_map_id == mapping_table.c.id)
-                .join(campaign_lead_table, campaign_lead_table.c.lead_id == lead_table.c.id)
-                .join(lead_activity_table, lead_activity_table.c.campaign_lead_id == campaign_lead_table.c.id)
-            )
-            .where(
-                campaign_company_table.c.assigned_sdr.in_(sdr_ids),
-                lead_activity_table.c.type == 'replied',
-                lead_activity_table.c.description.ilike('%positive%')
-            )
-            .group_by(campaign_company_table.c.assigned_sdr)
-        ).fetchall()
-        for row in positive_reply_rows:
-            activity_map[row.assigned_sdr]['positive_replies'] = row.count
-
-        results = []
-        for sdr in sdrs:
-            sdr_id = sdr.id
-            results.append(SDRDashboardStats(
-                sdr_name=sdr.name,
-                leads_emailed=leads_emailed_map.get(sdr_id, 0),
-                positive_replies=activity_map[sdr_id]['positive_replies'],
-                meetings_booked=activity_map[sdr_id]['meetings_booked'],
-                deals_closed=activity_map[sdr_id]['deals_closed'],
-                campaigns_touched=campaigns_touched_map.get(sdr_id, 0)
-            ))
-        total = len(results)
-        return {
-            "items": results[offset:offset+limit],
-            "total": total
-        }
+        raise HTTPException(status_code=500, detail=f"Failed to create SDR: {str(e)}")
 
 @router.get("/{sdr_id}", response_model=SDRSchema)
 def get_sdr(
@@ -202,18 +121,30 @@ def update_sdr(
             if not sdr:
                 raise HTTPException(status_code=404, detail="SDR not found")
             
-            if sdr_data.email and sdr_data.email != sdr._mapping['email']:
-                result = conn.execute(
-                    sdr_table.select().where(sdr_table.c.email == sdr_data.email)
-                )
-                existing_sdr = result.fetchone()
-                if existing_sdr:
-                    raise HTTPException(status_code=400, detail="SDR with this email already exists")
+            # Check if we're updating the headshot
+            old_headshot_filename = sdr._mapping.get('headshot_filename')
+            new_headshot_filename = sdr_data.headshot_filename
             
-            update_data = {k: v for k, v in sdr_data.dict(exclude_unset=True).items() if v != sdr._mapping[k]}
-            update_stmt = sdr_table.update().where(sdr_table.c.id == sdr_id).values(**update_data)
-            result = conn.execute(update_stmt)
-            conn.commit()
+            existing_columns = [col.name for col in sdr_table.columns]
+            update_data = {}
+            for k, v in sdr_data.dict(exclude_unset=True).items():
+                if k in existing_columns:
+                    if k in ['headshot_url', 'headshot_filename']:
+                        update_data[k] = v
+                    elif v is not None:
+                        update_data[k] = v
+            
+            if update_data:
+                # Delete old headshot if we're updating to a new one
+                if (old_headshot_filename and 
+                    new_headshot_filename and 
+                    old_headshot_filename != new_headshot_filename):
+                    delete_headshot_image(old_headshot_filename)
+                
+                update_stmt = sdr_table.update().where(sdr_table.c.id == sdr_id).values(**update_data)
+                result = conn.execute(update_stmt)
+                conn.commit()
+            
             updated_sdr = conn.execute(
                 sdr_table.select().where(sdr_table.c.id == sdr_id)
             ).fetchone()
@@ -222,7 +153,7 @@ def update_sdr(
         raise
     except Exception as e:
         db.rollback()
-        raise HTTPException(status_code=500, detail="Failed to update SDR")
+        raise HTTPException(status_code=500, detail=f"Failed to update SDR: {str(e)}")
 
 @router.delete("/{sdr_id}")
 def delete_sdr(
@@ -232,26 +163,29 @@ def delete_sdr(
 ):
     try:
         sdr_table = get_table('sdrs', current_user.schema_name, db.bind)
-        ai_coaching_replies_table = get_table('ai_coaching_replies', current_user.schema_name, db.bind)
         with db.bind.connect() as conn:
             result = conn.execute(sdr_table.select().where(sdr_table.c.id == sdr_id))
             sdr = result.fetchone()
             if not sdr:
                 raise HTTPException(status_code=404, detail="SDR not found")
-            conn.execute(ai_coaching_replies_table.delete().where(ai_coaching_replies_table.c.sdr_id == sdr_id))
-            campaign_company_table = get_table('campaign_companies', current_user.schema_name, db.bind)
-            update_stmt = campaign_company_table.update().where(campaign_company_table.c.assigned_sdr == sdr_id).values(assigned_sdr=None)
-            result = conn.execute(update_stmt)
-            conn.commit()
+            
+            headshot_filename = sdr._mapping.get('headshot_filename')
+            if headshot_filename:
+                try:
+                    delete_headshot_image(headshot_filename)
+                except Exception as e:
+                    print(f"Warning: Failed to delete headshot file {headshot_filename}: {e}")
             delete_stmt = sdr_table.delete().where(sdr_table.c.id == sdr_id)
             result = conn.execute(delete_stmt)
             conn.commit()
+            
         return {"message": "SDR deleted successfully"}
     except HTTPException:
         raise
     except Exception as e:
         db.rollback()
-        raise HTTPException(status_code=500, detail="Failed to delete SDR")
+        print(f"Error deleting SDR: {e}")
+        raise HTTPException(status_code=500, detail=f"Failed to delete SDR: {str(e)}")
 
 @router.post("/{sdr_id}/toggle-status")
 def toggle_sdr_status(
@@ -285,4 +219,43 @@ def toggle_sdr_status(
         raise
     except Exception as e:
         db.rollback()
-        raise HTTPException(status_code=500, detail="Failed to toggle SDR status") 
+        raise HTTPException(status_code=500, detail="Failed to toggle SDR status")
+
+@router.delete("/{sdr_id}/headshot")
+def delete_sdr_headshot(
+    sdr_id: str,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+    try:
+        sdr_table = get_table('sdrs', current_user.schema_name, db.bind)
+        with db.bind.connect() as conn:
+            result = conn.execute(sdr_table.select().where(sdr_table.c.id == sdr_id))
+            sdr = result.fetchone()
+            if not sdr:
+                raise HTTPException(status_code=404, detail="SDR not found")
+            
+            headshot_filename = sdr._mapping.get('headshot_filename')
+            if not headshot_filename:
+                raise HTTPException(status_code=404, detail="No headshot found for this SDR")
+        
+            try:
+                delete_headshot_image(headshot_filename)
+            except Exception as e:
+                print(f"Warning: Failed to delete headshot file {headshot_filename}: {e}")
+            
+            update_data = {
+                'headshot_url': None,
+                'headshot_filename': None
+            }
+            update_stmt = sdr_table.update().where(sdr_table.c.id == sdr_id).values(**update_data)
+            conn.execute(update_stmt)
+            conn.commit()
+            
+        return {"message": "Headshot deleted successfully"}
+    except HTTPException:
+        raise
+    except Exception as e:
+        db.rollback()
+        print(f"Error deleting headshot: {e}")
+        raise HTTPException(status_code=500, detail=f"Failed to delete headshot: {str(e)}") 

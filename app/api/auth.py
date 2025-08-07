@@ -115,12 +115,14 @@ def signup(
                 }
             )
             conn.execute(
-                text(f'INSERT INTO "{schema_name}".sdrs (id, name, email, max_capacity, created_at, updated_at) VALUES (:id, :name, :email, :max_capacity, :created_at, :updated_at)'),
+                text(f'INSERT INTO "{schema_name}".sdrs (id, name, role, territory, notes, status, created_at, updated_at) VALUES (:id, :name, :role, :territory, :notes, :status, :created_at, :updated_at)'),
                 {
                     "id": str(uuid.uuid4()),
                     "name": f"{user.first_name} {user.last_name}",
-                    "email": user.email,
-                    "max_capacity": 100,
+                    "role": "",
+                    "territory": "",
+                    "notes": "",
+                    "status": "active",
                     "created_at": now,
                     "updated_at": now
                 }
