@@ -4,6 +4,8 @@ from sqlalchemy import select, func
 from typing import List, Union
 from openai import OpenAI
 import os
+import json
+import re
 from app.db import get_db
 from app.utils.auth import get_current_user
 from app.models.users import User
@@ -114,20 +116,46 @@ Score 0-100 based on how well this prospect fits YOUR specific business context 
 async def score_with_openai(prompt):
     try:
         response = client.chat.completions.create(
-            model="gpt-3.5-turbo",
+            model="gpt-4o-mini",
             messages=[
-                {"role": "system", "content": "You are a lead scoring expert. Return only valid JSON."},
+                {"role": "system", "content": "Score prospects 0-100. Return only valid JSON arrays."},
                 {"role": "user", "content": prompt}
             ],
-            temperature=0.3,
-            max_tokens=200
+            temperature=0.1,
+            max_tokens=500,
+            timeout=10
         )
         
         result = response.choices[0].message.content.strip()
-        return json.loads(result)
+        
+        if not result:
+            print("OpenAI returned empty response")
+            return []
+        
+        try:
+            parsed_result = json.loads(result)
+            if isinstance(parsed_result, dict):
+                return [parsed_result]
+            elif isinstance(parsed_result, list):
+                return parsed_result
+            else:
+                return []
+        except json.JSONDecodeError as e:
+            print(f"JSON parsing error: {e}")
+            print(f"Raw response: {result}")
+            
+            json_match = re.search(r'\[.*\]', result)
+            if json_match:
+                try:
+                    return json.loads(json_match.group())
+                except:
+                    pass
+            
+            return []
+            
     except Exception as e:
         print(f"OpenAI API error: {e}")
-        return {"score": 50, "reason": "Unable to score - using default"}
+        return []
 
 @router.post("/score")
 async def score_prospects(
@@ -162,15 +190,21 @@ async def score_prospects(
             
             if company_profiles:
                 company_prompt = create_scoring_prompt(prospect, company_profiles, "company")
-                company_score = await score_with_openai(company_prompt)
+                company_result = await score_with_openai(company_prompt)
+                if company_result and len(company_result) > 0:
+                    company_score = company_result[0]
             
             if persona_profiles:
                 persona_prompt = create_scoring_prompt(prospect, persona_profiles, "persona")
-                persona_score = await score_with_openai(persona_prompt)
+                persona_result = await score_with_openai(persona_prompt)
+                if persona_result and len(persona_result) > 0:
+                    persona_score = persona_result[0]
             
             company_description_text = company_description.description if company_description and company_description.description else None
             ai_prompt = create_ai_intelligence_prompt(prospect, company_description_text)
-            ai_score = await score_with_openai(ai_prompt)
+            ai_result = await score_with_openai(ai_prompt)
+            if ai_result and len(ai_result) > 0:
+                ai_score = ai_result[0]
             
             final_score = round(
                 (company_score["score"] * weights["company_fit"]) + 
