@@ -6,21 +6,60 @@ from openai import OpenAI
 import os
 import json
 import re
+import numpy as np
 from app.db import get_db
 from app.utils.auth import get_current_user
 from app.models.users import User
 from app.schemas.prospects import ProspectRead, ProspectUpdate
 from app.utils.db_utils import get_table
 from pydantic import BaseModel
-from app.core.config import settings
 
 router = APIRouter(prefix="/prospects", tags=["prospects"], redirect_slashes=False)
 
-client = OpenAI(api_key=settings.OPENAI_API_KEY)
+client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 
 class DuplicateProspectResponse(BaseModel):
     message: str
     skipped: bool
+
+def normalize_job_title(title):
+    try:
+        response = client.chat.completions.create(
+            model="gpt-4o-mini",
+            messages=[
+                {"role": "system", "content": "Normalize job titles to standard roles. Return only the normalized title."},
+                {"role": "user", "content": f"Normalize this job title: {title}"}
+            ],
+            temperature=0.1,
+            max_tokens=50
+        )
+        return response.choices[0].message.content.strip()
+    except:
+        return title
+
+def get_embedding(text):
+    """Get embedding for semantic similarity"""
+    try:
+        response = client.embeddings.create(
+            model="text-embedding-3-small",
+            input=text
+        )
+        return response.data[0].embedding
+    except:
+        return None
+
+def calculate_similarity(embedding1, embedding2):
+    """Calculate cosine similarity between embeddings"""
+    if not embedding1 or not embedding2:
+        return 0
+    
+    try:
+        vec1 = np.array(embedding1)
+        vec2 = np.array(embedding2)
+        similarity = np.dot(vec1, vec2) / (np.linalg.norm(vec1) * np.linalg.norm(vec2))
+        return float(similarity)
+    except:
+        return 0
 
 def create_scoring_prompt(prospect, profiles, profile_type):
     prospect_info = f"""
@@ -45,13 +84,34 @@ PROSPECT:
             departments = profile_data.get('departments', 'N/A')
             profiles_info += f"{i}. \"{profile_data.get('name', 'Unknown')}\": Title Keywords: {title_keywords}, Departments: {departments}\n"
     
+    scoring_guidance = ""
+    if profile_type == "company":
+        scoring_guidance = """
+SCORING GUIDANCE:
+- Strong match (90-100): Matches multiple criteria (industry, size, ARR)
+- Partial match (60-80): Matches some criteria (e.g., one industry or close ARR)
+- Weak match (40-59): Limited alignment
+- No match (0-39): No significant alignment
+"""
+    else:
+        scoring_guidance = """
+SCORING GUIDANCE:
+- Exact match or strong title overlap (90-100): Perfect role match
+- Semantic similarity or adjacent role (70-89): Related role or department
+- Low seniority or off-department (0-69): Limited role relevance
+"""
+    
     prompt = f"""You are a lead scoring expert. Score this prospect (0-100) against these {profile_type} profiles.
 
-{prospect_info}{profiles_info}
+{prospect_info}{profiles_info}{scoring_guidance}
 
 Return only a JSON object with this exact format:
 {{
   "score": 85,
+  "component_scores": {{
+    "profile_match_score": 90,
+    "criteria_alignment": 80
+  }},
   "reason": "TechCorp is a SaaS company with 200 employees, matching the SaaS Companies profile criteria"
 }}
 
@@ -106,6 +166,11 @@ Consider factors like:
 Return only a JSON object with this exact format:
 {{
   "score": 75,
+  "component_scores": {{
+    "business_alignment": 80,
+    "role_relevance": 70,
+    "market_fit": 75
+  }},
   "reason": "Strong potential: Mid-market SaaS company, VP-level decision maker, growing industry, good data quality"
 }}
 
@@ -118,7 +183,7 @@ async def score_with_openai(prompt):
         response = client.chat.completions.create(
             model="gpt-4o-mini",
             messages=[
-                {"role": "system", "content": "Score prospects 0-100. Return only valid JSON arrays."},
+                {"role": "system", "content": "Score prospects 0-100. Return only valid JSON objects with component_scores."},
                 {"role": "user", "content": prompt}
             ],
             temperature=0.1,
@@ -128,34 +193,42 @@ async def score_with_openai(prompt):
         
         result = response.choices[0].message.content.strip()
         
+        # Handle empty or malformed responses
         if not result:
             print("OpenAI returned empty response")
-            return []
+            return {"score": 50, "component_scores": {}, "reason": "No response from AI"}
         
+        # Try to parse JSON, with fallback for common issues
         try:
             parsed_result = json.loads(result)
+            # Ensure we have the expected structure
             if isinstance(parsed_result, dict):
-                return [parsed_result]
-            elif isinstance(parsed_result, list):
+                if "score" not in parsed_result:
+                    parsed_result["score"] = 50
+                if "component_scores" not in parsed_result:
+                    parsed_result["component_scores"] = {}
+                if "reason" not in parsed_result:
+                    parsed_result["reason"] = "AI analysis"
                 return parsed_result
             else:
-                return []
+                return {"score": 50, "component_scores": {}, "reason": "Invalid response format"}
         except json.JSONDecodeError as e:
             print(f"JSON parsing error: {e}")
             print(f"Raw response: {result}")
             
-            json_match = re.search(r'\[.*\]', result)
+            # Try to extract JSON from the response if it's wrapped in text
+            json_match = re.search(r'\{.*\}', result)
             if json_match:
                 try:
                     return json.loads(json_match.group())
                 except:
                     pass
             
-            return []
+            return {"score": 50, "component_scores": {}, "reason": "JSON parsing failed"}
             
     except Exception as e:
         print(f"OpenAI API error: {e}")
-        return []
+        return {"score": 50, "component_scores": {}, "reason": "API error"}
 
 @router.post("/score")
 async def score_prospects(
@@ -164,6 +237,9 @@ async def score_prospects(
     current_user: User = Depends(get_current_user)
 ):
     try:
+        if not prospects:
+            return {"prospects": []}
+        
         company_table = get_table('icps', current_user.schema_name, db.bind)
         persona_table = get_table('personas', current_user.schema_name, db.bind)
         scoring_weights_table = get_table('scoring_weights', current_user.schema_name, db.bind)
@@ -175,57 +251,108 @@ async def score_prospects(
             scoring_weights = conn.execute(scoring_weights_table.select()).fetchone()
             company_description = conn.execute(company_description_table.select()).fetchone()
         
-        weights = {
-            "company_fit": float(scoring_weights.company_fit_weight) / 100 if scoring_weights and scoring_weights.company_fit_weight else 0.4,
-            "persona_fit": float(scoring_weights.persona_fit_weight) / 100 if scoring_weights and scoring_weights.persona_fit_weight else 0.4,
-            "ai_intelligence": float(scoring_weights.sales_data_weight) / 100 if scoring_weights and scoring_weights.sales_data_weight else 0.2
-        }
+        company_profiles = company_profiles or []
+        persona_profiles = persona_profiles or []
+        
+        if not scoring_weights:
+            weights = {
+                "company_fit": 0.4,
+                "persona_fit": 0.4,
+                "ai_intelligence": 0.2
+            }
+        else:
+            weights = {
+                "company_fit": float(scoring_weights.company_fit_weight) / 100 if scoring_weights.company_fit_weight else 0.0,
+                "persona_fit": float(scoring_weights.persona_fit_weight) / 100 if scoring_weights.persona_fit_weight else 0.0,
+                "ai_intelligence": float(scoring_weights.sales_data_weight) / 100 if scoring_weights.sales_data_weight else 0.0
+            }
+        
+        company_description_text = company_description.description if company_description and company_description.description else None
+        company_embedding = get_embedding(company_description_text) if company_description_text else None
         
         scored_prospects = []
-        
         for prospect in prospects:
-            company_score = {"score": 50, "reason": "No company profiles available"}
-            persona_score = {"score": 50, "reason": "No persona profiles available"}
-            ai_score = {"score": 50, "reason": "AI intelligence analysis"}
+            normalized_title = normalize_job_title(prospect.get('title', ''))
+            prospect['normalized_title'] = normalized_title
             
-            if company_profiles:
+            # Only calculate scores for non-zero weights
+            company_score = None
+            persona_score = None
+            ai_score = None
+            score_reason_parts = []
+            component_scores = {}
+            final_score = 0
+            total_weight = 0
+            
+            # Company scoring
+            if weights["company_fit"] > 0 and company_profiles:
                 company_prompt = create_scoring_prompt(prospect, company_profiles, "company")
-                company_result = await score_with_openai(company_prompt)
-                if company_result and len(company_result) > 0:
-                    company_score = company_result[0]
+                company_score = await score_with_openai(company_prompt)
+                final_score += company_score["score"] * weights["company_fit"]
+                total_weight += weights["company_fit"]
+                score_reason_parts.append(f"Company: {company_score['reason']}")
+                component_scores["company"] = company_score.get("component_scores", {})
             
-            if persona_profiles:
+            # Persona scoring
+            if weights["persona_fit"] > 0 and persona_profiles:
                 persona_prompt = create_scoring_prompt(prospect, persona_profiles, "persona")
-                persona_result = await score_with_openai(persona_prompt)
-                if persona_result and len(persona_result) > 0:
-                    persona_score = persona_result[0]
+                persona_score = await score_with_openai(persona_prompt)
+                final_score += persona_score["score"] * weights["persona_fit"]
+                total_weight += weights["persona_fit"]
+                score_reason_parts.append(f"Persona: {persona_score['reason']}")
+                component_scores["persona"] = persona_score.get("component_scores", {})
             
-            company_description_text = company_description.description if company_description and company_description.description else None
-            ai_prompt = create_ai_intelligence_prompt(prospect, company_description_text)
-            ai_result = await score_with_openai(ai_prompt)
-            if ai_result and len(ai_result) > 0:
-                ai_score = ai_result[0]
+            # AI intelligence scoring
+            if weights["ai_intelligence"] > 0:
+                ai_prompt = create_ai_intelligence_prompt(prospect, company_description_text)
+                ai_score = await score_with_openai(ai_prompt)
+                final_score += ai_score["score"] * weights["ai_intelligence"]
+                total_weight += weights["ai_intelligence"]
+                score_reason_parts.append(f"AI: {ai_score['reason']}")
+                component_scores["ai"] = ai_score.get("component_scores", {})
             
-            final_score = round(
-                (company_score["score"] * weights["company_fit"]) + 
-                (persona_score["score"] * weights["persona_fit"]) + 
-                (ai_score["score"] * weights["ai_intelligence"])
-            )
+            # Semantic similarity boost (only if any weight > 0)
+            similarity_boost = 0
+            if total_weight > 0 and company_embedding and prospect.get('company') and prospect.get('title'):
+                prospect_text = f"{prospect.get('company')} {normalized_title}"
+                prospect_embedding = get_embedding(prospect_text)
+                similarity = calculate_similarity(company_embedding, prospect_embedding)
+                if similarity > 0.8:
+                    similarity_boost = 10
+                elif similarity > 0.6:
+                    similarity_boost = 5
+                final_score += similarity_boost
+                # score_reason_parts.append(f"Similarity boost: +{similarity_boost}")
             
-            scored_prospect = {
-                **prospect,
-                "score": final_score,
-                "score_reason": f"Company: {company_score['reason']} Persona: {persona_score['reason']} AI: {ai_score['reason']}",
-                "company_score": company_score["score"],
-                "persona_score": persona_score["score"],
-                "ai_score": ai_score["score"]
-            }
-            
+            # If all weights are zero, return default
+            if total_weight == 0:
+                scored_prospect = {
+                    **prospect,
+                    "score": 50,
+                    "score_reason": "All weights are zero, no scoring performed.",
+                    "company_score": None,
+                    "persona_score": None,
+                    "ai_score": None,
+                    "similarity_boost": 0,
+                    "component_scores": {}
+                }
+            else:
+                final_score = round(min(final_score, 100))
+                scored_prospect = {
+                    **prospect,
+                    "score": final_score,
+                    "score_reason": " | ".join(score_reason_parts),
+                    "company_score": company_score["score"] if company_score else None,
+                    "persona_score": persona_score["score"] if persona_score else None,
+                    "ai_score": ai_score["score"] if ai_score else None,
+                    "similarity_boost": similarity_boost,
+                    "component_scores": component_scores
+                }
             scored_prospects.append(scored_prospect)
-        
         return {"prospects": scored_prospects}
-        
     except Exception as e:
+        import traceback
+        traceback.print_exc()
         raise HTTPException(status_code=500, detail=f"Scoring failed: {str(e)}")
 
 @router.post("/batch", response_model=List[Union[ProspectRead, DuplicateProspectResponse]])

@@ -16,3 +16,4 @@ sendgrid
 openai
 APScheduler
 Pillow
+numpy
