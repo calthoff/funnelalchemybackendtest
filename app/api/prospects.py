@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException, Query
+from fastapi import APIRouter, Depends, HTTPException, Query, BackgroundTasks
 from sqlalchemy.orm import Session
 from sqlalchemy import select, func
 from typing import List, Union
@@ -355,9 +355,63 @@ async def score_prospects(
         traceback.print_exc()
         raise HTTPException(status_code=500, detail=f"Scoring failed: {str(e)}")
 
+async def score_prospect_background(prospect_id: str, schema_name: str):
+    """Background task to score a prospect"""
+    try:
+        print(f"\n🔄 Starting background scoring for prospect {prospect_id}")
+        
+        # Get DB session
+        db = next(get_db())
+        prospect_table = get_table('prospects', schema_name, db.bind)
+        
+        print(f"📊 Getting prospect data...")
+        # Get prospect data
+        with db.bind.connect() as conn:
+            prospect = conn.execute(
+                select([prospect_table]).where(prospect_table.c.id == prospect_id)
+            ).fetchone()
+
+            if not prospect:
+                print(f"Prospect {prospect_id} not found")
+                return
+
+            # Format prospect data for scoring
+            prospect_data = {
+                "name": f"{prospect.first_name} {prospect.last_name}",
+                "company": prospect.company_name,
+                "title": prospect.job_title,
+                "email": prospect.email
+            }
+
+            print(f"🧮 Calculating score for {prospect_data['name']} at {prospect_data['company']}...")
+            # Score the prospect
+            score_result = await score_prospects([prospect_data], db, None)
+            if score_result and score_result.get("prospects"):
+                scored_prospect = score_result["prospects"][0]
+                print(f"✨ Score calculated: {scored_prospect['score']}")
+                print(f"📝 Reason: {scored_prospect['score_reason']}")
+                
+                # Update prospect with score
+                conn.execute(
+                    prospect_table.update()
+                    .where(prospect_table.c.id == prospect_id)
+                    .values(
+                        current_score=scored_prospect["score"],
+                        initial_score=scored_prospect["score"],
+                        score_reason=scored_prospect["score_reason"],
+                        updated_at=func.now()
+                    )
+                )
+                conn.commit()
+                print(f"✅ Successfully updated prospect {prospect_id} with new score\n")
+
+    except Exception as e:
+        print(f"❌ Background scoring error for prospect {prospect_id}: {e}\n")
+
 @router.post("/batch", response_model=List[Union[ProspectRead, DuplicateProspectResponse]])
 def create_prospects_batch(
     prospects_data: List[dict],
+    background_tasks: BackgroundTasks,
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user)
 ):
@@ -440,6 +494,15 @@ def create_prospects_batch(
                     created_prospect = result.fetchone()
                     
                     results.append(ProspectRead(**{k: created_prospect._mapping[k] for k in created_prospect._mapping.keys() if k in ProspectRead.__fields__}))
+                    
+                    # Queue background scoring task
+                    print(f"\n📋 Queuing background scoring for prospect {prospect_id}")
+                    background_tasks.add_task(
+                        score_prospect_background,
+                        str(prospect_id),
+                        current_user.schema_name
+                    )
+
             if all_sdrs:
                 current_sdr_index = (current_sdr_index + 1) % len(all_sdrs)
                 assigned_sdr_id = str(all_sdrs[current_sdr_index].id)
