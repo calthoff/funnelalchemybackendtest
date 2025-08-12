@@ -1,3 +1,7 @@
+import threading
+import asyncio
+import time
+from datetime import datetime, timedelta
 from fastapi import APIRouter, Depends, HTTPException, Query, BackgroundTasks
 from sqlalchemy.orm import Session
 from sqlalchemy import select, func
@@ -17,6 +21,9 @@ from pydantic import BaseModel
 router = APIRouter(prefix="/prospects", tags=["prospects"], redirect_slashes=False)
 
 client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
+
+background_scoring_running = False
+background_thread = None
 
 class DuplicateProspectResponse(BaseModel):
     message: str
@@ -356,62 +363,160 @@ async def score_prospects(
         raise HTTPException(status_code=500, detail=f"Scoring failed: {str(e)}")
 
 async def score_prospect_background(prospect_id: str, schema_name: str):
-    """Background task to score a prospect"""
+    """Background task to score a prospect using the same logic as /score endpoint"""
     try:
         print(f"\n🔄 Starting background scoring for prospect {prospect_id}")
         
-        # Get DB session
-        db = next(get_db())
-        prospect_table = get_table('prospects', schema_name, db.bind)
+        # Create a database session without requiring a request
+        from app.db import SessionLocal
+        db = SessionLocal()
         
-        print(f"📊 Getting prospect data...")
-        # Get prospect data
-        with db.bind.connect() as conn:
-            prospect = conn.execute(
-                select([prospect_table]).where(prospect_table.c.id == prospect_id)
-            ).fetchone()
+        try:
+            prospect_table = get_table('prospects', schema_name, db.bind)
+            company_table = get_table('icps', schema_name, db.bind)
+            persona_table = get_table('personas', schema_name, db.bind)
+            scoring_weights_table = get_table('scoring_weights', schema_name, db.bind)
+            company_description_table = get_table('company_descriptions', schema_name, db.bind)
+            
+            print(f"📊 Getting prospect data...")
+            # Get prospect data
+            with db.bind.connect() as conn:
+                prospect = conn.execute(
+                    prospect_table.select().where(prospect_table.c.id == prospect_id)
+                ).fetchone()
 
-            if not prospect:
-                print(f"Prospect {prospect_id} not found")
-                return
+                if not prospect:
+                    print(f"Prospect {prospect_id} not found")
+                    return
+
+                # Get scoring data
+                company_profiles = conn.execute(company_table.select()).fetchall()
+                persona_profiles = conn.execute(persona_table.select()).fetchall()
+                scoring_weights = conn.execute(scoring_weights_table.select()).fetchone()
+                company_description = conn.execute(company_description_table.select()).fetchone()
+
+            company_profiles = company_profiles or []
+            persona_profiles = persona_profiles or []
+            
+            if not scoring_weights:
+                weights = {
+                    "company_fit": 0.4,
+                    "persona_fit": 0.4,
+                    "ai_intelligence": 0.2
+                }
+            else:
+                weights = {
+                    "company_fit": float(scoring_weights.company_fit_weight) / 100 if scoring_weights.company_fit_weight else 0.0,
+                    "persona_fit": float(scoring_weights.persona_fit_weight) / 100 if scoring_weights.persona_fit_weight else 0.0,
+                    "ai_intelligence": float(scoring_weights.sales_data_weight) / 100 if scoring_weights.sales_data_weight else 0.0
+                }
+            
+            company_description_text = company_description.description if company_description and company_description.description else None
+            company_embedding = get_embedding(company_description_text) if company_description_text else None
 
             # Format prospect data for scoring
             prospect_data = {
                 "name": f"{prospect.first_name} {prospect.last_name}",
                 "company": prospect.company_name,
                 "title": prospect.job_title,
-                "email": prospect.email
+                "email": prospect.email,
+                "department": prospect.department,
+                "seniority": prospect.seniority,
+                "location": prospect.location,
+                "source": prospect.source
             }
 
             print(f"🧮 Calculating score for {prospect_data['name']} at {prospect_data['company']}...")
-            # Score the prospect
-            score_result = await score_prospects([prospect_data], db, None)
-            if score_result and score_result.get("prospects"):
-                scored_prospect = score_result["prospects"][0]
-                print(f"✨ Score calculated: {scored_prospect['score']}")
-                print(f"📝 Reason: {scored_prospect['score_reason']}")
-                
-                # Update prospect with score
+            
+            # Use the same scoring logic as /score endpoint
+            normalized_title = normalize_job_title(prospect_data.get('title', ''))
+            prospect_data['normalized_title'] = normalized_title
+            
+            # Only calculate scores for non-zero weights
+            company_score = None
+            persona_score = None
+            ai_score = None
+            score_reason_parts = []
+            component_scores = {}
+            final_score = 0
+            total_weight = 0
+            
+            # Company scoring
+            if weights["company_fit"] > 0 and company_profiles:
+                company_prompt = create_scoring_prompt(prospect_data, company_profiles, "company")
+                company_score = await score_with_openai(company_prompt)
+                final_score += company_score["score"] * weights["company_fit"]
+                total_weight += weights["company_fit"]
+                score_reason_parts.append(f"Company: {company_score['reason']}")
+                component_scores["company"] = company_score.get("component_scores", {})
+            
+            # Persona scoring
+            if weights["persona_fit"] > 0 and persona_profiles:
+                persona_prompt = create_scoring_prompt(prospect_data, persona_profiles, "persona")
+                persona_score = await score_with_openai(persona_prompt)
+                final_score += persona_score["score"] * weights["persona_fit"]
+                total_weight += weights["persona_fit"]
+                score_reason_parts.append(f"Persona: {persona_score['reason']}")
+                component_scores["persona"] = persona_score.get("component_scores", {})
+            
+            # AI intelligence scoring
+            if weights["ai_intelligence"] > 0:
+                ai_prompt = create_ai_intelligence_prompt(prospect_data, company_description_text)
+                ai_score = await score_with_openai(ai_prompt)
+                final_score += ai_score["score"] * weights["ai_intelligence"]
+                total_weight += weights["ai_intelligence"]
+                score_reason_parts.append(f"AI: {ai_score['reason']}")
+                component_scores["ai"] = ai_score.get("component_scores", {})
+            
+            # Semantic similarity boost (only if any weight > 0)
+            similarity_boost = 0
+            if total_weight > 0 and company_embedding and prospect_data.get('company') and prospect_data.get('title'):
+                prospect_text = f"{prospect_data.get('company')} {normalized_title}"
+                prospect_embedding = get_embedding(prospect_text)
+                similarity = calculate_similarity(company_embedding, prospect_embedding)
+                if similarity > 0.8:
+                    similarity_boost = 10
+                elif similarity > 0.6:
+                    similarity_boost = 5
+                final_score += similarity_boost
+            
+            # Calculate final score
+            if total_weight == 0:
+                final_score = 50
+                score_reason = "All weights are zero, no scoring performed."
+            else:
+                final_score = round(min(final_score, 100))
+                score_reason = " | ".join(score_reason_parts)
+            
+            print(f"✨ Score calculated: {final_score}")
+            print(f"📝 Reason: {score_reason}")
+            
+            # Update prospect with score
+            with db.bind.connect() as conn:
                 conn.execute(
                     prospect_table.update()
                     .where(prospect_table.c.id == prospect_id)
                     .values(
-                        current_score=scored_prospect["score"],
-                        initial_score=scored_prospect["score"],
-                        score_reason=scored_prospect["score_reason"],
+                        current_score=final_score,
+                        initial_score=final_score,
+                        score_reason=score_reason,
                         updated_at=func.now()
                     )
                 )
                 conn.commit()
                 print(f"✅ Successfully updated prospect {prospect_id} with new score\n")
 
+        finally:
+            db.close()
+
     except Exception as e:
         print(f"❌ Background scoring error for prospect {prospect_id}: {e}\n")
+        import traceback
+        traceback.print_exc()
 
 @router.post("/batch", response_model=List[Union[ProspectRead, DuplicateProspectResponse]])
 def create_prospects_batch(
     prospects_data: List[dict],
-    background_tasks: BackgroundTasks,
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user)
 ):
@@ -460,9 +565,9 @@ def create_prospects_batch(
                 'seniority': prospect_data.get('seniority', ''),
                 'source': prospect_data.get('source', 'csv_upload'),
                 'source_id': prospect_data.get('source_id', ''),
-                'current_score': prospect_data.get('current_score', 0),
-                'initial_score': prospect_data.get('initial_score', 0),
-                'score_reason': prospect_data.get('score_reason', ''),
+                'current_score': prospect_data.get('current_score', -1),
+                'initial_score': prospect_data.get('initial_score', -1),
+                'score_reason': prospect_data.get('score_reason', 'Generating...'),
                 'score_period': prospect_data.get('score_period', ''),
                 'suggested_sales_rep_reason': f"Round robin assignment from {prospect_data.get('source', 'csv_upload')}",
                 'suggested_sales_rep_date': current_time,
@@ -484,6 +589,7 @@ def create_prospects_batch(
                 if existing_prospect:
                     results.append(DuplicateProspectResponse(message="Prospect already exists", skipped=True))
                 else:
+                    # SAVE IMMEDIATELY - NO SCORING, NO WAITING
                     insert_stmt = prospect_table.insert().values(**insert_data)
                     conn.execute(insert_stmt)
                     conn.commit()
@@ -494,23 +600,74 @@ def create_prospects_batch(
                     created_prospect = result.fetchone()
                     
                     results.append(ProspectRead(**{k: created_prospect._mapping[k] for k in created_prospect._mapping.keys() if k in ProspectRead.__fields__}))
-                    
-                    # Queue background scoring task
-                    print(f"\n📋 Queuing background scoring for prospect {prospect_id}")
-                    background_tasks.add_task(
-                        score_prospect_background,
-                        str(prospect_id),
-                        current_user.schema_name
-                    )
 
             if all_sdrs:
                 current_sdr_index = (current_sdr_index + 1) % len(all_sdrs)
                 assigned_sdr_id = str(all_sdrs[current_sdr_index].id)
         
+        # Start scoring in a separate thread (truly non-blocking)
+        def start_scoring_thread():
+            try:
+                # Create new event loop for the thread
+                loop = asyncio.new_event_loop()
+                asyncio.set_event_loop(loop)
+                loop.run_until_complete(trigger_immediate_scoring_background(current_user.schema_name))
+            except Exception as e:
+                print(f"Error in scoring thread: {e}")
+        
+        scoring_thread = threading.Thread(target=start_scoring_thread)
+        scoring_thread.daemon = True
+        scoring_thread.start()
+        
+        # Return results immediately - NO WAITING FOR ANYTHING
         return results
         
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Failed to create prospects: {str(e)}")
+
+async def trigger_immediate_scoring_background(schema_name: str):
+    """Background task to trigger immediate scoring after batch upload"""
+    try:
+        print(f"\n🚀 Triggering immediate scoring for schema {schema_name}")
+        
+        # Create a database session
+        from app.db import SessionLocal
+        db = SessionLocal()
+        
+        try:
+            prospect_table = get_table('prospects', schema_name, db.bind)
+            
+            with db.bind.connect() as conn:
+                # Get prospects that need scoring (recently uploaded)
+                prospects_to_score = conn.execute(
+                    prospect_table.select().where(
+                        (prospect_table.c.current_score == -1) &
+                        (prospect_table.c.score_reason == 'Generating...')
+                    ).order_by(prospect_table.c.created_at.desc()).limit(20)
+                ).fetchall()
+            
+            if not prospects_to_score:
+                print("No prospects need immediate scoring")
+                return
+            
+            print(f"📊 Found {len(prospects_to_score)} prospects to score immediately")
+            
+            for prospect in prospects_to_score:
+                try:
+                    await score_prospect_background(str(prospect.id), schema_name)
+                    # Small delay to avoid overwhelming the API
+                    await asyncio.sleep(0.5)
+                except Exception as e:
+                    print(f"Error scoring prospect {prospect.id}: {e}")
+                    continue
+            
+            print(f"✅ Immediate scoring completed for {len(prospects_to_score)} prospects")
+            
+        finally:
+            db.close()
+            
+    except Exception as e:
+        print(f"❌ Error in immediate scoring background task: {e}")
 
 @router.get("/", response_model=List[ProspectRead])
 def get_prospects(
@@ -617,3 +774,130 @@ def delete_prospect(
     except Exception as e:
         db.rollback()
         raise HTTPException(status_code=500, detail="Failed to delete prospect") 
+
+@router.post("/trigger-scoring")
+async def trigger_scoring(
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+    """Manually trigger scoring for prospects that need it"""
+    try:
+        prospect_table = get_table('prospects', current_user.schema_name, db.bind)
+        
+        with db.bind.connect() as conn:
+            # Get prospects that need scoring
+            prospects_to_score = conn.execute(
+                select([prospect_table]).where(
+                    (prospect_table.c.current_score == 0) | 
+                    (prospect_table.c.score_reason.is_(None)) |
+                    (prospect_table.c.score_reason == '')
+                ).limit(5)  # Process 5 at a time
+            ).fetchall()
+        
+        if not prospects_to_score:
+            return {"message": "No prospects need scoring", "processed": 0}
+        
+        processed_count = 0
+        for prospect in prospects_to_score:
+            try:
+                await score_prospect_background(str(prospect.id), current_user.schema_name)
+                processed_count += 1
+                # Small delay to avoid overwhelming the API
+                await asyncio.sleep(1)
+            except Exception as e:
+                print(f"Error scoring prospect {prospect.id}: {e}")
+                continue
+        
+        return {
+            "message": f"Successfully processed {processed_count} prospects",
+            "processed": processed_count,
+            "total_found": len(prospects_to_score)
+        }
+        
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to trigger scoring: {str(e)}") 
+
+@router.post("/trigger-immediate-scoring")
+async def trigger_immediate_scoring(
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+    """Trigger immediate scoring for prospects that were just uploaded"""
+    try:
+        prospect_table = get_table('prospects', current_user.schema_name, db.bind)
+        
+        with db.bind.connect() as conn:
+            # Get prospects that need scoring (recently uploaded)
+            prospects_to_score = conn.execute(
+                prospect_table.select().where(
+                    (prospect_table.c.current_score == -1) &
+                    (prospect_table.c.score_reason == 'Generating...')
+                ).order_by(prospect_table.c.created_at.desc()).limit(20)  # Process recent uploads first
+            ).fetchall()
+        
+        if not prospects_to_score:
+            return {"message": "No prospects need immediate scoring", "processed": 0}
+        
+        processed_count = 0
+        for prospect in prospects_to_score:
+            try:
+                await score_prospect_background(str(prospect.id), current_user.schema_name)
+                processed_count += 1
+                # Small delay to avoid overwhelming the API
+                await asyncio.sleep(0.5)  # Faster than periodic task
+            except Exception as e:
+                print(f"Error scoring prospect {prospect.id}: {e}")
+                continue
+        
+        return {
+            "message": f"Successfully processed {processed_count} prospects",
+            "processed": processed_count,
+            "total_found": len(prospects_to_score)
+        }
+        
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to trigger immediate scoring: {str(e)}")
+
+@router.get("/scoring-status")
+async def get_scoring_status(
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+    """Check which prospects need scoring"""
+    try:
+        prospect_table = get_table('prospects', current_user.schema_name, db.bind)
+        
+        with db.bind.connect() as conn:
+            # Count prospects that need scoring
+            prospects_needing_scoring = conn.execute(
+                prospect_table.select().where(
+                    (prospect_table.c.current_score == 0) | 
+                    (prospect_table.c.current_score == -1) |
+                    (prospect_table.c.score_reason.is_(None)) |
+                    (prospect_table.c.score_reason == '') |
+                    (prospect_table.c.score_reason == 'Generating...')
+                )
+            ).fetchall()
+            
+            # Count total prospects
+            total_prospects = conn.execute(prospect_table.select()).fetchall()
+            
+            # Count scored prospects
+            scored_prospects = conn.execute(
+                prospect_table.select().where(
+                    (prospect_table.c.current_score > 0) & 
+                    (prospect_table.c.score_reason.isnot(None)) &
+                    (prospect_table.c.score_reason != '') &
+                    (prospect_table.c.score_reason != 'Generating...')
+                )
+            ).fetchall()
+        
+        return {
+            "total_prospects": len(total_prospects),
+            "scored_prospects": len(scored_prospects),
+            "prospects_needing_scoring": len(prospects_needing_scoring),
+            "scoring_progress": f"{len(scored_prospects)}/{len(total_prospects)}" if len(total_prospects) > 0 else "0/0"
+        }
+        
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to get scoring status: {str(e)}") 

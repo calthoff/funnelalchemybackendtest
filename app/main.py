@@ -11,12 +11,18 @@ from app.api.users import router as users_router
 from app.api.icps import router as icps_router
 from app.api.personas import router as personas_router
 from app.api.notifications import router as notifications_router
-from app.api.prospects import router as prospects_router
+from app.api.prospects import router as prospects_router, score_prospect_background
 from app.api.scoring_weights import router as scoring_weights_router
 from app.api.company_description import router as company_description_router
 import os
 import logging
 from dotenv import load_dotenv
+import asyncio
+import threading
+import time
+from datetime import datetime, timedelta
+from sqlalchemy import select, func
+from app.utils.db_utils import get_table
 
 from app.utils.db_utils import get_table
 from app.db import engine
@@ -37,6 +43,7 @@ if os.path.exists("uploads"):
     app.mount("/uploads", StaticFiles(directory="uploads"), name="uploads")
 
 origins = [
+    "https://funnelalchemy.onrender.com",
     "https://funnel-alchemy-production.up.railway.app",
     "http://localhost:3000",
     "http://127.0.0.1:3000",
@@ -50,12 +57,94 @@ app.add_middleware(
     allow_headers=["*"]
 )
 
+background_scoring_running = False
+background_thread = None
+
+async def periodic_score_update():
+    global background_scoring_running
+    
+    while background_scoring_running:
+        try:
+            logger.info("🔄 Starting periodic score update...")
+            
+            with engine.connect() as conn:
+                schemas = [row[0] for row in conn.execute(text("SELECT schema_name FROM public.user_directory"))]
+            
+            for schema in schemas:
+                try:
+                    prospect_table = get_table('prospects', schema, engine)
+                    
+                    with engine.connect() as conn:
+                        prospects_to_score = conn.execute(
+                            prospect_table.select().where(
+                                (prospect_table.c.current_score == -1) |
+                                (prospect_table.c.score_reason == 'Generating...')
+                            ).limit(10)
+                        ).fetchall()
+                    
+                    logger.info(f"📊 Found {len(prospects_to_score)} prospects to score in schema {schema}")
+                    
+                    for prospect in prospects_to_score:
+                        try:
+                            await score_prospect_background(str(prospect.id), schema)
+                            # Small delay to avoid overwhelming the API
+                            await asyncio.sleep(1)
+                        except Exception as e:
+                            logger.error(f"Error scoring prospect {prospect.id}: {e}")
+                            continue
+                            
+                except Exception as e:
+                    logger.error(f"Error processing schema {schema}: {e}")
+                    continue
+            
+            logger.info("✅ Periodic score update completed")
+            
+        except Exception as e:
+            logger.error(f"Error in periodic score update: {e}")
+        
+        await asyncio.sleep(300)
+
+def start_background_scoring():
+    """Start the background scoring thread"""
+    global background_scoring_running, background_thread
+    
+    if not background_scoring_running:
+        background_scoring_running = True
+        background_thread = threading.Thread(target=lambda: asyncio.run(periodic_score_update()))
+        background_thread.daemon = True
+        background_thread.start()
+        logger.info("🚀 Background scoring started")
+
+def stop_background_scoring():
+    """Stop the background scoring thread"""
+    global background_scoring_running
+    background_scoring_running = False
+    logger.info("🛑 Background scoring stopped")
+
+@app.on_event("startup")
+async def startup_event():
+    """Start background scoring on startup"""
+    start_background_scoring()
+
+@app.on_event("shutdown")
+async def shutdown_event():
+    """Stop background scoring on shutdown"""
+    stop_background_scoring()
+
 @app.exception_handler(Exception)
 async def global_exception_handler(request, exc):
     return JSONResponse(
         status_code=500,
         content={"detail": str(exc)},
     )
+
+@app.get("/background-scoring-status")
+async def get_background_scoring_status():
+    """Check if background scoring is running"""
+    return {
+        "background_scoring_running": background_scoring_running,
+        "status": "running" if background_scoring_running else "stopped"
+    }
 
 @app.get("/")
 def root():
