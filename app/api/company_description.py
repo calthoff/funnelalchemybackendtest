@@ -26,6 +26,7 @@ def get_company_description(
                 return CompanyDescriptionRead(
                     id=uuid.uuid4(),
                     description="",
+                    exclusion_criteria="",
                     updated_at=None
                 )
             
@@ -50,6 +51,7 @@ def update_company_description(
                 insert_data = {
                     'id': description_id,
                     'description': description_data.description or "",
+                    'exclusion_criteria': description_data.exclusion_criteria or "",
                     'updated_at': func.now()
                 }
                 conn.execute(company_description_table.insert().values(insert_data))
@@ -57,6 +59,8 @@ def update_company_description(
                 update_data = {}
                 if description_data.description is not None:
                     update_data['description'] = description_data.description
+                if description_data.exclusion_criteria is not None:
+                    update_data['exclusion_criteria'] = description_data.exclusion_criteria
                 update_data['updated_at'] = func.now()
                 
                 conn.execute(

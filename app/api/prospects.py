@@ -237,6 +237,91 @@ async def score_with_openai(prompt):
         print(f"OpenAI API error: {e}")
         return {"score": 50, "component_scores": {}, "reason": "API error"}
 
+def create_exclusion_check_prompt(prospect, exclusion_criteria):
+    """Create a prompt to check if a prospect matches exclusion criteria"""
+    prospect_info = f"""
+Prospect Information:
+- Name: {prospect.get('name', 'N/A')}
+- Company: {prospect.get('company', 'N/A')}
+- Title: {prospect.get('title', 'N/A')}
+- Email: {prospect.get('email', 'N/A')}
+- Location: {prospect.get('location', 'N/A')}
+- Industry: {prospect.get('industry', 'N/A')}
+- Company Size: {prospect.get('company_size', 'N/A')}
+- Revenue: {prospect.get('revenue_range', 'N/A')}
+- Tech Stack: {prospect.get('tech_stack', 'N/A')}
+- Notes: {prospect.get('notes', 'N/A')}
+"""
+
+    prompt = f"""
+You are an AI assistant that evaluates whether prospects match exclusion criteria for a business.
+
+Exclusion Criteria:
+{exclusion_criteria}
+
+Prospect to evaluate:
+{prospect_info}
+
+Based on the exclusion criteria above, determine if this prospect should be excluded or flagged with a warning.
+
+Return your response in this exact JSON format:
+{{
+    "excluded": true/false,
+    "warning": true/false,
+    "reason": "Brief explanation of why this prospect matches or doesn't match the exclusion criteria"
+}}
+
+Rules:
+- "excluded": true if the prospect clearly matches the exclusion criteria and should not be contacted
+- "warning": true if the prospect partially matches or there's uncertainty about the exclusion criteria
+- "excluded" and "warning" should not both be true
+- "reason": Provide a clear, concise explanation
+- If the prospect doesn't match any exclusion criteria, set both "excluded" and "warning" to false
+
+Evaluate carefully and be conservative - only exclude if there's a clear match to the exclusion criteria.
+"""
+
+    return prompt
+
+async def check_exclusion_criteria(prompt):
+    """Check if a prospect matches exclusion criteria using OpenAI"""
+    try:
+        response = await client.chat.completions.acreate(
+            model="gpt-4o-mini",
+            messages=[
+                {"role": "system", "content": "You are an AI assistant that evaluates prospects against exclusion criteria. Respond only with valid JSON."},
+                {"role": "user", "content": prompt}
+            ],
+            temperature=0.1,
+            max_tokens=200
+        )
+        
+        result_text = response.choices[0].message.content.strip()
+        
+        # Try to parse the JSON response
+        try:
+            result = json.loads(result_text)
+            return {
+                "excluded": result.get("excluded", False),
+                "warning": result.get("warning", False),
+                "reason": result.get("reason", "No specific reason provided")
+            }
+        except json.JSONDecodeError:
+            # Fallback if JSON parsing fails
+            return {
+                "excluded": False,
+                "warning": False,
+                "reason": "Unable to parse exclusion check result"
+            }
+            
+    except Exception as e:
+        print(f"Error checking exclusion criteria: {e}")
+        return {
+            "excluded": False,
+            "warning": False,
+            "reason": "Error during exclusion check"
+        }
+
 @router.post("/score")
 async def score_prospects(
     prospects: List[dict],
@@ -275,6 +360,7 @@ async def score_prospects(
             }
         
         company_description_text = company_description.description if company_description and company_description.description else None
+        exclusion_criteria_text = company_description.exclusion_criteria if company_description and company_description.exclusion_criteria else None
         company_embedding = get_embedding(company_description_text) if company_description_text else None
         
         scored_prospects = []
@@ -317,6 +403,21 @@ async def score_prospects(
                 total_weight += weights["ai_intelligence"]
                 score_reason_parts.append(f"AI: {ai_score['reason']}")
                 component_scores["ai"] = ai_score.get("component_scores", {})
+            
+            # Exclusion criteria check
+            exclusion_penalty = 0
+            if exclusion_criteria_text and total_weight > 0:
+                exclusion_prompt = create_exclusion_check_prompt(prospect, exclusion_criteria_text)
+                exclusion_result = await check_exclusion_criteria(exclusion_prompt)
+                if exclusion_result["excluded"]:
+                    exclusion_penalty = 50  # Significant penalty for excluded prospects
+                    score_reason_parts.append(f"EXCLUDED: {exclusion_result['reason']}")
+                elif exclusion_result["warning"]:
+                    exclusion_penalty = 20  # Smaller penalty for warnings
+                    score_reason_parts.append(f"WARNING: {exclusion_result['reason']}")
+            
+            # Apply exclusion penalty
+            final_score = max(0, final_score - exclusion_penalty)
             
             # Semantic similarity boost (only if any weight > 0)
             similarity_boost = 0
@@ -412,6 +513,7 @@ async def score_prospect_background(prospect_id: str, schema_name: str):
                 }
             
             company_description_text = company_description.description if company_description and company_description.description else None
+            exclusion_criteria_text = company_description.exclusion_criteria if company_description and company_description.exclusion_criteria else None
             company_embedding = get_embedding(company_description_text) if company_description_text else None
 
             # Format prospect data for scoring
@@ -467,6 +569,21 @@ async def score_prospect_background(prospect_id: str, schema_name: str):
                 total_weight += weights["ai_intelligence"]
                 score_reason_parts.append(f"AI: {ai_score['reason']}")
                 component_scores["ai"] = ai_score.get("component_scores", {})
+            
+            # Exclusion criteria check
+            exclusion_penalty = 0
+            if exclusion_criteria_text and total_weight > 0:
+                exclusion_prompt = create_exclusion_check_prompt(prospect_data, exclusion_criteria_text)
+                exclusion_result = await check_exclusion_criteria(exclusion_prompt)
+                if exclusion_result["excluded"]:
+                    exclusion_penalty = 50  # Significant penalty for excluded prospects
+                    score_reason_parts.append(f"EXCLUDED: {exclusion_result['reason']}")
+                elif exclusion_result["warning"]:
+                    exclusion_penalty = 20  # Smaller penalty for warnings
+                    score_reason_parts.append(f"WARNING: {exclusion_result['reason']}")
+            
+            # Apply exclusion penalty
+            final_score = max(0, final_score - exclusion_penalty)
             
             # Semantic similarity boost (only if any weight > 0)
             similarity_boost = 0
