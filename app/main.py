@@ -14,6 +14,7 @@ from app.api.notifications import router as notifications_router
 from app.api.prospects import router as prospects_router, score_prospect_background
 from app.api.scoring_weights import router as scoring_weights_router
 from app.api.company_description import router as company_description_router
+from app.api.calibration import router as calibration_router
 import os
 import logging
 from dotenv import load_dotenv
@@ -189,6 +190,7 @@ app.include_router(notifications_router)
 app.include_router(prospects_router)
 app.include_router(scoring_weights_router)
 app.include_router(company_description_router)
+app.include_router(calibration_router)
 
 if __name__ == "__main__":
     import uvicorn
