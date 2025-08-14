@@ -103,7 +103,7 @@ async def periodic_score_update():
         except Exception as e:
             logger.error(f"Error in periodic score update: {e}")
         
-        await asyncio.sleep(300)
+        await asyncio.sleep(900)
 
 def start_background_scoring():
     """Start the background scoring thread"""

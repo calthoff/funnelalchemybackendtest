@@ -76,7 +76,7 @@ async def generate_calibration_samples(
 ):
     """Generate calibration samples using current scoring weights"""
     try:
-        sample_size = 4
+        sample_size = 10
         if len(prospects) <= sample_size:
             sample_prospects = prospects
         else:
