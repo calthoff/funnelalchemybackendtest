@@ -27,6 +27,7 @@ def get_company_description(
                     id=uuid.uuid4(),
                     description="",
                     exclusion_criteria="",
+                    scoring_prompt="",
                     updated_at=None
                 )
             
@@ -52,6 +53,7 @@ def update_company_description(
                     'id': description_id,
                     'description': description_data.description or "",
                     'exclusion_criteria': description_data.exclusion_criteria or "",
+                    'scoring_prompt': description_data.scoring_prompt or "",
                     'updated_at': func.now()
                 }
                 conn.execute(company_description_table.insert().values(insert_data))
@@ -61,6 +63,8 @@ def update_company_description(
                     update_data['description'] = description_data.description
                 if description_data.exclusion_criteria is not None:
                     update_data['exclusion_criteria'] = description_data.exclusion_criteria
+                if description_data.scoring_prompt is not None:
+                    update_data['scoring_prompt'] = description_data.scoring_prompt
                 update_data['updated_at'] = func.now()
                 
                 conn.execute(
