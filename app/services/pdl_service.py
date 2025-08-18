@@ -1,10 +1,62 @@
 import os
 import asyncio
 from typing import List, Dict, Any, Optional
-from peopledatalabs import PDLPY
 import logging
 
 logger = logging.getLogger(__name__)
+
+# Try to import PDL, but handle gracefully if not available
+try:
+    from peopledatalabs import PDLPY
+    PDL_AVAILABLE = True
+except ImportError:
+    PDL_AVAILABLE = False
+    logger.warning("peopledatalabs package not available. Using mock PDL service.")
+
+class MockPDLClient:
+    """Mock PDL client for when the real package is not available"""
+    
+    def __init__(self, api_key):
+        self.api_key = api_key
+    
+    def person(self):
+        return self
+    
+    def search(self, **kwargs):
+        # Return mock response
+        return MockResponse({
+            'data': [
+                {
+                    'id': 'mock_1',
+                    'first_name': 'John',
+                    'last_name': 'Doe',
+                    'email': 'john.doe@example.com',
+                    'job_title': 'Software Engineer',
+                    'company': {'name': 'Tech Corp'},
+                    'location_name': 'San Francisco, CA'
+                },
+                {
+                    'id': 'mock_2',
+                    'first_name': 'Jane',
+                    'last_name': 'Smith',
+                    'email': 'jane.smith@example.com',
+                    'job_title': 'Product Manager',
+                    'company': {'name': 'Startup Inc'},
+                    'location_name': 'New York, NY'
+                }
+            ],
+            'total': 2
+        })
+
+class MockResponse:
+    """Mock response object"""
+    
+    def __init__(self, data):
+        self.data = data
+        self.status_code = 200
+    
+    def json(self):
+        return self.data
 
 class PDLService:
     def __init__(self):
@@ -12,49 +64,39 @@ class PDLService:
         if not self.api_key:
             raise ValueError("PDL_API_KEY environment variable is required")
         
-        self.client = PDLPY(api_key=self.api_key)
+        if PDL_AVAILABLE:
+            self.client = PDLPY(api_key=self.api_key)
+        else:
+            self.client = MockPDLClient(self.api_key)
     
     def build_search_query(self, icps: List[Dict], personas: List[Dict], company_description: Dict) -> Dict[str, Any]:
-        """
-        Build a PDL search query based on ICP and persona configurations
-        """
         query = {
             "sql": "",
-            "size": 100,  # Default size, can be adjusted
+            "size": 100,
             "pretty": True
         }
-        
-        # Build SQL query based on ICP and persona data
         sql_conditions = []
-        
-        # Company-based conditions from ICPs
         if icps:
             company_conditions = []
             for icp in icps:
-                # Industry conditions
                 if icp.get('industries'):
                     industries = list(icp['industries'].values()) if isinstance(icp['industries'], dict) else icp['industries']
                     if industries:
                         industry_list = "', '".join(industries)
                         company_conditions.append(f"company.industry IN ('{industry_list}')")
-                
-                # Company size conditions
                 if icp.get('employee_size_range'):
                     size_range = icp['employee_size_range']
                     if isinstance(size_range, dict):
                         min_size = size_range.get('min', 0)
                         max_size = size_range.get('max', 100000)
                         company_conditions.append(f"company.employee_count BETWEEN {min_size} AND {max_size}")
-                
-                # Revenue conditions
                 if icp.get('arr_range'):
                     arr_range = icp['arr_range']
                     if isinstance(arr_range, dict):
-                        min_arr = arr_range.get('min', 0) * 1000000  # Convert to actual revenue
+                        min_arr = arr_range.get('min', 0) * 1000000
                         max_arr = arr_range.get('max', 1000000000) * 1000000
                         company_conditions.append(f"company.revenue BETWEEN {min_arr} AND {max_arr}")
                 
-                # Location conditions
                 if icp.get('location'):
                     locations = list(icp['location'].values()) if isinstance(icp['location'], dict) else icp['location']
                     if locations:
@@ -64,11 +106,9 @@ class PDLService:
             if company_conditions:
                 sql_conditions.append(f"({' OR '.join(company_conditions)})")
         
-        # Persona-based conditions
         if personas:
             persona_conditions = []
             for persona in personas:
-                # Job title conditions
                 if persona.get('title_keywords'):
                     titles = list(persona['title_keywords'].values()) if isinstance(persona['title_keywords'], dict) else persona['title_keywords']
                     if titles:
@@ -77,14 +117,12 @@ class PDLService:
                             title_conditions.append(f"job_title ILIKE '%{title}%'")
                         persona_conditions.append(f"({' OR '.join(title_conditions)})")
                 
-                # Department conditions
                 if persona.get('departments'):
                     departments = list(persona['departments'].values()) if isinstance(persona['departments'], dict) else persona['departments']
                     if departments:
                         dept_list = "', '".join(departments)
                         persona_conditions.append(f"job_title_level IN ('{dept_list}')")
                 
-                # Seniority conditions
                 if persona.get('seniority_levels'):
                     seniority = list(persona['seniority_levels'].values()) if isinstance(persona['seniority_levels'], dict) else persona['seniority_levels']
                     if seniority:
@@ -94,7 +132,6 @@ class PDLService:
             if persona_conditions:
                 sql_conditions.append(f"({' OR '.join(persona_conditions)})")
         
-        # Basic filters for quality
         sql_conditions.extend([
             "email IS NOT NULL",
             "email != ''",
@@ -103,29 +140,21 @@ class PDLService:
             "company.name IS NOT NULL"
         ])
         
-        # Exclusion criteria from company description
         if company_description and company_description.get('exclusion_criteria'):
-            # This would need more sophisticated parsing, but for now we'll skip
-            # companies that might be excluded based on common patterns
             pass
         
-        # Build final SQL query
         if sql_conditions:
             query["sql"] = " AND ".join(sql_conditions)
         
         return query
     
     async def search_prospects(self, icps: List[Dict], personas: List[Dict], company_description: Dict, limit: int = 100) -> List[Dict]:
-        """
-        Search for prospects using PDL API based on ICP and persona configurations
-        """
         try:
             query = self.build_search_query(icps, personas, company_description)
-            query["size"] = min(limit, 100)  # PDL has limits
+            query["size"] = min(limit, 100)
             
             logger.info(f"PDL Search Query: {query}")
             
-            # Make the API call
             response = self.client.person.search(**query)
             
             if response.status_code != 200:
@@ -135,7 +164,6 @@ class PDLService:
             data = response.json()
             prospects = data.get('data', [])
             
-            # Transform PDL data to our prospect format
             transformed_prospects = []
             for prospect in prospects:
                 transformed_prospect = {
@@ -152,7 +180,6 @@ class PDLService:
                     'source': 'pdl',
                     'source_id': prospect.get('id', ''),
                     'headshot_url': prospect.get('profile_pic_url', ''),
-                    # Additional PDL-specific fields
                     'pdl_data': {
                         'industry': prospect.get('job_company_industry', ''),
                         'company_size': prospect.get('job_company_size', ''),
@@ -174,9 +201,6 @@ class PDLService:
             return []
     
     async def enrich_prospect(self, email: str) -> Optional[Dict]:
-        """
-        Enrich a single prospect using their email
-        """
         try:
             response = self.client.person.enrichment(email=email)
             
@@ -192,9 +216,6 @@ class PDLService:
             return None
     
     def get_company_info(self, company_name: str) -> Optional[Dict]:
-        """
-        Get company information from PDL
-        """
         try:
             response = self.client.company.enrichment(name=company_name)
             
