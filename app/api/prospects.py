@@ -890,25 +890,92 @@ def delete_prospect(
         raise
     except Exception as e:
         db.rollback()
-        raise HTTPException(status_code=500, detail="Failed to delete prospect") 
+        raise HTTPException(status_code=500, detail="Failed to delete prospect")
+
+class BatchDeleteRequest(BaseModel):
+    prospect_ids: List[str]
+
+@router.post("/batch-delete")
+def delete_prospects_batch(
+    request: BatchDeleteRequest,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+    try:
+        prospect_ids = request.prospect_ids
+        print(f"DEBUG: Received prospect_ids: {prospect_ids}")
+        print(f"DEBUG: Schema name: {current_user.schema_name}")
+        
+        if not prospect_ids:
+            return {
+                "message": "No prospects to delete",
+                "deleted_count": 0,
+                "prospect_ids": []
+            }
+        
+        prospect_table = get_table('prospects', current_user.schema_name, db.bind)
+        print(f"DEBUG: Got prospect table")
+        
+        with db.bind.connect() as conn:
+            print(f"DEBUG: Connected to database")
+            
+            try:
+                delete_stmt = prospect_table.delete().where(prospect_table.c.id.in_(prospect_ids))
+                result = conn.execute(delete_stmt)
+                conn.commit()
+                deleted_count = result.rowcount
+                
+                return {
+                    "message": f"Successfully deleted {deleted_count} prospect(s)",
+                    "deleted_count": deleted_count,
+                    "prospect_ids": prospect_ids
+                }
+                
+            except Exception as batch_error:
+                conn.rollback()
+                
+                deleted_count = 0
+                for prospect_id in prospect_ids:
+                    try:
+                        delete_stmt = prospect_table.delete().where(prospect_table.c.id == prospect_id)
+                        result = conn.execute(delete_stmt)
+                        if result.rowcount > 0:
+                            deleted_count += 1
+                    except Exception as e:
+                        print(f"DEBUG: Failed to delete prospect {prospect_id}: {str(e)}")
+                        continue
+                
+                conn.commit()
+                
+                return {
+                    "message": f"Successfully deleted {deleted_count} prospect(s)",
+                    "deleted_count": deleted_count,
+                    "prospect_ids": prospect_ids
+                }
+                
+    except HTTPException:
+        raise
+    except Exception as e:
+        import traceback
+        traceback.print_exc()
+        db.rollback()
+        raise HTTPException(status_code=500, detail=f"Failed to delete prospects: {str(e)}")
 
 @router.post("/trigger-scoring")
 async def trigger_scoring(
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user)
 ):
-    """Manually trigger scoring for prospects that need it"""
     try:
         prospect_table = get_table('prospects', current_user.schema_name, db.bind)
         
         with db.bind.connect() as conn:
-            # Get prospects that need scoring
             prospects_to_score = conn.execute(
                 select([prospect_table]).where(
                     (prospect_table.c.current_score == 0) | 
                     (prospect_table.c.score_reason.is_(None)) |
                     (prospect_table.c.score_reason == '')
-                ).limit(5)  # Process 5 at a time
+                ).limit(5)
             ).fetchall()
         
         if not prospects_to_score:
@@ -919,7 +986,6 @@ async def trigger_scoring(
             try:
                 await score_prospect_background(str(prospect.id), current_user.schema_name)
                 processed_count += 1
-                # Small delay to avoid overwhelming the API
                 await asyncio.sleep(1)
             except Exception as e:
                 print(f"Error scoring prospect {prospect.id}: {e}")
@@ -939,12 +1005,10 @@ async def trigger_immediate_scoring(
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user)
 ):
-    """Trigger immediate scoring for prospects that were just uploaded"""
     try:
         prospect_table = get_table('prospects', current_user.schema_name, db.bind)
         
         with db.bind.connect() as conn:
-            # Get prospects that need scoring (recently uploaded)
             prospects_to_score = conn.execute(
                 prospect_table.select().where(
                     (prospect_table.c.current_score == -1) &
@@ -960,8 +1024,7 @@ async def trigger_immediate_scoring(
             try:
                 await score_prospect_background(str(prospect.id), current_user.schema_name)
                 processed_count += 1
-                # Small delay to avoid overwhelming the API
-                await asyncio.sleep(0.5)  # Faster than periodic task
+                await asyncio.sleep(0.5)
             except Exception as e:
                 print(f"Error scoring prospect {prospect.id}: {e}")
                 continue
@@ -980,12 +1043,10 @@ async def get_scoring_status(
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user)
 ):
-    """Check which prospects need scoring"""
     try:
         prospect_table = get_table('prospects', current_user.schema_name, db.bind)
         
         with db.bind.connect() as conn:
-            # Count prospects that need scoring
             prospects_needing_scoring = conn.execute(
                 prospect_table.select().where(
                     (prospect_table.c.current_score == 0) | 
@@ -996,10 +1057,8 @@ async def get_scoring_status(
                 )
             ).fetchall()
             
-            # Count total prospects
             total_prospects = conn.execute(prospect_table.select()).fetchall()
             
-            # Count scored prospects
             scored_prospects = conn.execute(
                 prospect_table.select().where(
                     (prospect_table.c.current_score > 0) & 
