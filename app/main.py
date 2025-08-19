@@ -15,7 +15,7 @@ from app.api.prospects import router as prospects_router, score_prospect_backgro
 from app.api.scoring_weights import router as scoring_weights_router
 from app.api.company_description import router as company_description_router
 from app.api.calibration import router as calibration_router
-from app.api.pdl_prospects import router as pdl_prospects_router
+from app.api.coresignal_prospects import router as coresignal_prospects_router
 import os
 import logging
 from dotenv import load_dotenv
@@ -192,7 +192,7 @@ app.include_router(prospects_router)
 app.include_router(scoring_weights_router)
 app.include_router(company_description_router)
 app.include_router(calibration_router)
-app.include_router(pdl_prospects_router)
+app.include_router(coresignal_prospects_router)
 
 if __name__ == "__main__":
     import uvicorn

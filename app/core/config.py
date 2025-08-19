@@ -21,6 +21,9 @@ class Settings(BaseSettings):
     # OpenAI
     OPENAI_API_KEY: Optional[str] = None
 
+    # PDL
+    PDL_API_KEY: Optional[str] = None
+
     # SMTP
     SMTP_HOST: Optional[str] = None
     SMTP_PORT: Optional[int] = None
