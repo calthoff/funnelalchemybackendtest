@@ -705,3 +705,40 @@ async def get_scoring_status(
         
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Failed to get scoring status: {str(e)}") 
+
+@router.post("/trigger-rescoring")
+async def trigger_rescoring(
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+    try:
+        prospect_table = get_table('prospects', current_user.schema_name, db.bind)
+        
+        with db.bind.connect() as conn:
+            all_prospects = conn.execute(
+                prospect_table.select().where(
+                    prospect_table.c.current_score > 0
+                )
+            ).fetchall()
+        
+        if not all_prospects:
+            return {"message": "No prospects to re-score", "processed": 0}
+        
+        processed_count = 0
+        for prospect in all_prospects:
+            try:
+                await score_prospect_background(str(prospect.id), current_user.schema_name)
+                processed_count += 1
+                await asyncio.sleep(0.5)
+            except Exception as e:
+                print(f"Error re-scoring prospect {prospect.id}: {e}")
+                continue
+        
+        return {
+            "message": f"Successfully re-scored {processed_count} prospects with updated criteria",
+            "processed": processed_count,
+            "total_found": len(all_prospects)
+        }
+        
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to trigger re-scoring: {str(e)}") 
