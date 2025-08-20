@@ -20,7 +20,7 @@ class ProspectSettingBase(BaseModel):
     funding_stages: Optional[List[str]] = None
     tech_adoption: Optional[List[str]] = None
     
-    exclusion_criteria: Optional[List[str]] = None
+    exclusion_criteria: Optional[str] = None
     scoring_prompt: Optional[str] = None
 
 class ProspectSettingCreate(ProspectSettingBase):
@@ -43,7 +43,7 @@ class ProspectSettingUpdate(BaseModel):
     funding_stages: Optional[List[str]] = None
     tech_adoption: Optional[List[str]] = None
     
-    exclusion_criteria: Optional[List[str]] = None
+    exclusion_criteria: Optional[str] = None
     scoring_prompt: Optional[str] = None
 
 class ProspectSettingResponse(ProspectSettingBase):

@@ -742,3 +742,35 @@ async def trigger_rescoring(
         
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Failed to trigger re-scoring: {str(e)}") 
+
+@router.get("/{prospect_id}/activities")
+def get_prospect_activities(
+    prospect_id: str,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+    try:
+        prospect_activities_table = get_table('prospect_activities', current_user.schema_name, db.bind)
+        
+        with db.bind.connect() as conn:
+            result = conn.execute(
+                prospect_activities_table.select()
+                .where(prospect_activities_table.c.prospect_id == prospect_id)
+                .order_by(prospect_activities_table.c.timestamp.desc())
+            )
+            activities = result.fetchall()
+            
+            return [
+                {
+                    "id": str(activity.id),
+                    "prospect_id": str(activity.prospect_id),
+                    "type": activity.type,
+                    "source": activity.source,
+                    "description": activity.description,
+                    "timestamp": activity.timestamp.isoformat() if activity.timestamp else None
+                }
+                for activity in activities
+            ]
+            
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to fetch prospect activities: {str(e)}") 

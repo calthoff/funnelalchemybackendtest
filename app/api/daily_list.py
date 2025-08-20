@@ -1,28 +1,54 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
+from typing import List
+from uuid import UUID
+import uuid
+from datetime import datetime
+
 from app.db import get_db
 from app.utils.auth import get_current_user
 from app.models.users import User
-from app.schemas.daily_list import DailyListCreate, DailyListUpdate, DailyListResponse
+from app.schemas.daily_list import (
+    DailyListCreate,
+    DailyListUpdate,
+    DailyListResponse
+)
 from app.utils.db_utils import get_table
-from typing import List
-import uuid
-from datetime import datetime, timedelta
 
 router = APIRouter(prefix="/daily-list", tags=["daily-list"], redirect_slashes=False)
+
+def create_prospect_activity(conn, prospect_id: str, activity_type: str, description: str, schema_name: str):
+    try:
+        print(f"Creating activity: prospect_id={prospect_id}, type={activity_type}, description={description}")
+        prospect_activities_table = get_table('prospect_activities', schema_name, conn.engine)
+        
+        activity_data = {
+            'id': str(uuid.uuid4()),
+            'prospect_id': prospect_id,
+            'type': activity_type,
+            'source': 'daily_list',
+            'description': description,
+            'timestamp': datetime.utcnow()
+        }
+        
+        insert_stmt = prospect_activities_table.insert().values(**activity_data)
+        result = conn.execute(insert_stmt)
+        
+    except Exception as e:
+        print(f"Error creating prospect activity: {e}")
+        import traceback
+        traceback.print_exc()
 
 @router.get("/", response_model=List[DailyListResponse])
 def get_daily_list(
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user)
 ):
-    """Get current active daily list (prospects not removed)"""
     try:
         daily_list_table = get_table('daily_list', current_user.schema_name, db.bind)
         prospect_table = get_table('prospects', current_user.schema_name, db.bind)
         
         with db.bind.connect() as conn:
-            # Get active daily list items with prospect details
             result = conn.execute(
                 daily_list_table.select()
                 .where(daily_list_table.c.removed_date.is_(None))
@@ -128,6 +154,17 @@ def update_daily_list_item(
             if update_dict.get('contact_status') in ['Contacted', 'Replied']:
                 update_dict['removed_date'] = datetime.utcnow()
                 update_dict['removal_reason'] = update_dict.get('contact_status').lower()
+                
+                # Create activity entry
+                activity_type = update_dict.get('contact_status').lower()
+                description = f"Prospect {activity_type} and removed from Daily List"
+                create_prospect_activity(
+                    conn, 
+                    str(existing.prospect_id), 
+                    activity_type, 
+                    description, 
+                    current_user.schema_name
+                )
             
             if update_dict:
                 update_stmt = daily_list_table.update().where(
@@ -163,6 +200,24 @@ def remove_prospect_from_daily_list(
             if not existing:
                 raise HTTPException(status_code=404, detail="Daily list item not found")
             
+            # Create activity entry
+            activity_type = reason
+            description_map = {
+                'not_a_fit': 'Prospect marked as Not a Fit and removed from Daily List',
+                'maybe_later': 'Prospect marked as Maybe Later and removed from Daily List',
+                'contacted': 'Prospect contacted and removed from Daily List',
+                'replied': 'Prospect replied and removed from Daily List'
+            }
+            description = description_map.get(reason, f'Prospect removed from Daily List: {reason}')
+            
+            create_prospect_activity(
+                conn, 
+                str(existing.prospect_id), 
+                activity_type, 
+                description, 
+                current_user.schema_name
+            )
+            
             # Remove from daily list
             update_stmt = daily_list_table.update().where(
                 daily_list_table.c.id == daily_list_id
@@ -190,6 +245,21 @@ def reset_daily_list(
         daily_list_table = get_table('daily_list', current_user.schema_name, db.bind)
         
         with db.bind.connect() as conn:
+            # Get all active items before resetting
+            active_items = conn.execute(
+                daily_list_table.select().where(daily_list_table.c.removed_date.is_(None))
+            ).fetchall()
+            
+            # Create activity entries for all active prospects
+            for item in active_items:
+                create_prospect_activity(
+                    conn,
+                    str(item.prospect_id),
+                    'daily_reset',
+                    'Daily List reset - prospect removed from active list',
+                    current_user.schema_name
+                )
+            
             # Mark all active items as removed
             update_stmt = daily_list_table.update().where(
                 daily_list_table.c.removed_date.is_(None)
