@@ -68,259 +68,65 @@ def calculate_similarity(embedding1, embedding2):
     except:
         return 0
 
-def create_scoring_prompt(prospect, profiles, profile_type):
-    prospect_info = f"""
-PROSPECT:
-- Name: {prospect.get('name', 'N/A')}
-- Company: {prospect.get('company', 'N/A')}
-- Title: {prospect.get('title', 'N/A')}
-- Email: {prospect.get('email', 'N/A')}
-"""
-    
-    profiles_info = f"\n{profile_type.upper()} PROFILES:\n"
-    for i, profile in enumerate(profiles, 1):
-        if profile_type == "company":
-            profile_data = profile._mapping
-            industries = profile_data.get('industries', 'N/A')
-            arr_range = profile_data.get('arr_range', 'N/A')
-            employee_size = profile_data.get('employee_size_range', 'N/A')
-            profiles_info += f"{i}. \"{profile_data.get('name', 'Unknown')}\": Industries: {industries}, ARR: {arr_range}, Employee Size: {employee_size}\n"
-        else:
-            profile_data = profile._mapping
-            title_keywords = profile_data.get('title_keywords', 'N/A')
-            departments = profile_data.get('departments', 'N/A')
-            profiles_info += f"{i}. \"{profile_data.get('name', 'Unknown')}\": Title Keywords: {title_keywords}, Departments: {departments}\n"
-    
-    scoring_guidance = ""
-    if profile_type == "company":
-        scoring_guidance = """
-SCORING GUIDANCE:
-- Strong match (90-100): Matches multiple criteria (industry, size, ARR)
-- Partial match (60-80): Matches some criteria (e.g., one industry or close ARR)
-- Weak match (40-59): Limited alignment
-- No match (0-39): No significant alignment
-"""
-    else:
-        scoring_guidance = """
-SCORING GUIDANCE:
-- Exact match or strong title overlap (90-100): Perfect role match
-- Semantic similarity or adjacent role (70-89): Related role or department
-- Low seniority or off-department (0-69): Limited role relevance
-"""
-    
-    prompt = f"""You are a lead scoring expert. Score this prospect (0-100) against these {profile_type} profiles.
-
-{prospect_info}{profiles_info}{scoring_guidance}
-
-Return only a JSON object with this exact format:
-{{
-  "score": 85,
-  "component_scores": {{
-    "profile_match_score": 90,
-    "criteria_alignment": 80
-  }},
-  "reason": "TechCorp is a SaaS company with 200 employees, matching the SaaS Companies profile criteria"
-}}
-
-Score 0-100 based on how well the prospect matches each profile. Consider the best match and return that score with reasoning."""
-    
-    return prompt
-
-def create_ai_intelligence_prompt(prospect, company_description=None, sales_data=None):
-    prospect_info = f"""
-PROSPECT DATA:
-- Name: {prospect.get('name', 'N/A')}
-- Company: {prospect.get('company', 'N/A')}
-- Title: {prospect.get('title', 'N/A')}
-- Email: {prospect.get('email', 'N/A')}
-- Department: {prospect.get('department', 'N/A')}
-- Seniority: {prospect.get('seniority', 'N/A')}
-- Location: {prospect.get('location', 'N/A')}
-- Source: {prospect.get('source', 'N/A')}
-"""
-
-    company_context = ""
-    if company_description:
-        company_context = f"""
-YOUR COMPANY CONTEXT:
-{company_description}
-
-Use this description to understand what makes a prospect valuable to this specific business.
-"""
-
-    sales_context = ""
-    if sales_data:
-        sales_context = f"""
-SALES CONTEXT:
-- Past closed deals pattern: {sales_data.get('closed_deals_pattern', 'N/A')}
-- Rep performance history: {sales_data.get('rep_performance', 'N/A')}
-- Industry success rates: {sales_data.get('industry_success', 'N/A')}
-"""
-
-    prompt = f"""You are an AI sales intelligence expert. Analyze this prospect based on the provided company context.
-
-{prospect_info}{company_context}{sales_context}
-
-Based on the prospect's information and your company's specific business context, evaluate their potential as a sales lead.
-
-Consider factors like:
-- How well the prospect's company aligns with your business model and target market
-- Whether the prospect's role and authority level matches your ideal customer profile
-- Industry and market fit based on your company's focus areas
-- Geographic and market factors relevant to your business
-- Source quality and data completeness
-
-Return only a JSON object with this exact format:
-{{
-  "score": 75,
-  "component_scores": {{
-    "business_alignment": 80,
-    "role_relevance": 70,
-    "market_fit": 75
-  }},
-  "reason": "Strong potential: Mid-market SaaS company, VP-level decision maker, growing industry, good data quality"
-}}
-
-Score 0-100 based on how well this prospect fits YOUR specific business context and sales goals."""
-    
-    return prompt
-
 async def score_with_openai(prompt):
     try:
         response = client.chat.completions.create(
             model="gpt-4o-mini",
             messages=[
-                {"role": "system", "content": "Score prospects 0-100. Return only valid JSON objects with component_scores."},
+                {"role": "system", "content": "You are an AI assistant that scores prospects. Return only valid JSON objects with score (0-100) and detailed reason. Provide comprehensive explanations including specific factors that influenced the score, company fit analysis, role relevance, and business potential. Do not wrap in markdown code blocks."},
                 {"role": "user", "content": prompt}
             ],
             temperature=0.1,
-            max_tokens=500,
+            max_tokens=800,
             timeout=10
         )
         
         result = response.choices[0].message.content.strip()
         
-        # Handle empty or malformed responses
         if not result:
             print("OpenAI returned empty response")
-            return {"score": 50, "component_scores": {}, "reason": "No response from AI"}
+            return {"score": 50, "reason": "Unable to analyze prospect due to empty AI response. Default score assigned based on neutral assessment."}
         
-        # Try to parse JSON, with fallback for common issues
+        if result.startswith("```json"):
+            result = result[7:]
+        if result.startswith("```"):
+            result = result[3:]
+        if result.endswith("```"):
+            result = result[:-3]
+        
+        result = result.strip()
+        
         try:
             parsed_result = json.loads(result)
-            # Ensure we have the expected structure
             if isinstance(parsed_result, dict):
-                if "score" not in parsed_result:
-                    parsed_result["score"] = 50
-                if "component_scores" not in parsed_result:
-                    parsed_result["component_scores"] = {}
+                score = parsed_result.get("score", 50)
+                score = max(0, min(100, int(score)))
+                parsed_result["score"] = score
                 if "reason" not in parsed_result:
-                    parsed_result["reason"] = "AI analysis"
+                    parsed_result["reason"] = "AI analysis completed but no specific reasoning provided. Score based on general prospect assessment criteria."
                 return parsed_result
             else:
-                return {"score": 50, "component_scores": {}, "reason": "Invalid response format"}
+                return {"score": 50, "reason": "Invalid response format received from AI. Unable to parse detailed analysis. Default score assigned."}
         except json.JSONDecodeError as e:
             print(f"JSON parsing error: {e}")
             print(f"Raw response: {result}")
             
-            # Try to extract JSON from the response if it's wrapped in text
             json_match = re.search(r'\{.*\}', result)
             if json_match:
                 try:
-                    return json.loads(json_match.group())
+                    parsed = json.loads(json_match.group())
+                    score = parsed.get("score", 50)
+                    score = max(0, min(100, int(score)))
+                    parsed["score"] = score
+                    return parsed
                 except:
                     pass
             
-            return {"score": 50, "component_scores": {}, "reason": "JSON parsing failed"}
+            return {"score": 50, "reason": "Failed to parse AI response due to JSON formatting issues. Unable to extract detailed analysis. Default score assigned."}
             
     except Exception as e:
         print(f"OpenAI API error: {e}")
-        return {"score": 50, "component_scores": {}, "reason": "API error"}
-
-def create_exclusion_check_prompt(prospect, exclusion_criteria):
-    """Create a prompt to check if a prospect matches exclusion criteria"""
-    prospect_info = f"""
-Prospect Information:
-- Name: {prospect.get('name', 'N/A')}
-- Company: {prospect.get('company', 'N/A')}
-- Title: {prospect.get('title', 'N/A')}
-- Email: {prospect.get('email', 'N/A')}
-- Location: {prospect.get('location', 'N/A')}
-- Industry: {prospect.get('industry', 'N/A')}
-- Company Size: {prospect.get('company_size', 'N/A')}
-- Revenue: {prospect.get('revenue_range', 'N/A')}
-- Tech Stack: {prospect.get('tech_stack', 'N/A')}
-- Notes: {prospect.get('notes', 'N/A')}
-"""
-
-    prompt = f"""
-You are an AI assistant that evaluates whether prospects match exclusion criteria for a business.
-
-Exclusion Criteria:
-{exclusion_criteria}
-
-Prospect to evaluate:
-{prospect_info}
-
-Based on the exclusion criteria above, determine if this prospect should be excluded or flagged with a warning.
-
-Return your response in this exact JSON format:
-{{
-    "excluded": true/false,
-    "warning": true/false,
-    "reason": "Brief explanation of why this prospect matches or doesn't match the exclusion criteria"
-}}
-
-Rules:
-- "excluded": true if the prospect clearly matches the exclusion criteria and should not be contacted
-- "warning": true if the prospect partially matches or there's uncertainty about the exclusion criteria
-- "excluded" and "warning" should not both be true
-- "reason": Provide a clear, concise explanation
-- If the prospect doesn't match any exclusion criteria, set both "excluded" and "warning" to false
-
-Evaluate carefully and be conservative - only exclude if there's a clear match to the exclusion criteria.
-"""
-
-    return prompt
-
-async def check_exclusion_criteria(prompt):
-    """Check if a prospect matches exclusion criteria using OpenAI"""
-    try:
-        response = await client.chat.completions.acreate(
-            model="gpt-4o-mini",
-            messages=[
-                {"role": "system", "content": "You are an AI assistant that evaluates prospects against exclusion criteria. Respond only with valid JSON."},
-                {"role": "user", "content": prompt}
-            ],
-            temperature=0.1,
-            max_tokens=200
-        )
-        
-        result_text = response.choices[0].message.content.strip()
-        
-        # Try to parse the JSON response
-        try:
-            result = json.loads(result_text)
-            return {
-                "excluded": result.get("excluded", False),
-                "warning": result.get("warning", False),
-                "reason": result.get("reason", "No specific reason provided")
-            }
-        except json.JSONDecodeError:
-            # Fallback if JSON parsing fails
-            return {
-                "excluded": False,
-                "warning": False,
-                "reason": "Unable to parse exclusion check result"
-            }
-            
-    except Exception as e:
-        print(f"Error checking exclusion criteria: {e}")
-        return {
-            "excluded": False,
-            "warning": False,
-            "reason": "Error during exclusion check"
-        }
+        return {"score": 50, "reason": f"AI scoring service unavailable due to technical error: {str(e)}. Default score assigned based on neutral assessment."}
 
 @router.post("/score")
 async def score_prospects(
@@ -332,155 +138,67 @@ async def score_prospects(
         if not prospects:
             return {"prospects": []}
         
-        company_table = get_table('icps', current_user.schema_name, db.bind)
-        persona_table = get_table('personas', current_user.schema_name, db.bind)
-        scoring_weights_table = get_table('scoring_weights', current_user.schema_name, db.bind)
-        company_description_table = get_table('company_descriptions', current_user.schema_name, db.bind)
+        prospect_settings_table = get_table('prospect_settings', current_user.schema_name, db.bind)
         
         with db.bind.connect() as conn:
-            company_profiles = conn.execute(company_table.select()).fetchall()
-            persona_profiles = conn.execute(persona_table.select()).fetchall()
-            scoring_weights = conn.execute(scoring_weights_table.select()).fetchone()
-            company_description = conn.execute(company_description_table.select()).fetchone()
-        
-        company_profiles = company_profiles or []
-        persona_profiles = persona_profiles or []
-        
-        if not scoring_weights:
-            weights = {
-                "company_fit": 0.4,
-                "persona_fit": 0.4,
-                "ai_intelligence": 0.2
-            }
-        else:
-            weights = {
-                "company_fit": float(scoring_weights.company_fit_weight) / 100 if scoring_weights.company_fit_weight else 0.0,
-                "persona_fit": float(scoring_weights.persona_fit_weight) / 100 if scoring_weights.persona_fit_weight else 0.0,
-                "ai_intelligence": float(scoring_weights.sales_data_weight) / 100 if scoring_weights.sales_data_weight else 0.0
-            }
-        
-        company_description_text = company_description.description if company_description and company_description.description else None
-        exclusion_criteria_text = company_description.exclusion_criteria if company_description and company_description.exclusion_criteria else None
-        company_embedding = get_embedding(company_description_text) if company_description_text else None
+            prospect_settings_result = conn.execute(prospect_settings_table.select())
+            prospect_settings = prospect_settings_result.fetchall()
+            
+            if not prospect_settings:
+                raise HTTPException(
+                    status_code=400,
+                    detail="Please configure prospect scoring settings before scoring prospects"
+                )
+            
+            setting = dict(prospect_settings[0]._mapping)
+            scoring_prompt = setting.get('scoring_prompt', '')
+            
+            if not scoring_prompt:
+                raise HTTPException(
+                    status_code=400,
+                    detail="Please configure a scoring prompt in your prospect settings"
+                )
         
         scored_prospects = []
         for prospect in prospects:
-            normalized_title = normalize_job_title(prospect.get('title', ''))
-            prospect['normalized_title'] = normalized_title
-            
-            # Only calculate scores for non-zero weights
-            company_score = None
-            persona_score = None
-            ai_score = None
-            score_reason_parts = []
-            component_scores = {}
-            final_score = 0
-            total_weight = 0
-            
-            # Company scoring
-            if weights["company_fit"] > 0 and company_profiles:
-                company_prompt = create_scoring_prompt(prospect, company_profiles, "company")
-                company_score = await score_with_openai(company_prompt)
-                final_score += company_score["score"] * weights["company_fit"]
-                total_weight += weights["company_fit"]
-                score_reason_parts.append(f"Company: {company_score['reason']}")
-                component_scores["company"] = company_score.get("component_scores", {})
-            
-            # Persona scoring
-            if weights["persona_fit"] > 0 and persona_profiles:
-                persona_prompt = create_scoring_prompt(prospect, persona_profiles, "persona")
-                persona_score = await score_with_openai(persona_prompt)
-                final_score += persona_score["score"] * weights["persona_fit"]
-                total_weight += weights["persona_fit"]
-                score_reason_parts.append(f"Persona: {persona_score['reason']}")
-                component_scores["persona"] = persona_score.get("component_scores", {})
-            
-            # AI intelligence scoring
-            if weights["ai_intelligence"] > 0:
-                ai_prompt = create_ai_intelligence_prompt(prospect, company_description_text)
-                ai_score = await score_with_openai(ai_prompt)
-                final_score += ai_score["score"] * weights["ai_intelligence"]
-                total_weight += weights["ai_intelligence"]
-                score_reason_parts.append(f"AI: {ai_score['reason']}")
-                component_scores["ai"] = ai_score.get("component_scores", {})
-            
-            # Exclusion criteria check
-            exclusion_penalty = 0
-            if exclusion_criteria_text and total_weight > 0:
-                exclusion_prompt = create_exclusion_check_prompt(prospect, exclusion_criteria_text)
-                exclusion_result = await check_exclusion_criteria(exclusion_prompt)
-                if exclusion_result["excluded"]:
-                    exclusion_penalty = 50  # Significant penalty for excluded prospects
-                    score_reason_parts.append(f"EXCLUDED: {exclusion_result['reason']}")
-                elif exclusion_result["warning"]:
-                    exclusion_penalty = 20  # Smaller penalty for warnings
-                    score_reason_parts.append(f"WARNING: {exclusion_result['reason']}")
-            
-            # Apply exclusion penalty
-            final_score = max(0, final_score - exclusion_penalty)
-            
-            # Semantic similarity boost (only if any weight > 0)
-            similarity_boost = 0
-            if total_weight > 0 and company_embedding and prospect.get('company') and prospect.get('title'):
-                prospect_text = f"{prospect.get('company')} {normalized_title}"
-                prospect_embedding = get_embedding(prospect_text)
-                similarity = calculate_similarity(company_embedding, prospect_embedding)
-                if similarity > 0.8:
-                    similarity_boost = 10
-                elif similarity > 0.6:
-                    similarity_boost = 5
-                final_score += similarity_boost
-                # score_reason_parts.append(f"Similarity boost: +{similarity_boost}")
-            
-            # If all weights are zero, return default
-            if total_weight == 0:
-                scored_prospect = {
-                    **prospect,
-                    "score": 50,
-                    "score_reason": "All weights are zero, no scoring performed.",
-                    "company_score": None,
-                    "persona_score": None,
-                    "ai_score": None,
-                    "similarity_boost": 0,
-                    "component_scores": {}
-                }
-            else:
-                final_score = round(min(final_score, 100))
-                scored_prospect = {
-                    **prospect,
-                    "score": final_score,
-                    "score_reason": " | ".join(score_reason_parts),
-                    "company_score": company_score["score"] if company_score else None,
-                    "persona_score": persona_score["score"] if persona_score else None,
-                    "ai_score": ai_score["score"] if ai_score else None,
-                    "similarity_boost": similarity_boost,
-                    "component_scores": component_scores
-                }
-            scored_prospects.append(scored_prospect)
+            try:
+                score_result = await score_with_openai(scoring_prompt)
+                
+                prospect['current_score'] = score_result.get('score', 50)
+                prospect['score_reason'] = score_result.get('reason', 'AI analysis completed with comprehensive evaluation of prospect fit and business potential.')
+                
+                scored_prospects.append(prospect)
+                
+            except Exception as e:
+                print(f"Error scoring prospect {prospect.get('id', 'unknown')}: {str(e)}")
+                prospect['current_score'] = 50
+                prospect['score_reason'] = f"Scoring process failed due to technical error: {str(e)}. Unable to complete detailed prospect analysis. Default score assigned."
+                scored_prospects.append(prospect)
+        
         return {"prospects": scored_prospects}
+        
+    except HTTPException:
+        raise
     except Exception as e:
         import traceback
         traceback.print_exc()
-        raise HTTPException(status_code=500, detail=f"Scoring failed: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Failed to score prospects: {str(e)}")
 
 async def score_prospect_background(prospect_id: str, schema_name: str):
-    """Background task to score a prospect using the same logic as /score endpoint"""
+    """
+    Background function to score a single prospect using the prospect_settings scoring prompt
+    """
     try:
         print(f"\n🔄 Starting background scoring for prospect {prospect_id}")
         
-        # Create a database session without requiring a request
         from app.db import SessionLocal
         db = SessionLocal()
         
         try:
             prospect_table = get_table('prospects', schema_name, db.bind)
-            company_table = get_table('icps', schema_name, db.bind)
-            persona_table = get_table('personas', schema_name, db.bind)
-            scoring_weights_table = get_table('scoring_weights', schema_name, db.bind)
-            company_description_table = get_table('company_descriptions', schema_name, db.bind)
+            prospect_settings_table = get_table('prospect_settings', schema_name, db.bind)
             
             print(f"📊 Getting prospect data...")
-            # Get prospect data
             with db.bind.connect() as conn:
                 prospect = conn.execute(
                     prospect_table.select().where(prospect_table.c.id == prospect_id)
@@ -490,146 +208,56 @@ async def score_prospect_background(prospect_id: str, schema_name: str):
                     print(f"Prospect {prospect_id} not found")
                     return
 
-                # Get scoring data
-                company_profiles = conn.execute(company_table.select()).fetchall()
-                persona_profiles = conn.execute(persona_table.select()).fetchall()
-                scoring_weights = conn.execute(scoring_weights_table.select()).fetchone()
-                company_description = conn.execute(company_description_table.select()).fetchone()
+                prospect_settings_result = conn.execute(prospect_settings_table.select())
+                prospect_settings = prospect_settings_result.fetchall()
+                
+                if not prospect_settings:
+                    print(f"No prospect settings found for schema {schema_name}")
+                    return
+                
+                setting = dict(prospect_settings[0]._mapping)
+                scoring_prompt = setting.get('scoring_prompt', '')
+                
+                if not scoring_prompt:
+                    print(f"No scoring prompt configured in prospect settings")
+                    return
 
-            company_profiles = company_profiles or []
-            persona_profiles = persona_profiles or []
+            prospect_data = dict(prospect._mapping)
             
-            if not scoring_weights:
-                weights = {
-                    "company_fit": 0.4,
-                    "persona_fit": 0.4,
-                    "ai_intelligence": 0.2
-                }
-            else:
-                weights = {
-                    "company_fit": float(scoring_weights.company_fit_weight) / 100 if scoring_weights.company_fit_weight else 0.0,
-                    "persona_fit": float(scoring_weights.persona_fit_weight) / 100 if scoring_weights.persona_fit_weight else 0.0,
-                    "ai_intelligence": float(scoring_weights.sales_data_weight) / 100 if scoring_weights.sales_data_weight else 0.0
-                }
+            score_result = await score_with_openai(scoring_prompt)
             
-            company_description_text = company_description.description if company_description and company_description.description else None
-            exclusion_criteria_text = company_description.exclusion_criteria if company_description and company_description.exclusion_criteria else None
-            company_embedding = get_embedding(company_description_text) if company_description_text else None
-
-            # Format prospect data for scoring
-            prospect_data = {
-                "name": f"{prospect.first_name} {prospect.last_name}",
-                "company": prospect.company_name,
-                "title": prospect.job_title,
-                "email": prospect.email,
-                "department": prospect.department,
-                "seniority": prospect.seniority,
-                "location": prospect.location,
-                "source": prospect.source
-            }
-
-            print(f"🧮 Calculating score for {prospect_data['name']} at {prospect_data['company']}...")
-            
-            # Use the same scoring logic as /score endpoint
-            normalized_title = normalize_job_title(prospect_data.get('title', ''))
-            prospect_data['normalized_title'] = normalized_title
-            
-            # Only calculate scores for non-zero weights
-            company_score = None
-            persona_score = None
-            ai_score = None
-            score_reason_parts = []
-            component_scores = {}
-            final_score = 0
-            total_weight = 0
-            
-            # Company scoring
-            if weights["company_fit"] > 0 and company_profiles:
-                company_prompt = create_scoring_prompt(prospect_data, company_profiles, "company")
-                company_score = await score_with_openai(company_prompt)
-                final_score += company_score["score"] * weights["company_fit"]
-                total_weight += weights["company_fit"]
-                score_reason_parts.append(f"Company: {company_score['reason']}")
-                component_scores["company"] = company_score.get("component_scores", {})
-            
-            # Persona scoring
-            if weights["persona_fit"] > 0 and persona_profiles:
-                persona_prompt = create_scoring_prompt(prospect_data, persona_profiles, "persona")
-                persona_score = await score_with_openai(persona_prompt)
-                final_score += persona_score["score"] * weights["persona_fit"]
-                total_weight += weights["persona_fit"]
-                score_reason_parts.append(f"Persona: {persona_score['reason']}")
-                component_scores["persona"] = persona_score.get("component_scores", {})
-            
-            # AI intelligence scoring
-            if weights["ai_intelligence"] > 0:
-                ai_prompt = create_ai_intelligence_prompt(prospect_data, company_description_text)
-                ai_score = await score_with_openai(ai_prompt)
-                final_score += ai_score["score"] * weights["ai_intelligence"]
-                total_weight += weights["ai_intelligence"]
-                score_reason_parts.append(f"AI: {ai_score['reason']}")
-                component_scores["ai"] = ai_score.get("component_scores", {})
-            
-            # Exclusion criteria check
-            exclusion_penalty = 0
-            if exclusion_criteria_text and total_weight > 0:
-                exclusion_prompt = create_exclusion_check_prompt(prospect_data, exclusion_criteria_text)
-                exclusion_result = await check_exclusion_criteria(exclusion_prompt)
-                if exclusion_result["excluded"]:
-                    exclusion_penalty = 50  # Significant penalty for excluded prospects
-                    score_reason_parts.append(f"EXCLUDED: {exclusion_result['reason']}")
-                elif exclusion_result["warning"]:
-                    exclusion_penalty = 20  # Smaller penalty for warnings
-                    score_reason_parts.append(f"WARNING: {exclusion_result['reason']}")
-            
-            # Apply exclusion penalty
-            final_score = max(0, final_score - exclusion_penalty)
-            
-            # Semantic similarity boost (only if any weight > 0)
-            similarity_boost = 0
-            if total_weight > 0 and company_embedding and prospect_data.get('company') and prospect_data.get('title'):
-                prospect_text = f"{prospect_data.get('company')} {normalized_title}"
-                prospect_embedding = get_embedding(prospect_text)
-                similarity = calculate_similarity(company_embedding, prospect_embedding)
-                if similarity > 0.8:
-                    similarity_boost = 10
-                elif similarity > 0.6:
-                    similarity_boost = 5
-                final_score += similarity_boost
-            
-            # Calculate final score
-            if total_weight == 0:
-                final_score = 50
-                score_reason = "All weights are zero, no scoring performed."
-            else:
-                final_score = round(min(final_score, 100))
-                score_reason = " | ".join(score_reason_parts)
-            
-            print(f"✨ Score calculated: {final_score}")
-            print(f"📝 Reason: {score_reason}")
-            
-            # Update prospect with score
             with db.bind.connect() as conn:
                 conn.execute(
-                    prospect_table.update()
-                    .where(prospect_table.c.id == prospect_id)
-                    .values(
-                        current_score=final_score,
-                        initial_score=final_score,
-                        score_reason=score_reason,
-                        updated_at=func.now()
+                    prospect_table.update().where(prospect_table.c.id == prospect_id).values(
+                        current_score=score_result.get('score', 50),
+                        score_reason=score_result.get('reason', 'AI analysis completed with comprehensive evaluation of prospect fit and business potential.')
                     )
                 )
                 conn.commit()
-                print(f"✅ Successfully updated prospect {prospect_id} with new score\n")
-
+            
+            print(f"✅ Successfully scored prospect {prospect_id} with score {score_result.get('score', 50)}")
+            
         finally:
             db.close()
-
+            
     except Exception as e:
-        print(f"❌ Background scoring error for prospect {prospect_id}: {e}\n")
-        import traceback
-        traceback.print_exc()
+        print(f"❌ Error scoring prospect {prospect_id}: {str(e)}")
+        try:
+            from app.db import SessionLocal
+            db = SessionLocal()
+            prospect_table = get_table('prospects', schema_name, db.bind)
+            
+            with db.bind.connect() as conn:
+                conn.execute(
+                    prospect_table.update().where(prospect_table.c.id == prospect_id).values(
+                        current_score=50,
+                        score_reason=f"Scoring process failed due to technical error: {str(e)}. Unable to complete detailed prospect analysis. Default score assigned."
+                    )
+                )
+                conn.commit()
+            db.close()
+        except Exception as update_error:
+            print(f"Failed to update prospect {prospect_id} with error status: {str(update_error)}")
 
 @router.post("/batch", response_model=List[Union[ProspectRead, DuplicateProspectResponse]])
 def create_prospects_batch(

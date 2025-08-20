@@ -67,7 +67,7 @@ class CoreSignalService:
             icp = icps[0]
             
             if icp.get('industries'):
-                industries = list(icp['industries'].values()) if isinstance(icp['industries'], dict) else icp['industries']
+                industries = icp['industries'] if isinstance(icp['industries'], list) else []
                 if industries:
                     industry_conditions = []
                     for industry in industries:
@@ -92,41 +92,52 @@ class CoreSignalService:
                     })
             
             if icp.get('employee_size_range'):
-                size_range = icp['employee_size_range']
-                if isinstance(size_range, dict):
-                    min_size = size_range.get('min', 0)
-                    max_size = size_range.get('max', 100000)
-                    experience_filter.append({
-                        "range": {
-                            "experience.company_employees_count": {
-                                "gte": min_size,
-                                "lte": max_size
-                            }
-                        }
-                    })
-            
-            if icp.get('location'):
-                locations = list(icp['location'].values()) if isinstance(icp['location'], dict) else icp['location']
-                if locations:
-                    location_conditions = []
-                    for location in locations:
-                        location_conditions.append({
-                            "match": {
-                                "experience.company_hq_full_address": location
+                size_ranges = icp['employee_size_range'] if isinstance(icp['employee_size_range'], list) else []
+                if size_ranges:
+                    size_conditions = []
+                    for size_range in size_ranges:
+                        if "-" in str(size_range):
+                            parts = str(size_range).split("-")
+                            if len(parts) == 2:
+                                try:
+                                    min_size = int(parts[0])
+                                    max_size = int(parts[1]) if parts[1] != "+" else 100000
+                                    size_conditions.append({
+                                        "range": {
+                                            "experience.company_employees_count": {
+                                                "gte": min_size,
+                                                "lte": max_size
+                                            }
+                                        }
+                                    })
+                                except ValueError:
+                                    continue
+                        elif str(size_range).endswith("+"):
+                            try:
+                                min_size = int(str(size_range).replace("+", ""))
+                                size_conditions.append({
+                                    "range": {
+                                        "experience.company_employees_count": {
+                                            "gte": min_size
+                                        }
+                                    }
+                                })
+                            except ValueError:
+                                continue
+                    
+                    if size_conditions:
+                        experience_filter.append({
+                            "bool": {
+                                "should": size_conditions,
+                                "minimum_should_match": 1
                             }
                         })
-                    experience_filter.append({
-                        "bool": {
-                            "should": location_conditions,
-                            "minimum_should_match": 1
-                        }
-                    })
         
         if personas and len(personas) > 0:
             persona = personas[0]
             
             if persona.get('title_keywords'):
-                titles = list(persona['title_keywords'].values()) if isinstance(persona['title_keywords'], dict) else persona['title_keywords']
+                titles = persona['title_keywords'] if isinstance(persona['title_keywords'], list) else []
                 if titles:
                     title_query = " OR ".join([f'"{title}"' for title in titles])
                     experience_filter.append({
@@ -137,7 +148,7 @@ class CoreSignalService:
                     })
             
             if persona.get('seniority_levels'):
-                seniority = list(persona['seniority_levels'].values()) if isinstance(persona['seniority_levels'], dict) else persona['seniority_levels']
+                seniority = persona['seniority_levels'] if isinstance(persona['seniority_levels'], list) else []
                 if seniority:
                     seniority_conditions = []
                     for level in seniority:
@@ -153,28 +164,41 @@ class CoreSignalService:
                         }
                     })
             
-            if persona.get('departments'):
-                departments = list(persona['departments'].values()) if isinstance(persona['departments'], dict) else persona['departments']
-                if departments:
-                    department_conditions = []
-                    for dept in departments:
-                        department_conditions.append({
+            if persona.get('buying_roles'):
+                buying_roles = persona['buying_roles'] if isinstance(persona['buying_roles'], list) else []
+                if buying_roles:
+                    role_conditions = []
+                    for role in buying_roles:
+                        role_conditions.append({
                             "match": {
-                                "experience.department": dept
+                                "experience.position_title": role
                             }
                         })
                     experience_filter.append({
                         "bool": {
-                            "should": department_conditions,
+                            "should": role_conditions,
                             "minimum_should_match": 1
                         }
                     })
         
-        query["query"]["bool"]["filter"].append({
-            "term": {
-                "is_decision_maker": 1
-            }
-        })
+        if company_description and company_description.get('exclusion_criteria'):
+            exclusion_criteria = company_description['exclusion_criteria'] if isinstance(company_description['exclusion_criteria'], list) else []
+            if exclusion_criteria:
+                exclusion_conditions = []
+                for criteria in exclusion_criteria:
+                    exclusion_conditions.append({
+                        "bool": {
+                            "must_not": [
+                                {
+                                    "query_string": {
+                                        "query": criteria,
+                                        "default_field": "experience.company_industry"
+                                    }
+                                }
+                            ]
+                        }
+                    })
+                query["query"]["bool"]["filter"].extend(exclusion_conditions)
         
         return query
     
@@ -370,23 +394,41 @@ class CoreSignalService:
 
 @router.post("/search")
 async def search_coresignal_prospects(
-    limit: int = 20,
+    limit: int = 2,
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user)
 ):
     try:
-        company_table = get_table('icps', current_user.schema_name, db.bind)
-        persona_table = get_table('personas', current_user.schema_name, db.bind)
-        company_description_table = get_table('company_descriptions', current_user.schema_name, db.bind)
+        prospect_settings_table = get_table('prospect_settings', current_user.schema_name, db.bind)
         
         with db.bind.connect() as conn:
-            icps_result = conn.execute(company_table.select())
-            icps = [dict(row._mapping) for row in icps_result.fetchall()]
-            personas_result = conn.execute(persona_table.select())
-            personas = [dict(row._mapping) for row in personas_result.fetchall()]
-            company_description_result = conn.execute(company_description_table.select())
-            company_description = company_description_result.fetchone()
-            company_description_dict = dict(company_description._mapping) if company_description else {}
+            prospect_settings_result = conn.execute(prospect_settings_table.select())
+            prospect_settings = prospect_settings_result.fetchall()
+            
+            if not prospect_settings:
+                raise HTTPException(
+                    status_code=400, 
+                    detail="Please configure prospect scoring settings before searching for prospects"
+                )
+            
+            setting = dict(prospect_settings[0]._mapping)
+            
+            icps = [{
+                'industries': setting.get('industries', []),
+                'employee_size_range': setting.get('employee_range', []),
+                'revenue_range': setting.get('revenue_range', [])
+            }] if setting.get('industries') or setting.get('employee_range') or setting.get('revenue_range') else []
+            
+            personas = [{
+                'title_keywords': setting.get('title_keywords', []),
+                'seniority_levels': setting.get('seniority_levels', []),
+                'buying_roles': setting.get('buying_roles', [])
+            }] if setting.get('title_keywords') or setting.get('seniority_levels') or setting.get('buying_roles') else []
+            
+            company_description = {
+                'description': setting.get('company_description', ''),
+                'exclusion_criteria': setting.get('exclusion_criteria', [])
+            }
         
         if not icps and not personas:
             raise HTTPException(
@@ -405,7 +447,7 @@ async def search_coresignal_prospects(
         prospects = await coresignal_service.search_prospects(
             icps=icps,
             personas=personas,
-            company_description=company_description_dict,
+            company_description=company_description,
             limit=limit
         )
         
@@ -415,7 +457,7 @@ async def search_coresignal_prospects(
             "search_criteria": {
                 "icps_count": len(icps),
                 "personas_count": len(personas),
-                "has_company_description": bool(company_description_dict)
+                "has_company_description": bool(company_description.get('description'))
             }
         }
         
