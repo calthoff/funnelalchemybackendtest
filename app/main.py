@@ -8,24 +8,16 @@ from .api.auth import router as auth_router
 from app.models.user_directory import UserDirectory
 from app.api.sdrs import router as sdrs_router
 from app.api.users import router as users_router
-from app.api.icps import router as icps_router
-from app.api.personas import router as personas_router
 from app.api.notifications import router as notifications_router
 from app.api.prospects import router as prospects_router, score_prospect_background
-from app.api.scoring_weights import router as scoring_weights_router
-from app.api.company_description import router as company_description_router
 from app.api.calibration import router as calibration_router
 from app.api.coresignal_prospects import router as coresignal_prospects_router
+from app.api.prospect_settings import router as prospect_settings_router
 import os
 import logging
 from dotenv import load_dotenv
 import asyncio
 import threading
-import time
-from datetime import datetime, timedelta
-from sqlalchemy import select, func
-from app.utils.db_utils import get_table
-
 from app.utils.db_utils import get_table
 from app.db import engine
 from sqlalchemy import text
@@ -89,7 +81,6 @@ async def periodic_score_update():
                     for prospect in prospects_to_score:
                         try:
                             await score_prospect_background(str(prospect.id), schema)
-                            # Small delay to avoid overwhelming the API
                             await asyncio.sleep(1)
                         except Exception as e:
                             logger.error(f"Error scoring prospect {prospect.id}: {e}")
@@ -107,7 +98,6 @@ async def periodic_score_update():
         await asyncio.sleep(900)
 
 def start_background_scoring():
-    """Start the background scoring thread"""
     global background_scoring_running, background_thread
     
     if not background_scoring_running:
@@ -166,9 +156,8 @@ async def startup_db_client():
 
 SCHEMAS = ["public"]
 TABLES = [
-    "icps", "sdrs", "prospects", "personas", "high_intent_triggers",
-    "high_intent_events", "prospect_activities", "prospect_score_history",
-    "scoring_weights", "notifications", "companies"
+    "sdrs", "prospects", "prospect_activities", "prospect_score_history",
+    "scoring_weights", "notifications", "companies", "prospect_settings"
 ]
 
 @app.on_event("startup")
@@ -185,14 +174,11 @@ def preload_all_tenant_tables():
 app.include_router(auth_router)
 app.include_router(sdrs_router)
 app.include_router(users_router)
-app.include_router(icps_router)
-app.include_router(personas_router)
 app.include_router(notifications_router)
 app.include_router(prospects_router)
-app.include_router(scoring_weights_router)
-app.include_router(company_description_router)
 app.include_router(calibration_router)
 app.include_router(coresignal_prospects_router)
+app.include_router(prospect_settings_router)
 
 if __name__ == "__main__":
     import uvicorn

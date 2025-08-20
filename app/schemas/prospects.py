@@ -18,8 +18,7 @@ class ProspectBase(BaseModel):
     source_id: Optional[str] = None
 
 class ProspectCreate(ProspectBase):
-    icp_id: Optional[UUID] = None
-    persona_id: Optional[UUID] = None
+    prospect_setting_id: Optional[UUID] = None
     sales_rep_id: Optional[UUID] = None
 
 class ProspectUpdate(BaseModel):
@@ -35,8 +34,7 @@ class ProspectUpdate(BaseModel):
     seniority: Optional[str] = None
     source: Optional[str] = None
     source_id: Optional[str] = None
-    icp_id: Optional[UUID] = None
-    persona_id: Optional[UUID] = None
+    prospect_setting_id: Optional[UUID] = None
     sales_rep_id: Optional[UUID] = None
     current_score: Optional[int] = None
     initial_score: Optional[int] = None
@@ -49,8 +47,7 @@ class ProspectUpdate(BaseModel):
 
 class ProspectRead(ProspectBase):
     id: UUID
-    icp_id: Optional[UUID] = None
-    persona_id: Optional[UUID] = None
+    prospect_setting_id: Optional[UUID] = None
     sales_rep_id: Optional[UUID] = None
     current_score: Optional[int] = 0
     initial_score: Optional[int] = 0

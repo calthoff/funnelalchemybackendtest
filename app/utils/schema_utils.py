@@ -1,18 +1,13 @@
 from sqlalchemy import text
 from app.db import Base, engine
 from app.models.users import User
-from app.models.icps import ICP
 from app.models.sdrs import SDR
 from app.models.prospects import Prospect
-from app.models.personas import Persona
-from app.models.high_intent_triggers import HighIntentTrigger
-from app.models.high_intent_events import HighIntentEvent
 from app.models.prospect_activities import ProspectActivity
 from app.models.prospect_score_history import ProspectScoreHistory
-from app.models.scoring_weights import ScoringWeight
 from app.models.notifications import Notification
 from app.models.companies import Company
-from app.models.company_description import CompanyDescription
+from app.models.prospect_setting import ProspectSetting
 
 def create_company_schema(engine, schema_name: str):
 
@@ -22,8 +17,7 @@ def create_company_schema(engine, schema_name: str):
             conn.commit()
 
         models = [
-            ICP, SDR, User, Prospect, Persona, HighIntentTrigger, HighIntentEvent,
-            ProspectActivity, ProspectScoreHistory, ScoringWeight, Notification, Company, CompanyDescription
+            SDR, User, Prospect,ProspectActivity, ProspectScoreHistory, ProspectSetting, Notification, Company
         ]
 
         original_schemas = {}
