@@ -13,6 +13,7 @@ from app.api.prospects import router as prospects_router, score_prospect_backgro
 from app.api.calibration import router as calibration_router
 from app.api.coresignal_prospects import router as coresignal_prospects_router
 from app.api.prospect_settings import router as prospect_settings_router
+from app.api.daily_list import router as daily_list_router
 import os
 import logging
 from dotenv import load_dotenv
@@ -157,7 +158,8 @@ async def startup_db_client():
 SCHEMAS = ["public"]
 TABLES = [
     "sdrs", "prospects", "prospect_activities", "prospect_score_history",
-    "scoring_weights", "notifications", "companies", "prospect_settings"
+    "scoring_weights", "notifications", "companies", "prospect_settings",
+    "daily_list"
 ]
 
 @app.on_event("startup")
@@ -179,6 +181,7 @@ app.include_router(prospects_router)
 app.include_router(calibration_router)
 app.include_router(coresignal_prospects_router)
 app.include_router(prospect_settings_router)
+app.include_router(daily_list_router)
 
 if __name__ == "__main__":
     import uvicorn

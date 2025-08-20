@@ -8,6 +8,7 @@ from app.models.prospect_score_history import ProspectScoreHistory
 from app.models.notifications import Notification
 from app.models.companies import Company
 from app.models.prospect_setting import ProspectSetting
+from app.models.daily_list import DailyList
 
 def create_company_schema(engine, schema_name: str):
 
@@ -17,7 +18,7 @@ def create_company_schema(engine, schema_name: str):
             conn.commit()
 
         models = [
-            SDR, User, Prospect,ProspectActivity, ProspectScoreHistory, ProspectSetting, Notification, Company
+            SDR, User, Prospect,ProspectActivity, ProspectScoreHistory, ProspectSetting, Notification, Company, DailyList
         ]
 
         original_schemas = {}
