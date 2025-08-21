@@ -5,6 +5,7 @@ from typing import List
 from uuid import UUID
 import uuid
 from datetime import datetime
+import time
 
 from app.db import get_db
 from app.utils.auth import get_current_user
@@ -81,56 +82,46 @@ def add_prospect_to_daily_list(
     current_user: User = Depends(get_current_user)
 ):
     try:
-        with db.bind.connect() as conn:         
-            query = text(f"""
-                WITH prospect_check AS (
-                    SELECT id FROM {current_user.schema_name}.prospects WHERE id = :prospect_id
-                ),
-                daily_list_check AS (
-                    SELECT id FROM {current_user.schema_name}.daily_list 
-                    WHERE prospect_id = :prospect_id AND removed_date IS NULL
-                ),
-                insert_result AS (
-                    INSERT INTO {current_user.schema_name}.daily_list (id, prospect_id, added_date, contact_status, is_primary, daily_batch_date)
-                    SELECT 
-                        :daily_list_id,
-                        :prospect_id,
-                        :current_time,
-                        'Not contacted',
-                        true,
-                        :current_time
-                    WHERE EXISTS (SELECT 1 FROM prospect_check)
-                    AND NOT EXISTS (SELECT 1 FROM daily_list_check)
-                    RETURNING id
+        start_time = time.time()
+        daily_list_table = get_table('daily_list', current_user.schema_name, db.bind)
+        prospect_table = get_table('prospects', current_user.schema_name, db.bind)
+        print(f"-----------------------------: {time.time() - start_time} seconds")
+        get_time = time.time()
+        with db.bind.connect() as conn:
+            prospect = conn.execute(
+                prospect_table.select().where(prospect_table.c.id == prospect_id)
+            ).fetchone()
+            
+            if not prospect:
+                raise HTTPException(status_code=404, detail="Prospect not found")
+            
+            existing = conn.execute(
+                daily_list_table.select().where(
+                    (daily_list_table.c.prospect_id == prospect_id) &
+                    (daily_list_table.c.removed_date.is_(None))
                 )
-                SELECT 
-                    CASE 
-                        WHEN NOT EXISTS (SELECT 1 FROM prospect_check) THEN 'prospect_not_found'
-                        WHEN EXISTS (SELECT 1 FROM daily_list_check) THEN 'already_in_list'
-                        WHEN EXISTS (SELECT 1 FROM insert_result) THEN 'success'
-                        ELSE 'error'
-                    END as result
-            """)
+            ).fetchone()
+            
+            if existing:
+                raise HTTPException(status_code=400, detail="Prospect already in daily list")
             
             daily_list_id = str(uuid.uuid4())
             current_time = datetime.utcnow()
             
-            result = conn.execute(query, {
+            insert_data = {
+                'id': daily_list_id,
                 'prospect_id': prospect_id,
-                'daily_list_id': daily_list_id,
-                'current_time': current_time
-            }).fetchone()
+                'added_date': current_time,
+                'contact_status': 'Not contacted',
+                'is_primary': True,
+                'daily_batch_date': current_time
+            }
             
+            insert_stmt = daily_list_table.insert().values(**insert_data)
+            conn.execute(insert_stmt)
             conn.commit()
-            
-            if result.result == 'prospect_not_found':
-                raise HTTPException(status_code=404, detail="Prospect not found")
-            elif result.result == 'already_in_list':
-                raise HTTPException(status_code=400, detail="Prospect already in daily list")
-            elif result.result == 'success':
-                return {"message": "Prospect added to daily list successfully", "daily_list_id": daily_list_id}
-            else:
-                raise HTTPException(status_code=500, detail="Failed to add prospect to daily list")
+            print(f"-----------------------------: {time.time() - get_time} seconds")
+            return {"message": "Prospect added to daily list successfully", "daily_list_id": daily_list_id}
             
     except HTTPException:
         raise
