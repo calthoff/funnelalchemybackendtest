@@ -85,25 +85,20 @@ def add_prospect_to_daily_list(
         start_time = time.time()
         daily_list_table = get_table('daily_list', current_user.schema_name, db.bind)
         prospect_table = get_table('prospects', current_user.schema_name, db.bind)
-        print(f"-----------------------------: {time.time() - start_time} seconds")
-        get_time = time.time()
+        print(f"-----------------------------: {(time.time() - start_time)*1000:.2f}ms")
         with db.bind.connect() as conn:
-            check_query = text(f"""
-                SELECT 
-                    p.id as prospect_id,
-                    CASE WHEN dl.id IS NOT NULL THEN true ELSE false END as in_daily_list
-                FROM {current_user.schema_name}.prospects p
-                LEFT JOIN {current_user.schema_name}.daily_list dl 
-                    ON dl.prospect_id = p.id AND dl.removed_date IS NULL
-                WHERE p.id = :prospect_id
-            """)
-            
-            result = conn.execute(check_query, {'prospect_id': prospect_id}).fetchone()
-            
-            if not result:
+            prospect = conn.execute(
+                prospect_table.select().where(prospect_table.c.id == prospect_id)
+            ).fetchone()
+            if not prospect:
                 raise HTTPException(status_code=404, detail="Prospect not found")
-            
-            if result.in_daily_list:
+            existing = conn.execute(
+                daily_list_table.select().where(
+                    (daily_list_table.c.prospect_id == prospect_id) &
+                    (daily_list_table.c.removed_date.is_(None))
+                )
+            ).fetchone()
+            if existing:
                 raise HTTPException(status_code=400, detail="Prospect already in daily list")
             
             daily_list_id = str(uuid.uuid4())
@@ -118,10 +113,10 @@ def add_prospect_to_daily_list(
                 'daily_batch_date': current_time
             }
             
+            query_start = time.time()
             insert_stmt = daily_list_table.insert().values(**insert_data)
             conn.execute(insert_stmt)
             conn.commit()
-            
             return {"message": "Prospect added to daily list successfully", "daily_list_id": daily_list_id}
             
     except HTTPException:
