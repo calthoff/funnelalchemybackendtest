@@ -1,5 +1,6 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
+from sqlalchemy import text
 from typing import List
 from uuid import UUID
 import uuid
@@ -56,7 +57,6 @@ def get_daily_list(
             )
             daily_list_items = result.fetchall()
             
-            # Get prospect details for each item
             daily_list_with_prospects = []
             for item in daily_list_items:
                 prospect_result = conn.execute(
@@ -80,47 +80,57 @@ def add_prospect_to_daily_list(
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user)
 ):
-    """Add a prospect to the daily list"""
     try:
-        daily_list_table = get_table('daily_list', current_user.schema_name, db.bind)
-        prospect_table = get_table('prospects', current_user.schema_name, db.bind)
-        
-        with db.bind.connect() as conn:
-            # Check if prospect exists
-            prospect = conn.execute(
-                prospect_table.select().where(prospect_table.c.id == prospect_id)
-            ).fetchone()
-            
-            if not prospect:
-                raise HTTPException(status_code=404, detail="Prospect not found")
-            
-            # Check if prospect is already in daily list
-            existing = conn.execute(
-                daily_list_table.select().where(
-                    (daily_list_table.c.prospect_id == prospect_id) &
-                    (daily_list_table.c.removed_date.is_(None))
+        with db.bind.connect() as conn:         
+            query = text(f"""
+                WITH prospect_check AS (
+                    SELECT id FROM {current_user.schema_name}.prospects WHERE id = :prospect_id
+                ),
+                daily_list_check AS (
+                    SELECT id FROM {current_user.schema_name}.daily_list 
+                    WHERE prospect_id = :prospect_id AND removed_date IS NULL
+                ),
+                insert_result AS (
+                    INSERT INTO {current_user.schema_name}.daily_list (id, prospect_id, added_date, contact_status, is_primary, daily_batch_date)
+                    SELECT 
+                        :daily_list_id,
+                        :prospect_id,
+                        :current_time,
+                        'Not contacted',
+                        true,
+                        :current_time
+                    WHERE EXISTS (SELECT 1 FROM prospect_check)
+                    AND NOT EXISTS (SELECT 1 FROM daily_list_check)
+                    RETURNING id
                 )
-            ).fetchone()
+                SELECT 
+                    CASE 
+                        WHEN NOT EXISTS (SELECT 1 FROM prospect_check) THEN 'prospect_not_found'
+                        WHEN EXISTS (SELECT 1 FROM daily_list_check) THEN 'already_in_list'
+                        WHEN EXISTS (SELECT 1 FROM insert_result) THEN 'success'
+                        ELSE 'error'
+                    END as result
+            """)
             
-            if existing:
-                raise HTTPException(status_code=400, detail="Prospect already in daily list")
-            
-            # Add to daily list
             daily_list_id = str(uuid.uuid4())
-            insert_data = {
-                'id': daily_list_id,
-                'prospect_id': prospect_id,
-                'added_date': datetime.utcnow(),
-                'contact_status': 'Not contacted',
-                'is_primary': True,
-                'daily_batch_date': datetime.utcnow()
-            }
+            current_time = datetime.utcnow()
             
-            insert_stmt = daily_list_table.insert().values(**insert_data)
-            conn.execute(insert_stmt)
+            result = conn.execute(query, {
+                'prospect_id': prospect_id,
+                'daily_list_id': daily_list_id,
+                'current_time': current_time
+            }).fetchone()
+            
             conn.commit()
             
-            return {"message": "Prospect added to daily list successfully", "daily_list_id": daily_list_id}
+            if result.result == 'prospect_not_found':
+                raise HTTPException(status_code=404, detail="Prospect not found")
+            elif result.result == 'already_in_list':
+                raise HTTPException(status_code=400, detail="Prospect already in daily list")
+            elif result.result == 'success':
+                return {"message": "Prospect added to daily list successfully", "daily_list_id": daily_list_id}
+            else:
+                raise HTTPException(status_code=500, detail="Failed to add prospect to daily list")
             
     except HTTPException:
         raise
