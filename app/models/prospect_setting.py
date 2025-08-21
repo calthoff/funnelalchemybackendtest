@@ -25,6 +25,7 @@ class ProspectSetting(Base):
     new_hire_titles = Column(JSONB, nullable=True)
     funding_stages = Column(JSONB, nullable=True)
     tech_adoption = Column(JSONB, nullable=True)
+    ma_events = Column(JSONB, nullable=True)
     
     scoring_prompt = Column(Text, nullable=True)
     

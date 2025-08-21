@@ -19,6 +19,7 @@ class ProspectSettingBase(BaseModel):
     new_hire_titles: Optional[List[str]] = None
     funding_stages: Optional[List[str]] = None
     tech_adoption: Optional[List[str]] = None
+    ma_events: Optional[List[str]] = None
     
     exclusion_criteria: Optional[str] = None
     scoring_prompt: Optional[str] = None
@@ -42,6 +43,7 @@ class ProspectSettingUpdate(BaseModel):
     new_hire_titles: Optional[List[str]] = None
     funding_stages: Optional[List[str]] = None
     tech_adoption: Optional[List[str]] = None
+    ma_events: Optional[List[str]] = None
     
     exclusion_criteria: Optional[str] = None
     scoring_prompt: Optional[str] = None
