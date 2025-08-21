@@ -1,4 +1,4 @@
-from sqlalchemy import Column, String, DateTime, ForeignKey, Integer, BigInteger
+from sqlalchemy import Column, String, DateTime, ForeignKey, Integer, BigInteger, Text
 from sqlalchemy.dialects.postgresql import JSONB, UUID
 import uuid
 from sqlalchemy.sql import func
@@ -33,6 +33,12 @@ class Prospect(Base):
     
     suggested_sales_rep_reason = Column(String)
     suggested_sales_rep_date = Column(DateTime(timezone=True))
+    
+    reply_status = Column(String)
+    reply_content = Column(Text, nullable=True)
+    reply_sentiment = Column(String, nullable=True)
+    reply_date = Column(DateTime(timezone=True), nullable=True)
+    contacted_date = Column(DateTime(timezone=True), nullable=True)
     
     headshot_url = Column(String)
     headshot_filename = Column(String)

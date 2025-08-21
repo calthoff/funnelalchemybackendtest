@@ -5,7 +5,7 @@ from datetime import datetime, timedelta
 from fastapi import APIRouter, Depends, HTTPException, Query, BackgroundTasks
 from sqlalchemy.orm import Session
 from sqlalchemy import select, func
-from typing import List, Union
+from typing import List, Union, Optional
 from openai import OpenAI
 import os
 import json
@@ -162,7 +162,21 @@ async def score_prospects(
         scored_prospects = []
         for prospect in prospects:
             try:
-                score_result = await score_with_openai(scoring_prompt)
+                formatted_prompt = scoring_prompt.format(
+                    first_name=prospect.get('first_name', ''),
+                    last_name=prospect.get('last_name', ''),
+                    company_name=prospect.get('company_name', ''),
+                    job_title=prospect.get('job_title', ''),
+                    industry=prospect.get('industry', ''),
+                    company_size=prospect.get('company_size', ''),
+                    revenue=prospect.get('revenue', ''),
+                    location=prospect.get('location', ''),
+                    linkedin_url=prospect.get('linkedin_url', ''),
+                    department=prospect.get('department', ''),
+                    seniority=prospect.get('seniority', '')
+                )
+                
+                score_result = await score_with_openai(formatted_prompt)
                 
                 prospect['current_score'] = score_result.get('score', 50)
                 prospect['score_reason'] = score_result.get('reason', 'AI analysis completed with comprehensive evaluation of prospect fit and business potential.')
@@ -185,9 +199,6 @@ async def score_prospects(
         raise HTTPException(status_code=500, detail=f"Failed to score prospects: {str(e)}")
 
 async def score_prospect_background(prospect_id: str, schema_name: str):
-    """
-    Background function to score a single prospect using the prospect_settings scoring prompt
-    """
     try:
         print(f"\n🔄 Starting background scoring for prospect {prospect_id}")
         
@@ -224,7 +235,22 @@ async def score_prospect_background(prospect_id: str, schema_name: str):
 
             prospect_data = dict(prospect._mapping)
             
-            score_result = await score_with_openai(scoring_prompt)
+            # Format the scoring prompt with actual prospect data
+            formatted_prompt = scoring_prompt.format(
+                first_name=prospect_data.get('first_name', ''),
+                last_name=prospect_data.get('last_name', ''),
+                company_name=prospect_data.get('company_name', ''),
+                job_title=prospect_data.get('job_title', ''),
+                industry=prospect_data.get('industry', ''),
+                company_size=prospect_data.get('company_size', ''),
+                revenue=prospect_data.get('revenue', ''),
+                location=prospect_data.get('location', ''),
+                linkedin_url=prospect_data.get('linkedin_url', ''),
+                department=prospect_data.get('department', ''),
+                seniority=prospect_data.get('seniority', '')
+            )
+            
+            score_result = await score_with_openai(formatted_prompt)
             
             with db.bind.connect() as conn:
                 conn.execute(
@@ -435,7 +461,7 @@ def get_prospects(
         prospect_list = []
         for prospect in prospects:
             try:
-                prospect_data = {k: prospect._mapping[k] for k in prospect._mapping.keys() if k in ProspectRead.__fields__}
+                prospect_data = {k: prospect._mapping[k] for k in ProspectRead.__fields__}
                 prospect_list.append(ProspectRead(**prospect_data))
             except Exception as e:
                 print(f"Error converting prospect {prospect._mapping.get('id', 'unknown')}: {e}")
@@ -773,4 +799,162 @@ def get_prospect_activities(
             ]
             
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Failed to fetch prospect activities: {str(e)}") 
+        raise HTTPException(status_code=500, detail=f"Failed to fetch prospect activities: {str(e)}")
+
+@router.get("/replies/status/{status}")
+def get_prospects_by_reply_status(
+    status: str,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+    limit: int = Query(100, ge=1, le=1000),
+    offset: int = Query(0, ge=0),
+    date_filter: Optional[str] = Query(None, description="Filter by date (YYYY-MM-DD)")
+):
+    try:
+        prospect_table = get_table('prospects', current_user.schema_name, db.bind)
+        
+        # Check if reply_status column exists
+        with db.bind.connect() as conn:
+            try:
+                # Try to query with reply_status column
+                query = prospect_table.select().where(prospect_table.c.reply_status == status)
+                
+                if date_filter:
+                    try:
+                        filter_date = datetime.strptime(date_filter, '%Y-%m-%d')
+                        next_day = filter_date + timedelta(days=1)
+                        query = query.where(
+                            (prospect_table.c.contacted_date >= filter_date) &
+                            (prospect_table.c.contacted_date < next_day)
+                        )
+                    except ValueError:
+                        raise HTTPException(status_code=400, detail="Invalid date format. Use YYYY-MM-DD")
+                
+                result = conn.execute(
+                    query
+                    .limit(limit)
+                    .offset(offset)
+                    .order_by(prospect_table.c.contacted_date.desc() if status == 'no_reply' else prospect_table.c.reply_date.desc())
+                )
+                prospects = result.fetchall()
+                
+            except Exception as column_error:
+                # If reply_status column doesn't exist, return empty list
+                print(f"Reply status column not found, returning empty list: {column_error}")
+                return []
+        
+        prospect_list = []
+        for prospect in prospects:
+            try:
+                prospect_data = {k: prospect._mapping[k] for k in ProspectRead.__fields__}
+                prospect_list.append(ProspectRead(**prospect_data))
+            except Exception as e:
+                print(f"Error converting prospect {prospect._mapping.get('id', 'unknown')}: {e}")
+                continue
+        
+        return prospect_list
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to fetch prospects by reply status: {str(e)}")
+
+@router.put("/{prospect_id}/reply")
+def update_prospect_reply(
+    prospect_id: str,
+    reply_data: dict,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+    try:
+        prospect_table = get_table('prospects', current_user.schema_name, db.bind)
+        
+        with db.bind.connect() as conn:
+            try:
+                existing_prospect = conn.execute(
+                    prospect_table.select().where(prospect_table.c.id == prospect_id)
+                ).fetchone()
+                
+                if not existing_prospect:
+                    raise HTTPException(status_code=404, detail="Prospect not found")
+                
+                update_data = {}
+                
+                if 'reply_status' in reply_data:
+                    reply_status = reply_data['reply_status']
+                    if reply_status == '' or reply_status in ['no_reply', 'replied'] or reply_status is None:
+                        update_data['reply_status'] = reply_status if reply_status != '' else None
+                
+                if 'reply_content' in reply_data:
+                    reply_content = reply_data['reply_content']
+                    update_data['reply_content'] = reply_content if reply_content else None
+                
+                if 'reply_sentiment' in reply_data:
+                    reply_sentiment = reply_data['reply_sentiment']
+                    if reply_sentiment == '' or reply_sentiment in ['positive', 'negative'] or reply_sentiment is None:
+                        update_data['reply_sentiment'] = reply_sentiment if reply_sentiment != '' else None
+
+                if 'reply_date' in reply_data:
+                    update_data['reply_date'] = datetime.utcnow()
+                
+                if update_data:
+                    print(f"Updating prospect {prospect_id} with data: {update_data}")
+                    update_stmt = prospect_table.update().where(
+                        prospect_table.c.id == prospect_id
+                    ).values(**update_data)
+                    conn.execute(update_stmt)
+                    conn.commit()
+                    print(f"Successfully updated prospect {prospect_id}")
+                
+                updated_prospect = conn.execute(
+                    prospect_table.select().where(prospect_table.c.id == prospect_id)
+                ).fetchone()
+                
+                return ProspectRead(**{k: updated_prospect._mapping[k] for k in updated_prospect._mapping.keys() if k in ProspectRead.__fields__})
+                
+            except Exception as column_error:
+                print(f"Reply columns not found: {column_error}")
+                raise HTTPException(status_code=500, detail="Reply tracking columns not available. Please run database migration first.")
+            
+    except HTTPException:
+        raise
+    except Exception as e:
+        print(f"Error updating prospect reply: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Failed to update prospect reply: {str(e)}")
+
+@router.put("/{prospect_id}/mark-contacted")
+def mark_prospect_contacted(
+    prospect_id: str,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+    try:
+        prospect_table = get_table('prospects', current_user.schema_name, db.bind)
+        
+        with db.bind.connect() as conn:
+            try:
+                existing_prospect = conn.execute(
+                    prospect_table.select().where(prospect_table.c.id == prospect_id)
+                ).fetchone()
+                
+                if not existing_prospect:
+                    raise HTTPException(status_code=404, detail="Prospect not found")
+                
+                update_stmt = prospect_table.update().where(
+                    prospect_table.c.id == prospect_id
+                ).values(
+                    contacted_date=datetime.utcnow(),
+                    reply_status='no_reply'
+                )
+                conn.execute(update_stmt)
+                conn.commit()
+                
+                return {"message": "Prospect marked as contacted successfully"}
+                
+            except Exception as column_error:
+                print(f"Reply columns not found: {column_error}")
+                raise HTTPException(status_code=500, detail="Reply tracking columns not available. Please run database migration first.")
+            
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to mark prospect as contacted: {str(e)}") 

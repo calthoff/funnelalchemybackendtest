@@ -16,6 +16,11 @@ class ProspectBase(BaseModel):
     seniority: Optional[str] = None
     source: Optional[str] = None
     source_id: Optional[str] = None
+    reply_status: Optional[str] = None
+    reply_content: Optional[str] = None
+    reply_sentiment: Optional[str] = None
+    reply_date: Optional[datetime] = None
+    contacted_date: Optional[datetime] = None
 
 class ProspectCreate(ProspectBase):
     prospect_setting_id: Optional[UUID] = None
@@ -34,16 +39,20 @@ class ProspectUpdate(BaseModel):
     seniority: Optional[str] = None
     source: Optional[str] = None
     source_id: Optional[str] = None
-    prospect_setting_id: Optional[UUID] = None
-    sales_rep_id: Optional[UUID] = None
     current_score: Optional[int] = None
     initial_score: Optional[int] = None
     score_reason: Optional[str] = None
     score_period: Optional[str] = None
     suggested_sales_rep_reason: Optional[str] = None
     suggested_sales_rep_date: Optional[datetime] = None
+    sales_rep_id: Optional[UUID] = None
     headshot_url: Optional[str] = None
     headshot_filename: Optional[str] = None
+    reply_status: Optional[str] = None
+    reply_content: Optional[str] = None
+    reply_sentiment: Optional[str] = None
+    reply_date: Optional[datetime] = None
+    contacted_date: Optional[datetime] = None
 
 class ProspectRead(ProspectBase):
     id: UUID
