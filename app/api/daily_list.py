@@ -86,18 +86,22 @@ def add_prospect_to_daily_list(
         daily_list_table = get_table('daily_list', current_user.schema_name, db.bind)
         prospect_table = get_table('prospects', current_user.schema_name, db.bind)
         print(f"-----------------------------: {(time.time() - start_time)*1000:.2f}ms")
+        test1_time = time.time()
         with db.bind.connect() as conn:
             prospect = conn.execute(
                 prospect_table.select().where(prospect_table.c.id == prospect_id)
             ).fetchone()
+            print(f"--------------------: {(time.time() - test1_time)*1000:.2f}ms")
             if not prospect:
                 raise HTTPException(status_code=404, detail="Prospect not found")
+            test2_time = time.time()
             existing = conn.execute(
                 daily_list_table.select().where(
                     (daily_list_table.c.prospect_id == prospect_id) &
                     (daily_list_table.c.removed_date.is_(None))
                 )
             ).fetchone()
+            print(f"----------------------: {(time.time() - test2_time)*1000:.2f}ms")
             if existing:
                 raise HTTPException(status_code=400, detail="Prospect already in daily list")
             
@@ -113,10 +117,11 @@ def add_prospect_to_daily_list(
                 'daily_batch_date': current_time
             }
             
-            query_start = time.time()
+            test3_time = time.time()
             insert_stmt = daily_list_table.insert().values(**insert_data)
             conn.execute(insert_stmt)
             conn.commit()
+            print(f"----------------------: {(time.time() - test3_time)*1000:.2f}ms")
             return {"message": "Prospect added to daily list successfully", "daily_list_id": daily_list_id}
             
     except HTTPException:
