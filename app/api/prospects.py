@@ -999,7 +999,7 @@ def update_prospect_reply(
                 
                 if 'reply_sentiment' in reply_data:
                     reply_sentiment = reply_data['reply_sentiment']
-                    if reply_sentiment == '' or reply_sentiment in ['positive', 'negative'] or reply_sentiment is None:
+                    if reply_sentiment == '' or reply_sentiment in ['positive', 'negative', 'neutral'] or reply_sentiment is None:
                         update_data['reply_sentiment'] = reply_sentiment if reply_sentiment != '' else None
 
                 if 'reply_date' in reply_data:
