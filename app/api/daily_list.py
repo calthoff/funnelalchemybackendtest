@@ -132,7 +132,6 @@ def update_daily_list_item(
         daily_list_table = get_table('daily_list', current_user.schema_name, db.bind)
         
         with db.bind.connect() as conn:
-            # Check if daily list item exists
             existing = conn.execute(
                 daily_list_table.select().where(daily_list_table.c.id == daily_list_id)
             ).fetchone()
@@ -140,15 +139,12 @@ def update_daily_list_item(
             if not existing:
                 raise HTTPException(status_code=404, detail="Daily list item not found")
             
-            # Prepare update data
             update_dict = update_data.dict(exclude_unset=True)
             
-            # If contact status is being updated to 'Contacted' or 'Replied', remove from daily list
             if update_dict.get('contact_status') in ['Contacted', 'Replied']:
                 update_dict['removed_date'] = datetime.utcnow()
                 update_dict['removal_reason'] = update_dict.get('contact_status').lower()
                 
-                # Create activity entry
                 activity_type = update_dict.get('contact_status').lower()
                 description = f"Prospect {activity_type} and removed from Daily List"
                 create_prospect_activity(
@@ -176,7 +172,7 @@ def update_daily_list_item(
 @router.post("/remove-prospect")
 def remove_prospect_from_daily_list(
     daily_list_id: str,
-    reason: str,  # 'not_a_fit', 'maybe_later', 'contacted', 'replied'
+    reason: str,
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user)
 ):
@@ -185,7 +181,6 @@ def remove_prospect_from_daily_list(
         daily_list_table = get_table('daily_list', current_user.schema_name, db.bind)
         
         with db.bind.connect() as conn:
-            # Check if daily list item exists
             existing = conn.execute(
                 daily_list_table.select().where(daily_list_table.c.id == daily_list_id)
             ).fetchone()
@@ -193,7 +188,6 @@ def remove_prospect_from_daily_list(
             if not existing:
                 raise HTTPException(status_code=404, detail="Daily list item not found")
             
-            # Create activity entry
             activity_type = reason
             description_map = {
                 'not_a_fit': 'Prospect marked as Not a Fit and removed from Daily List',
@@ -211,7 +205,6 @@ def remove_prospect_from_daily_list(
                 current_user.schema_name
             )
             
-            # Remove from daily list
             update_stmt = daily_list_table.update().where(
                 daily_list_table.c.id == daily_list_id
             ).values(
@@ -238,12 +231,10 @@ def reset_daily_list(
         daily_list_table = get_table('daily_list', current_user.schema_name, db.bind)
         
         with db.bind.connect() as conn:
-            # Get all active items before resetting
             active_items = conn.execute(
                 daily_list_table.select().where(daily_list_table.c.removed_date.is_(None))
             ).fetchall()
             
-            # Create activity entries for all active prospects
             for item in active_items:
                 create_prospect_activity(
                     conn,
@@ -253,7 +244,6 @@ def reset_daily_list(
                     current_user.schema_name
                 )
             
-            # Mark all active items as removed
             update_stmt = daily_list_table.update().where(
                 daily_list_table.c.removed_date.is_(None)
             ).values(

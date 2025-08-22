@@ -235,7 +235,6 @@ async def score_prospect_background(prospect_id: str, schema_name: str):
 
             prospect_data = dict(prospect._mapping)
             
-            # Format the scoring prompt with actual prospect data
             formatted_prompt = scoring_prompt.format(
                 first_name=prospect_data.get('first_name', ''),
                 last_name=prospect_data.get('last_name', ''),
@@ -267,7 +266,6 @@ async def score_prospect_background(prospect_id: str, schema_name: str):
             db.close()
             
     except Exception as e:
-        print(f"❌ Error scoring prospect {prospect_id}: {str(e)}")
         try:
             from app.db import SessionLocal
             db = SessionLocal()
@@ -345,6 +343,9 @@ def create_prospects_batch(
                 'sales_rep_id': assigned_sdr_id,
                 'headshot_url': prospect_data.get('headshot_url', ''),
                 'headshot_filename': prospect_data.get('headshot_filename', ''),
+                'funding_stage': prospect_data.get('funding_stage', ''),
+                'funding_amount': prospect_data.get('funding_amount', ''),
+                'funding_date': prospect_data.get('funding_date', ''),
                 'created_at': func.now(),
                 'updated_at': func.now()
             }
@@ -360,7 +361,6 @@ def create_prospects_batch(
                 if existing_prospect:
                     results.append(DuplicateProspectResponse(message="Prospect already exists", skipped=True))
                 else:
-                    # SAVE IMMEDIATELY - NO SCORING, NO WAITING
                     insert_stmt = prospect_table.insert().values(**insert_data)
                     conn.execute(insert_stmt)
                     conn.commit()
@@ -370,16 +370,17 @@ def create_prospects_batch(
                     )
                     created_prospect = result.fetchone()
                     
-                    results.append(ProspectRead(**{k: created_prospect._mapping[k] for k in created_prospect._mapping.keys() if k in ProspectRead.__fields__}))
+                    prospect_data = {k: created_prospect._mapping[k] for k in created_prospect._mapping.keys() if k in ProspectRead.__fields__ and k != 'activities'}
+                    prospect_data['activities'] = []
+                    
+                    results.append(ProspectRead(**prospect_data))
 
             if all_sdrs:
                 current_sdr_index = (current_sdr_index + 1) % len(all_sdrs)
                 assigned_sdr_id = str(all_sdrs[current_sdr_index].id)
         
-        # Start scoring in a separate thread (truly non-blocking)
         def start_scoring_thread():
             try:
-                # Create new event loop for the thread
                 loop = asyncio.new_event_loop()
                 asyncio.set_event_loop(loop)
                 loop.run_until_complete(trigger_immediate_scoring_background(current_user.schema_name))
@@ -390,18 +391,13 @@ def create_prospects_batch(
         scoring_thread.daemon = True
         scoring_thread.start()
         
-        # Return results immediately - NO WAITING FOR ANYTHING
         return results
         
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Failed to create prospects: {str(e)}")
 
 async def trigger_immediate_scoring_background(schema_name: str):
-    """Background task to trigger immediate scoring after batch upload"""
     try:
-        print(f"\n🚀 Triggering immediate scoring for schema {schema_name}")
-        
-        # Create a database session
         from app.db import SessionLocal
         db = SessionLocal()
         
@@ -409,7 +405,6 @@ async def trigger_immediate_scoring_background(schema_name: str):
             prospect_table = get_table('prospects', schema_name, db.bind)
             
             with db.bind.connect() as conn:
-                # Get prospects that need scoring (recently uploaded)
                 prospects_to_score = conn.execute(
                     prospect_table.select().where(
                         (prospect_table.c.current_score == -1) &
@@ -421,19 +416,13 @@ async def trigger_immediate_scoring_background(schema_name: str):
                 print("No prospects need immediate scoring")
                 return
             
-            print(f"📊 Found {len(prospects_to_score)} prospects to score immediately")
-            
             for prospect in prospects_to_score:
                 try:
                     await score_prospect_background(str(prospect.id), schema_name)
-                    # Small delay to avoid overwhelming the API
                     await asyncio.sleep(0.5)
                 except Exception as e:
                     print(f"Error scoring prospect {prospect.id}: {e}")
                     continue
-            
-            print(f"✅ Immediate scoring completed for {len(prospects_to_score)} prospects")
-            
         finally:
             db.close()
             
@@ -449,7 +438,11 @@ def get_prospects(
 ):
     try:
         prospect_table = get_table('prospects', current_user.schema_name, db.bind)
+        
+        prospect_list = []
+        
         with db.bind.connect() as conn:
+            # First, get all prospects
             result = conn.execute(
                 prospect_table.select()
                 .limit(limit)
@@ -457,16 +450,52 @@ def get_prospects(
                 .order_by(prospect_table.c.created_at.desc())
             )
             prospects = result.fetchall()
-        
-        prospect_list = []
-        for prospect in prospects:
+            
             try:
-                prospect_data = {k: prospect._mapping[k] for k in ProspectRead.__fields__}
-                prospect_list.append(ProspectRead(**prospect_data))
-            except Exception as e:
-                print(f"Error converting prospect {prospect._mapping.get('id', 'unknown')}: {e}")
-                print(f"Prospect data: {prospect._mapping}")
-                continue
+                prospect_activities_table = get_table('prospect_activities', current_user.schema_name, db.bind)
+                activities_table_exists = True
+            except Exception:
+                activities_table_exists = False
+                print("prospect_activities table not found, returning prospects without activities")
+            
+            for prospect in prospects:
+                try:
+                    prospect_data = {k: prospect._mapping[k] for k in ProspectRead.__fields__ if k != 'activities'}
+                    activities_list = []
+                    if activities_table_exists:
+                        try:
+                            activities_result = conn.execute(
+                                prospect_activities_table.select()
+                                .where(prospect_activities_table.c.prospect_id == str(prospect.id))
+                                .order_by(prospect_activities_table.c.timestamp.desc())
+                            )
+                            activities = activities_result.fetchall()
+                            for activity in activities:
+                                activities_list.append({
+                                    "id": str(activity.id),
+                                    "prospect_id": str(activity.prospect_id),
+                                    "type": activity.type,
+                                    "source": activity.source,
+                                    "description": activity.description,
+                                    "timestamp": activity.timestamp
+                                })
+                        except Exception as activity_error:
+                            print(f"Error fetching activities for prospect {prospect.id}: {activity_error}")
+                            activities_list = []
+                    
+                    prospect_data['activities'] = activities_list
+                    prospect_list.append(ProspectRead(**prospect_data))
+                    
+                except Exception as e:
+                    print(f"Error converting prospect {prospect._mapping.get('id', 'unknown')}: {e}")
+                    print(f"Prospect data: {prospect._mapping}")
+                    try:
+                        prospect_data = {k: prospect._mapping[k] for k in ProspectRead.__fields__ if k != 'activities'}
+                        prospect_data['activities'] = []
+                        prospect_list.append(ProspectRead(**prospect_data))
+                    except Exception as fallback_error:
+                        print(f"Fallback error for prospect {prospect._mapping.get('id', 'unknown')}: {fallback_error}")
+                        continue
         
         return prospect_list
     except Exception as e:
@@ -481,14 +510,54 @@ def get_prospect(
 ):
     try:
         prospect_table = get_table('prospects', current_user.schema_name, db.bind)
+        
         with db.bind.connect() as conn:
             result = conn.execute(
                 prospect_table.select().where(prospect_table.c.id == prospect_id)
             )
             prospect = result.fetchone()
-        if not prospect:
-            raise HTTPException(status_code=404, detail="Prospect not found")
-        return ProspectRead(**{k: prospect._mapping[k] for k in prospect._mapping.keys() if k in ProspectRead.__fields__})
+            
+            if not prospect:
+                raise HTTPException(status_code=404, detail="Prospect not found")
+            
+            prospect_data = {k: prospect._mapping[k] for k in prospect._mapping.keys() if k in ProspectRead.__fields__ and k != 'activities'}
+            
+            # Check if prospect_activities table exists
+            try:
+                prospect_activities_table = get_table('prospect_activities', current_user.schema_name, db.bind)
+                activities_table_exists = True
+            except Exception:
+                activities_table_exists = False
+                print("prospect_activities table not found, returning prospect without activities")
+            
+            # Fetch activities for this prospect if table exists
+            activities_list = []
+            if activities_table_exists:
+                try:
+                    activities_result = conn.execute(
+                        prospect_activities_table.select()
+                        .where(prospect_activities_table.c.prospect_id == prospect_id)
+                        .order_by(prospect_activities_table.c.timestamp.desc())
+                    )
+                    activities = activities_result.fetchall()
+                    
+                    # Convert activities to ActivityRead format
+                    for activity in activities:
+                        activities_list.append({
+                            "id": str(activity.id),
+                            "prospect_id": str(activity.prospect_id),
+                            "type": activity.type,
+                            "source": activity.source,
+                            "description": activity.description,
+                            "timestamp": activity.timestamp
+                        })
+                except Exception as activity_error:
+                    print(f"Error fetching activities for prospect {prospect_id}: {activity_error}")
+                    activities_list = []
+            
+            prospect_data['activities'] = activities_list
+            return ProspectRead(**prospect_data)
+            
     except HTTPException:
         raise
     except Exception as e:
@@ -503,6 +572,7 @@ def update_prospect(
 ):
     try:
         prospect_table = get_table('prospects', current_user.schema_name, db.bind)
+        
         with db.bind.connect() as conn:
             update_data = {k: v for k, v in prospect_data.dict().items() if v is not None}
             if update_data:
@@ -512,9 +582,48 @@ def update_prospect(
             updated_prospect = conn.execute(
                 prospect_table.select().where(prospect_table.c.id == prospect_id)
             ).fetchone()
-        if not updated_prospect:
-            raise HTTPException(status_code=404, detail="Prospect not found")
-        return ProspectRead(**{k: updated_prospect._mapping[k] for k in updated_prospect._mapping.keys() if k in ProspectRead.__fields__})
+            
+            if not updated_prospect:
+                raise HTTPException(status_code=404, detail="Prospect not found")
+            
+            prospect_data_response = {k: updated_prospect._mapping[k] for k in updated_prospect._mapping.keys() if k in ProspectRead.__fields__ and k != 'activities'}
+            
+            # Check if prospect_activities table exists
+            try:
+                prospect_activities_table = get_table('prospect_activities', current_user.schema_name, db.bind)
+                activities_table_exists = True
+            except Exception:
+                activities_table_exists = False
+                print("prospect_activities table not found, returning prospect without activities")
+            
+            # Fetch activities for this prospect if table exists
+            activities_list = []
+            if activities_table_exists:
+                try:
+                    activities_result = conn.execute(
+                        prospect_activities_table.select()
+                        .where(prospect_activities_table.c.prospect_id == prospect_id)
+                        .order_by(prospect_activities_table.c.timestamp.desc())
+                    )
+                    activities = activities_result.fetchall()
+                    
+                    # Convert activities to ActivityRead format
+                    for activity in activities:
+                        activities_list.append({
+                            "id": str(activity.id),
+                            "prospect_id": str(activity.prospect_id),
+                            "type": activity.type,
+                            "source": activity.source,
+                            "description": activity.description,
+                            "timestamp": activity.timestamp
+                        })
+                except Exception as activity_error:
+                    print(f"Error fetching activities for prospect {prospect_id}: {activity_error}")
+                    activities_list = []
+            
+            prospect_data_response['activities'] = activities_list
+            return ProspectRead(**prospect_data_response)
+            
     except HTTPException:
         raise
     except Exception as e:
@@ -667,7 +776,7 @@ async def trigger_immediate_scoring(
                 prospect_table.select().where(
                     (prospect_table.c.current_score == -1) &
                     (prospect_table.c.score_reason == 'Generating...')
-                ).order_by(prospect_table.c.created_at.desc()).limit(20)  # Process recent uploads first
+                ).order_by(prospect_table.c.created_at.desc()).limit(20)
             ).fetchall()
         
         if not prospects_to_score:
@@ -769,38 +878,6 @@ async def trigger_rescoring(
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Failed to trigger re-scoring: {str(e)}") 
 
-@router.get("/{prospect_id}/activities")
-def get_prospect_activities(
-    prospect_id: str,
-    db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_user)
-):
-    try:
-        prospect_activities_table = get_table('prospect_activities', current_user.schema_name, db.bind)
-        
-        with db.bind.connect() as conn:
-            result = conn.execute(
-                prospect_activities_table.select()
-                .where(prospect_activities_table.c.prospect_id == prospect_id)
-                .order_by(prospect_activities_table.c.timestamp.desc())
-            )
-            activities = result.fetchall()
-            
-            return [
-                {
-                    "id": str(activity.id),
-                    "prospect_id": str(activity.prospect_id),
-                    "type": activity.type,
-                    "source": activity.source,
-                    "description": activity.description,
-                    "timestamp": activity.timestamp.isoformat() if activity.timestamp else None
-                }
-                for activity in activities
-            ]
-            
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Failed to fetch prospect activities: {str(e)}")
-
 @router.get("/replies/status/{status}")
 def get_prospects_by_reply_status(
     status: str,
@@ -812,11 +889,8 @@ def get_prospects_by_reply_status(
 ):
     try:
         prospect_table = get_table('prospects', current_user.schema_name, db.bind)
-        
-        # Check if reply_status column exists
         with db.bind.connect() as conn:
             try:
-                # Try to query with reply_status column
                 query = prospect_table.select().where(prospect_table.c.reply_status == status)
                 
                 if date_filter:
@@ -842,11 +916,46 @@ def get_prospects_by_reply_status(
                 # If reply_status column doesn't exist, return empty list
                 print(f"Reply status column not found, returning empty list: {column_error}")
                 return []
+            
+            # Check if prospect_activities table exists
+            try:
+                prospect_activities_table = get_table('prospect_activities', current_user.schema_name, db.bind)
+                activities_table_exists = True
+            except Exception:
+                activities_table_exists = False
+                print("prospect_activities table not found, returning prospects without activities")
         
         prospect_list = []
         for prospect in prospects:
             try:
-                prospect_data = {k: prospect._mapping[k] for k in ProspectRead.__fields__}
+                prospect_data = {k: prospect._mapping[k] for k in ProspectRead.__fields__ if k != 'activities'}
+                
+                # Fetch activities for this prospect if table exists
+                activities_list = []
+                if activities_table_exists:
+                    try:
+                        activities_result = conn.execute(
+                            prospect_activities_table.select()
+                            .where(prospect_activities_table.c.prospect_id == str(prospect.id))
+                            .order_by(prospect_activities_table.c.timestamp.desc())
+                        )
+                        activities = activities_result.fetchall()
+                        
+                        # Convert activities to ActivityRead format
+                        for activity in activities:
+                            activities_list.append({
+                                "id": str(activity.id),
+                                "prospect_id": str(activity.prospect_id),
+                                "type": activity.type,
+                                "source": activity.source,
+                                "description": activity.description,
+                                "timestamp": activity.timestamp
+                            })
+                    except Exception as activity_error:
+                        print(f"Error fetching activities for prospect {prospect.id}: {activity_error}")
+                        activities_list = []
+                
+                prospect_data['activities'] = activities_list
                 prospect_list.append(ProspectRead(**prospect_data))
             except Exception as e:
                 print(f"Error converting prospect {prospect._mapping.get('id', 'unknown')}: {e}")
@@ -909,7 +1018,43 @@ def update_prospect_reply(
                     prospect_table.select().where(prospect_table.c.id == prospect_id)
                 ).fetchone()
                 
-                return ProspectRead(**{k: updated_prospect._mapping[k] for k in updated_prospect._mapping.keys() if k in ProspectRead.__fields__})
+                prospect_data_response = {k: updated_prospect._mapping[k] for k in updated_prospect._mapping.keys() if k in ProspectRead.__fields__ and k != 'activities'}
+                
+                # Check if prospect_activities table exists
+                try:
+                    prospect_activities_table = get_table('prospect_activities', current_user.schema_name, db.bind)
+                    activities_table_exists = True
+                except Exception:
+                    activities_table_exists = False
+                    print("prospect_activities table not found, returning prospect without activities")
+                
+                # Fetch activities for this prospect if table exists
+                activities_list = []
+                if activities_table_exists:
+                    try:
+                        activities_result = conn.execute(
+                            prospect_activities_table.select()
+                            .where(prospect_activities_table.c.prospect_id == prospect_id)
+                            .order_by(prospect_activities_table.c.timestamp.desc())
+                        )
+                        activities = activities_result.fetchall()
+                        
+                        # Convert activities to ActivityRead format
+                        for activity in activities:
+                            activities_list.append({
+                                "id": str(activity.id),
+                                "prospect_id": str(activity.prospect_id),
+                                "type": activity.type,
+                                "source": activity.source,
+                                "description": activity.description,
+                                "timestamp": activity.timestamp
+                            })
+                    except Exception as activity_error:
+                        print(f"Error fetching activities for prospect {prospect_id}: {activity_error}")
+                        activities_list = []
+                
+                prospect_data_response['activities'] = activities_list
+                return ProspectRead(**prospect_data_response)
                 
             except Exception as column_error:
                 print(f"Reply columns not found: {column_error}")

@@ -40,6 +40,10 @@ class Prospect(Base):
     reply_date = Column(DateTime(timezone=True), nullable=True)
     contacted_date = Column(DateTime(timezone=True), nullable=True)
     
+    funding_stage = Column(String, nullable=True)
+    funding_amount = Column(String, nullable=True)
+    funding_date = Column(DateTime(timezone=True), nullable=True)
+    
     headshot_url = Column(String)
     headshot_filename = Column(String)
     

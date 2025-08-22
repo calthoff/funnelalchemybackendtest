@@ -132,6 +132,52 @@ class CoreSignalService:
                                 "minimum_should_match": 1
                             }
                         })
+            
+            if icp.get('revenue_range'):
+                revenue_ranges = icp['revenue_range'] if isinstance(icp['revenue_range'], list) else []
+                if revenue_ranges:
+                    revenue_conditions = []
+                    for revenue_range in revenue_ranges:
+                        revenue_conditions.append({
+                            "match": {
+                                "experience.company_annual_revenue_source_1": revenue_range
+                            }
+                        })
+                    
+                    if revenue_conditions:
+                        experience_filter.append({
+                            "bool": {
+                                "should": revenue_conditions,
+                                "minimum_should_match": 1
+                            }
+                        })
+            
+            if icp.get('funding_stages'):
+                funding_stages = icp['funding_stages'] if isinstance(icp['funding_stages'], list) else []
+                if funding_stages:
+                    funding_conditions = []
+                    for stage in funding_stages:
+                        funding_conditions.extend([
+                            {
+                                "match": {
+                                    "experience.company_funding_stage": stage
+                                }
+                            },
+                            {
+                                "query_string": {
+                                    "query": stage,
+                                    "default_field": "experience.company_categories_and_keywords"
+                                }
+                            }
+                        ])
+                    
+                    if funding_conditions:
+                        experience_filter.append({
+                            "bool": {
+                                "should": funding_conditions,
+                                "minimum_should_match": 1
+                            }
+                        })
         
         if personas and len(personas) > 0:
             persona = personas[0]
@@ -292,6 +338,9 @@ class CoreSignalService:
                 'industry': active_experience.get('company_industry', ''),
                 'company_size': active_experience.get('company_employees_count', ''),
                 'company_revenue': active_experience.get('company_annual_revenue_source_1', ''),
+                'funding_stage': active_experience.get('company_funding_stage', ''),
+                'funding_amount': active_experience.get('company_funding_amount', ''),
+                'funding_date': active_experience.get('company_funding_date', ''),
                 'technology_stack': prospect_data.get('inferred_skills', []),
                 'location_country': prospect_data.get('location_country', ''),
                 'location_region': active_experience.get('company_hq_country', ''),
@@ -416,8 +465,9 @@ async def search_coresignal_prospects(
             icps = [{
                 'industries': setting.get('industries', []),
                 'employee_size_range': setting.get('employee_range', []),
-                'revenue_range': setting.get('revenue_range', [])
-            }] if setting.get('industries') or setting.get('employee_range') or setting.get('revenue_range') else []
+                'revenue_range': setting.get('revenue_range', []),
+                'funding_stages': setting.get('funding_stages', [])
+            }] if setting.get('industries') or setting.get('employee_range') or setting.get('revenue_range') or setting.get('funding_stages') else []
             
             personas = [{
                 'title_keywords': setting.get('title_keywords', []),

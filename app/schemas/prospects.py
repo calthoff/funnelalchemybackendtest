@@ -1,7 +1,15 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, validator
 from uuid import UUID
-from typing import Optional, Dict, Any
+from typing import Optional, Dict, Any, List
 from datetime import datetime
+
+class ActivityRead(BaseModel):
+    id: str
+    prospect_id: str
+    type: str
+    source: Optional[str] = None
+    description: str
+    timestamp: Optional[datetime] = None
 
 class ProspectBase(BaseModel):
     first_name: str
@@ -21,6 +29,9 @@ class ProspectBase(BaseModel):
     reply_sentiment: Optional[str] = None
     reply_date: Optional[datetime] = None
     contacted_date: Optional[datetime] = None
+    funding_stage: Optional[str] = None
+    funding_amount: Optional[str] = None
+    funding_date: Optional[datetime] = None
 
 class ProspectCreate(ProspectBase):
     prospect_setting_id: Optional[UUID] = None
@@ -53,6 +64,15 @@ class ProspectUpdate(BaseModel):
     reply_sentiment: Optional[str] = None
     reply_date: Optional[datetime] = None
     contacted_date: Optional[datetime] = None
+    funding_stage: Optional[str] = None
+    funding_amount: Optional[str] = None
+    funding_date: Optional[datetime] = None
+
+    @validator('funding_date', 'reply_date', 'contacted_date', 'suggested_sales_rep_date', pre=True)
+    def convert_empty_strings_to_none(cls, v):
+        if v == "":
+            return None
+        return v
 
 class ProspectRead(ProspectBase):
     id: UUID
@@ -68,6 +88,7 @@ class ProspectRead(ProspectBase):
     headshot_filename: Optional[str] = None
     created_at: datetime
     updated_at: Optional[datetime] = None
+    activities: Optional[List[ActivityRead]] = []
 
     class Config:
         from_attributes = True
