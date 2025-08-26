@@ -14,7 +14,7 @@ from app.schemas.prospect_setting import (
 )
 from app.utils.db_utils import get_table
 
-router = APIRouter(prefix="/prospect-settings", tags=["prospect-settings"], redirect_slashes=False)
+router = APIRouter(prefix="/prospect-settings", tags=["prospect-settings"])
 
 @router.get("/", response_model=List[ProspectSettingResponse])
 def get_prospect_settings(
