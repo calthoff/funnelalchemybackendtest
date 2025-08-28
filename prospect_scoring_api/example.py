@@ -2,8 +2,8 @@
 Example usage - what to import
 """
 
-from prospect_scoring_api import score_prospect, score_prospects_batch
+from prospect_scoring_api import score_prospects
 
 # Basic usage:
-# result = score_prospect(scoring_settings, prospect)
-# results = score_prospects_batch(scoring_settings, prospects)
+# Single prospect: result = score_prospects(scoring_settings, [prospect])[0]
+# Multiple prospects: results = score_prospects(scoring_settings, prospects)

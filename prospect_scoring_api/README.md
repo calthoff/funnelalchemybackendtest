@@ -1,8 +1,5 @@
 # Prospect Scoring API Module
 
-Lightweight Python module for scoring prospects based on ICP criteria. 
-Easy to integrate into any Python project.
-
 ## Installation
 
 ```bash
@@ -12,22 +9,16 @@ pip install -r requirements.txt
 ## Usage
 
 ```python
-from prospect_scoring_api import score_prospect, score_prospects_batch
-
-# Score single prospect
-result = score_prospect(scoring_settings, prospect)
+from prospect_scoring_api import score_prospects
 
 # Score multiple prospects
-results = score_prospects_batch(scoring_settings, prospects)
+results = score_prospects(scoring_settings, prospects)
 ```
 
 ## API
 
-### `score_prospect(scoring_settings, prospect)`
-Returns `ScoringResult` with `prospect_id`, `score` (0-100), and `justification`
-
-### `score_prospects_batch(scoring_settings, prospects)`
-Returns list of `ScoringResult` objects
+### `score_prospects(scoring_settings, prospects)`
+Returns list of `ScoringResult` objects. Works with single prospect (list with one item) or multiple prospects.
 
 ## Configuration
 
