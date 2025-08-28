@@ -14,6 +14,7 @@ class ProspectSetting(Base):
     exclusion_criteria = Column(Text, nullable=True)
     
     industries = Column(JSONB, nullable=True)
+    locations = Column(JSONB, nullable=True)
     employee_range = Column(JSONB, nullable=True)
     revenue_range = Column(JSONB, nullable=True)
     
@@ -26,8 +27,6 @@ class ProspectSetting(Base):
     funding_stages = Column(JSONB, nullable=True)
     tech_adoption = Column(JSONB, nullable=True)
     ma_events = Column(JSONB, nullable=True)
-    
-    scoring_prompt = Column(Text, nullable=True)
     
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     updated_at = Column(DateTime(timezone=True), onupdate=func.now())

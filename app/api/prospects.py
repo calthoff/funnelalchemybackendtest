@@ -151,13 +151,8 @@ async def score_prospects(
                 )
             
             setting = dict(prospect_settings[0]._mapping)
-            scoring_prompt = setting.get('scoring_prompt', '')
-            
-            if not scoring_prompt:
-                raise HTTPException(
-                    status_code=400,
-                    detail="Please configure a scoring prompt in your prospect settings"
-                )
+            # Default scoring logic without custom prompt
+            scoring_prompt = "Score this prospect from 0-100 based on their role, company, and fit for our solution. Provide a brief reason for the score."
         
         scored_prospects = []
         for prospect in prospects:
@@ -227,11 +222,8 @@ async def score_prospect_background(prospect_id: str, schema_name: str):
                     return
                 
                 setting = dict(prospect_settings[0]._mapping)
-                scoring_prompt = setting.get('scoring_prompt', '')
-                
-                if not scoring_prompt:
-                    print(f"No scoring prompt configured in prospect settings")
-                    return
+                # Default scoring logic without custom prompt
+                scoring_prompt = "Score this prospect from 0-100 based on their role, company, and fit for our solution. Provide a brief reason for the score."
 
             prospect_data = dict(prospect._mapping)
             

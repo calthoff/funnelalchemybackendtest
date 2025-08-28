@@ -5,9 +5,10 @@ from uuid import UUID
 
 class ProspectSettingBase(BaseModel):
     name: str
-    company_description: Optional[str] = None
+    company_description: str
     
     industries: Optional[List[str]] = None
+    locations: Optional[List[str]] = None
     employee_range: Optional[List[str]] = None
     revenue_range: Optional[List[str]] = None
     
@@ -22,7 +23,6 @@ class ProspectSettingBase(BaseModel):
     ma_events: Optional[List[str]] = None
     
     exclusion_criteria: Optional[str] = None
-    scoring_prompt: Optional[str] = None
 
 class ProspectSettingCreate(ProspectSettingBase):
     pass
@@ -32,6 +32,7 @@ class ProspectSettingUpdate(BaseModel):
     company_description: Optional[str] = None
     
     industries: Optional[List[str]] = None
+    locations: Optional[List[str]] = None
     employee_range: Optional[List[str]] = None
     revenue_range: Optional[List[str]] = None
     
@@ -46,7 +47,6 @@ class ProspectSettingUpdate(BaseModel):
     ma_events: Optional[List[str]] = None
     
     exclusion_criteria: Optional[str] = None
-    scoring_prompt: Optional[str] = None
 
 class ProspectSettingResponse(ProspectSettingBase):
     id: UUID
