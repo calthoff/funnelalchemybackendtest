@@ -11,7 +11,7 @@ from app.api.users import router as users_router
 from app.api.notifications import router as notifications_router
 from app.api.prospects import router as prospects_router, score_prospect_background
 from app.api.calibration import router as calibration_router
-# from app.api.coresignal_prospects import router as coresignal_prospects_router
+from app.api.coresignal_prospects import router as coresignal_prospects_router
 from app.api.prospect_settings import router as prospect_settings_router
 from app.api.daily_list import router as daily_list_router
 import os
@@ -179,7 +179,7 @@ app.include_router(users_router)
 app.include_router(notifications_router)
 app.include_router(prospects_router)
 app.include_router(calibration_router)
-# app.include_router(coresignal_prospects_router)
+app.include_router(coresignal_prospects_router)
 app.include_router(prospect_settings_router)
 app.include_router(daily_list_router)
 
