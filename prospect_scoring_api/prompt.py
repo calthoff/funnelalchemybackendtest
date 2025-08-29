@@ -14,13 +14,25 @@ def generate_prompt(scoring_settings: dict, prospect: dict) -> str:
     prospect_block = json.dumps(prospect, ensure_ascii=False, indent=2)
 
     header = dedent("""\
-        You are a lead qualification assistant. Your task is to evaluate EACH prospect in the incoming list and return a JSON ARRAY of individual result objects.
+        You are a lead qualification assistant. Your task is to evaluate EACH prospect in the incoming list and return a JSON ARRAY of individual result objects, each containing a score from 0 to 100 and a brief justification.
 
         The input includes a shared `scoring_settings` block and a list of `prospects`.
 
         Within `scoring_settings`:
-        - The fields `company_description` and `exclusion_criteria` describe **our own company** (the seller). Use them only for understanding the product and filtering out irrelevant prospects.
+        - The fields `company_description` and `exclusion_criteria` describe our own company (the seller). Use them only for understanding the product and filtering out irrelevant prospects.
         - All other fields (`industries`, `employee_range`, `revenue_range`, `funding_stages`, `title_keywords`, `seniority_levels`, `buying_roles`, `locations`) define our Ideal Customer Profile (ICP) — use them to evaluate each prospect.
+
+        KEY FIELDS TO USE
+        Prioritize fields that reflect alignment with the ICP, especially:
+        FROM `scoring_settings`:
+        company_description, exclusion_criteria, industries, employee_range, revenue_range, funding_stages, title_keywords, seniority_levels, buying_roles, locations
+        FROM `prospects`:
+        prospect_id, active_experience_title, active_experience_management_level, is_decision_maker, company_industry, company_size_range, company_last_funding_round_date, total_experience_duration_months
+        , is_working, position_title, department, management_level, location, company_name
+        
+        All other fields in the JSON input are optional and may serve as context only.
+
+        Missing fields → treat as "Unknown". Only apply penalties if exclusion criteria or location rules are explicitly violated.
 
         THINKING LOGIC (what to consider)
         1) First, check if the product generally makes sense for the company: proximity of industry to ICP, scale by headcount/revenue,
@@ -33,52 +45,38 @@ def generate_prompt(scoring_settings: dict, prospect: dict) -> str:
            active hiring in relevant function, growth signals, recent role change, compatible stack.
         Do NOT penalize for missing data; treat missing fields as "Unknown". Do NOT invent data.
 
-        CORE vs NON-CORE (field names as in incoming payload)
-        • Core (may or may not be present; if absent — skip, no penalty):
-          - scoring_settings: industries, employee_range, revenue_range, company_description
-          - prospect: basic_profile.headline, current_job.active_experience_title
-          The closer to ICP -> the higher the final score; far deviations -> mid; hard mismatch/stop -> low or zero.
-        • Non-core (context/timing if present): exclusion_criteria, funding_stages, title_keywords, seniority_levels, buying_roles,
-          current_job, current_company, total_experience, education, additional_info, languages and other fields. Positive signals + score; counter-signals - score.
+
+        SCORE REFINEMENT
+        If there is a clear mismatch between our ICP (industry, size, market type) and the prospect’s company — disqualify immediately.
+        
+        If the company seems relevant, consider the following additional signals to fine-tune the final score:
+        - Whether the prospect appears to influence buying decisions — look at `is_decision_maker`, seniority level (e.g. `management_level`, `position_title`)
+        - Time at current company (`duration_months`) — longer presence may indicate stronger influence.
+        - Department relevance (`department`, `active_experience_department`) — check if the person is likely to use or benefit from the product.
+        - Broader background: total experience, career trajectory, and (if present) education or certifications can help clarify maturity and fit.
+
+
 
         LOCATION RULE
-        • If scoring_settings.country is provided (meaning the search is for that country) and
+        • If scoring_settings.location is provided (meaning the search is for that country) and
           prospect.basic_profile.location_country differs -> reduce score noticeably.
         • If that country is explicitly excluded in exclusion_criteria -> Disqualified (score=0).
         • If location is missing -> no penalty.
 
-        EXPERIENCE FACTOR (important)
-        • Strongly consider total experience in months if available at prospect.total_experience.total_experience_duration_months:
-          Map experience months to points (max +15):
-            0–3m: +0; 4–12m: +3; 13–36m: +6; 37–72m: +10; 73–120m: +13; >120m: +15.
-          
-
-        SCORING RUBRIC (compute a PRELIMINARY numeric score; clamp 0..100)
-        Start at 50.
-        +20 if current_company.company_industry in scoring_settings.industries
-        +15 if current_company.company_size_range in scoring_settings.employee_range
-        +10 if revenue (if present) in scoring_settings.revenue_range
-        +10 if current_job.active_experience_title matches scoring_settings.title_keywords OR clearly maps to a buying role
-        +10 if seniority (e.g., current_company.management_level) in scoring_settings.seniority_levels
-        +5  if current_company.company_is_b2b == true
-        +10 if explicit timing triggers exist (e.g., recent funding stage/date/amount, active hiring in relevant function, recent growth)
-        +0..+15 from EXPERIENCE FACTOR (see mapping above, using total_experience.total_experience_duration_months)
-        -30 if any exclusion_criteria is triggered (consider both text and obvious matches)
-        -15 for location mismatch per the rule above
-        Clamp the preliminary score to [0, 100].
-        Missing fields = "Unknown" and do NOT penalize unless exclusions explicitly require them.
-
-        LETTER GRADE -> RANGE -> FINAL INTEGER (avoid fixed repetitive values)
-        • Assign a letter grade from the PRELIMINARY score:
-            A: 85–100  (excellent fit / immediate outreach)
-            B: 70–84   (good fit / follow-up)
-            C: 31–69   (partial or unclear fit)
-            D: 0–30    (poor fit / excluded / disqualified)
-        • Then pick a SPECIFIC INTEGER within the assigned band that reflects the strength of evidence:
-          - Do NOT always use boundaries or mid-points; vary naturally within the band.
-          - If evidence is strong within the band -> choose a higher number; if borderline -> choose a lower number.
-          - The final score MUST be an integer 0..100.
-        ALLWAYS REMEMBER, IF THE PROSPECT IS NOT GOOD AND THEORETICALLY CAN NOT HELP WITH OUR PROBLEM THEN SCORE = D
+        SCORE INTERPRETATION:
+        
+        Once you've evaluated the fit, assign a score from 0 to 100 based on overall alignment:
+        
+        • A (85–100): excellent fit — strong alignment with ICP, multiple matching signals
+        • B (70–84): good fit — solid match with a few missing signals
+        • C (31–69): partial or unclear fit — some match, but weak/uncertain
+        • D (0–30): poor fit — clear mismatch or explicit disqualification
+        
+        Pick a specific score within the band depending on the strength of evidence. Do not always use midpoints.
+        The final score MUST be an integer 0..100.
+        
+        If the prospect does not match our ICP and there is no reasonable scenario where our product could help them, assign a D score.
+        
         OUTPUT (STRICT JSON, ARRAY of result objects — no extra text) 
         Return exactly a JSON array of objects, one per prospect: 
         [ 
@@ -98,5 +96,6 @@ def generate_prompt(scoring_settings: dict, prospect: dict) -> str:
     # Concatenate static instruction + JSON blocks
     prompt = header + settings_block + middle + prospect_block
     return prompt
+
 
 
