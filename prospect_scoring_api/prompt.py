@@ -3,12 +3,12 @@ from textwrap import dedent
 
 def generate_prompt(scoring_settings: dict, prospect: dict) -> str:
     """
-    Safe prompt builder:
-    - No f-strings and no .format(): literal braces {} are safe.
-    - SINGLE prospect per request -> expect a SINGLE JSON object in response.
-    - Field names align with your payload: basic_profile.headline, current_job.active_experience_title,
-      total_experience.total_experience_duration_months, current_company.company_size_range,
-      current_company.company_industry, current_company.company_is_b2b, etc.
+    Prompt generator for lead scoring.
+
+    Produces a complete prompt for evaluating a batch of prospects using shared scoring criteria.
+    Assumes the LLM will return a JSON ARRAY of results (one object per prospect), 
+    each containing a score (0–100) and a short justification.
+
     """
     settings_block = json.dumps(scoring_settings, ensure_ascii=False, indent=2)
     prospect_block = json.dumps(prospect, ensure_ascii=False, indent=2)
@@ -96,6 +96,7 @@ def generate_prompt(scoring_settings: dict, prospect: dict) -> str:
     # Concatenate static instruction + JSON blocks
     prompt = header + settings_block + middle + prospect_block
     return prompt
+
 
 
 
