@@ -14,7 +14,13 @@ def generate_prompt(scoring_settings: dict, prospect: dict) -> str:
     prospect_block = json.dumps(prospect, ensure_ascii=False, indent=2)
 
     header = dedent("""\
-        You are a lead-qualification assistant. Evaluate this SINGLE prospect and return ONLY a JSON object.
+        You are a lead qualification assistant. Your task is to evaluate EACH prospect in the incoming list and return a JSON ARRAY of individual result objects.
+
+        The input includes a shared `scoring_settings` block and a list of `prospects`.
+
+        Within `scoring_settings`:
+        - The fields `company_description` and `exclusion_criteria` describe **our own company** (the seller). Use them only for understanding the product and filtering out irrelevant prospects.
+        - All other fields (`industries`, `employee_range`, `revenue_range`, `funding_stages`, `title_keywords`, `seniority_levels`, `buying_roles`, `locations`) define our Ideal Customer Profile (ICP) — use them to evaluate each prospect.
 
         THINKING LOGIC (what to consider)
         1) First, check if the product generally makes sense for the company: proximity of industry to ICP, scale by headcount/revenue,
@@ -73,13 +79,16 @@ def generate_prompt(scoring_settings: dict, prospect: dict) -> str:
           - If evidence is strong within the band -> choose a higher number; if borderline -> choose a lower number.
           - The final score MUST be an integer 0..100.
         ALLWAYS REMEMBER, IF THE PROSPECT IS NOT GOOD AND THEORETICALLY CAN NOT HELP WITH OUR PROBLEM THEN SCORE = D
-        OUTPUT (STRICT JSON, SINGLE OBJECT — no arrays, no extra text)
-        Return exactly:
-        {
-          "prospect_id": "<copy from input if present; otherwise 'auto-1'>",
-          "score": <integer 0..100 — a single final score according to the logic and rules above>,
-          "justification": "1–2 short English sentences citing explicit facts (industry/size/revenue/title/seniority/buying role/location/experience/timing), mentioning the letter grade in parentheses, and explaining the chosen score within the band."
-        }
+        OUTPUT (STRICT JSON, ARRAY of result objects — no extra text) 
+        Return exactly a JSON array of objects, one per prospect: 
+        [ 
+           {
+             "prospect_id": "<copy from input if present; otherwise 'auto-N'>",
+             "score": <integer 0..100 — final score for this individual>,
+             "justification": "1–2 short English sentences citing explicit facts (industry/size/revenue/title/seniority/buying role/location/experience/timing), mentioning the letter grade in parentheses, and explaining the chosen score within the band."
+        },
+        ...
+        ]
 
         Scoring Settings (full JSON)
     """)
@@ -89,3 +98,4 @@ def generate_prompt(scoring_settings: dict, prospect: dict) -> str:
     # Concatenate static instruction + JSON blocks
     prompt = header + settings_block + middle + prospect_block
     return prompt
+
