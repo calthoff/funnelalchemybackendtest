@@ -86,7 +86,7 @@ def generate_prompt(scoring_settings: dict, prospect: dict) -> str:
              "prospect_id": "<copy from input if present; otherwise 'auto-N'>",
              "score": <integer 0..100 — final score for this individual>,
              "justification": "1–2 short English sentences citing explicit facts (industry/size/revenue/title/seniority/buying role/location/experience/timing), mentioning the letter grade in parentheses, and explaining the chosen score within the band."
-        },
+           },
         ...
         ]
 
@@ -98,4 +98,5 @@ def generate_prompt(scoring_settings: dict, prospect: dict) -> str:
     # Concatenate static instruction + JSON blocks
     prompt = header + settings_block + middle + prospect_block
     return prompt
+
 
