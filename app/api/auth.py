@@ -248,7 +248,7 @@ def forgot_password(payload: ForgotPasswordRequest, db: Session = Depends(get_db
             }
         )
         conn.commit()
-    reset_link = f"http://localhost:3000/reset-password?token={token}"
+    reset_link = f"https://funnel-alchemy-production.up.railway.app//reset-password?token={token}"
     send_reset_link_email(user_data.email, reset_link)
     return {"message": "Password reset link sent"}
 
