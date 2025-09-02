@@ -21,15 +21,14 @@ def generate_prompt(scoring_settings: dict, prospect: dict) -> str:
         Within `scoring_settings`:
         - The fields `company_description` and `exclusion_criteria` describe our own company (the seller). Use them only for understanding the product and filtering out irrelevant prospects.
         - All other fields (`industries`, `employee_range`, `revenue_range`, `funding_stages`, `title_keywords`, `seniority_levels`, `buying_roles`, `locations`) define our Ideal Customer Profile (ICP) — use them to evaluate each prospect.
-        - The optional `other_preferences` field contains additional soft guidelines (e.g., "prefer technical founders") that can influence scores and justifications, but ignore if it doesn't apply.
 
         KEY FIELDS TO USE
         Prioritize fields that reflect alignment with the ICP, especially:
         FROM `scoring_settings`:
-        company_description, exclusion_criteria, industries, employee_range, revenue_range, funding_stages, title_keywords, seniority_levels, buying_roles, locations, other_preferences
+        company_description, exclusion_criteria, industries, employee_range, revenue_range, funding_stages, title_keywords, seniority_levels, buying_roles, locations
         FROM `prospects`:
         prospect_id, active_experience_title, active_experience_management_level, is_decision_maker, company_industry, company_size_range, company_last_funding_round_date, total_experience_duration_months
-        , is_working, position_title, department, management_level, location, company_name, company_is_b2b
+        , is_working, position_title, department, management_level, location, company_name
         
         All other fields in the JSON input are optional and may serve as context only.
 
@@ -39,21 +38,24 @@ def generate_prompt(scoring_settings: dict, prospect: dict) -> str:
         1) First, check if the product generally makes sense for the company: proximity of industry to ICP, scale by headcount/revenue,
            and absence of hard stops (competitors/forbidden markets/industries). If there is a gross mismatch -> DISQUALIFIED and briefly state the reason.
         2) COMPANY FIT: use explicit fields such as current_company.company_industry, current_company.company_size_range, revenue if present,
-           presence of a function/department where our product would "live", maturity signals (hiring/growth/stack). Pay special attention to company_is_b2b field to filter out B2C companies.
+           presence of a function/department where our product would "live", maturity signals (hiring/growth/stack).
         3) PERSONA FIT: use title from current_job.active_experience_title and seniority (e.g., current_company.management_level) to judge if
-           the person is an owner of the problem or can strongly initiate adoption. The active_experience_management_level and is_decision_maker fields are key indicators.
+           the person is an owner of the problem or can strongly initiate adoption. basic_profile.headline can also help.
         4) TIMING/TRIGGERS: funding (stage/date/amount) if found in scoring_settings.funding_stages or prospect data,
            active hiring in relevant function, growth signals, recent role change, compatible stack.
         Do NOT penalize for missing data; treat missing fields as "Unknown". Do NOT invent data.
 
+
         SCORE REFINEMENT
-        If there is a clear mismatch between our ICP (industry, size, market type) and the prospect's company — disqualify immediately.
+        If there is a clear mismatch between our ICP (industry, size, market type) and the prospect’s company — disqualify immediately.
         
         If the company seems relevant, consider the following additional signals to fine-tune the final score:
         - Whether the prospect appears to influence buying decisions — look at `is_decision_maker`, seniority level (e.g. `management_level`, `position_title`)
         - Time at current company (`duration_months`) — longer presence may indicate stronger influence.
         - Department relevance (`department`, `active_experience_department`) — check if the person is likely to use or benefit from the product.
         - Broader background: total experience, career trajectory, and (if present) education or certifications can help clarify maturity and fit.
+
+
 
         LOCATION RULE
         • If scoring_settings.location is provided (meaning the search is for that country) and
@@ -70,12 +72,8 @@ def generate_prompt(scoring_settings: dict, prospect: dict) -> str:
         • C (31–69): partial or unclear fit — some match, but weak/uncertain
         • D (0–30): poor fit — clear mismatch or explicit disqualification
         
-        SCORING PRECISION:
-        - Assign scores that reflect the nuanced strength of evidence and alignment
-        - Consider subtle differences in fit quality: 87 vs 89, 73 vs 76, 64 vs 67
-        - Strong evidence with multiple matching signals should result in higher precision scores
-        - Weak or uncertain evidence should result in more conservative, lower precision scores
-        - The final score MUST be an integer 0..100, reflecting the specific strength of the match
+        Pick a specific score within the band depending on the strength of evidence. Do not always use midpoints.
+        The final score MUST be an integer 0..100.
         
         If the prospect does not match our ICP and there is no reasonable scenario where our product could help them, assign a D score.
         
@@ -83,7 +81,7 @@ def generate_prompt(scoring_settings: dict, prospect: dict) -> str:
         Return exactly a JSON array of objects, one per prospect: 
         [ 
            {
-             "prospect_id": "<exactly the same value from the input JSON field prospect_id. If missing, return 'unknown'>",
+             "prospect_id": "<copy from input if present; otherwise 'auto-N'>",
              "score": <integer 0..100 — final score for this individual>,
              "justification": "1–2 short English sentences citing explicit facts (industry/size/revenue/title/seniority/buying role/location/experience/timing), mentioning the letter grade in parentheses, and explaining the chosen score within the band."
            },
@@ -121,15 +119,14 @@ def generate_batch_prompt(scoring_settings: dict, prospects: list) -> str:
         Within `scoring_settings`:
         - The fields `company_description` and `exclusion_criteria` describe our own company (the seller). Use them only for understanding the product and filtering out irrelevant prospects.
         - All other fields (`industries`, `employee_range`, `revenue_range`, `funding_stages`, `title_keywords`, `seniority_levels`, `buying_roles`, `locations`) define our Ideal Customer Profile (ICP) — use them to evaluate each prospect.
-        - The optional `other_preferences` field contains additional soft guidelines (e.g., "prefer technical founders") that can influence scores and justifications, but ignore if it doesn't apply.
 
         KEY FIELDS TO USE
         Prioritize fields that reflect alignment with the ICP, especially:
         FROM `scoring_settings`:
-        company_description, exclusion_criteria, industries, employee_range, revenue_range, funding_stages, title_keywords, seniority_levels, buying_roles, locations, other_preferences
+        company_description, exclusion_criteria, industries, employee_range, revenue_range, funding_stages, title_keywords, seniority_levels, buying_roles, locations
         FROM `prospects`:
         prospect_id, active_experience_title, active_experience_management_level, is_decision_maker, company_industry, company_size_range, company_last_funding_round_date, total_experience_duration_months
-        , is_working, position_title, department, management_level, location, company_name, company_is_b2b
+        , is_working, position_title, department, management_level, location, company_name
         
         All other fields in the JSON input are optional and may serve as context only.
 
@@ -139,9 +136,9 @@ def generate_batch_prompt(scoring_settings: dict, prospects: list) -> str:
         1) First, check if the product generally makes sense for the company: proximity of industry to ICP, scale by headcount/revenue,
            and absence of hard stops (competitors/forbidden markets/industries). If there is a gross mismatch -> DISQUALIFIED and briefly state the reason.
         2) COMPANY FIT: use explicit fields such as current_company.company_industry, current_company.company_size_range, revenue if present,
-           presence of a function/department where our product would "live", maturity signals (hiring/growth/stack). Pay special attention to company_is_b2b field to filter out B2C companies.
+           presence of a function/department where our product would "live", maturity signals (hiring/growth/stack).
         3) PERSONA FIT: use title from current_job.active_experience_title and seniority (e.g., current_company.management_level) to judge if
-           the person is an owner of the problem or can strongly initiate adoption. The active_experience_management_level and is_decision_maker fields are key indicators.
+           the person is an owner of the problem or can strongly initiate adoption. basic_profile.headline can also help.
         4) TIMING/TRIGGERS: funding (stage/date/amount) if found in scoring_settings.funding_stages or prospect data,
            active hiring in relevant function, growth signals, recent role change, compatible stack.
         Do NOT penalize for missing data; treat missing fields as "Unknown". Do NOT invent data.
@@ -154,6 +151,7 @@ def generate_batch_prompt(scoring_settings: dict, prospects: list) -> str:
         - Time at current company (`duration_months`) — longer presence may indicate stronger influence.
         - Department relevance (`department`, `active_experience_department`) — check if the person is likely to use or benefit from the product.
         - Broader background: total experience, career trajectory, and (if present) education or certifications can help clarify maturity and fit.
+
 
         LOCATION RULE
         • If scoring_settings.location is provided (meaning the search is for that country) and
@@ -170,13 +168,8 @@ def generate_batch_prompt(scoring_settings: dict, prospects: list) -> str:
         • C (31–69): partial or unclear fit — some match, but weak/uncertain
         • D (0–30): poor fit — clear mismatch or explicit disqualification
         
-        IMPORTANT SCORING GUIDELINES:
-        - Avoid round numbers (10, 20, 30, 40, 50, 60, 70, 80, 90, 100) unless absolutely perfect fit
-        - Use precise scores like 87, 73, 64, 42, 28, 96, 81, 67, 35, 19
-        - Consider subtle differences: 87 vs 89, 73 vs 76, 64 vs 67
-        - The final score MUST be an integer 0..100, but should reflect nuanced evaluation
-        - Strong evidence = higher precision (e.g., 94, 97, 98)
-        - Weak evidence = lower precision (e.g., 23, 26, 31)
+        Pick a specific score within the band depending on the strength of evidence. Do not always use midpoints.
+        The final score MUST be an integer 0..100.
         
         If the prospect does not match our ICP and there is no reasonable scenario where our product could help them, assign a D score.
         
@@ -184,7 +177,7 @@ def generate_batch_prompt(scoring_settings: dict, prospects: list) -> str:
         Return exactly a JSON array of objects, one per prospect: 
         [ 
            {
-             "prospect_id": "<exactly the same value from the input JSON field prospect_id. If missing, return 'unknown'>",
+             "prospect_id": "<copy from input if present; otherwise 'auto-N'>",
              "score": <integer 0..100 — final score for this individual>,
              "justification": "1–2 short English sentences citing explicit facts (industry/size/revenue/title/seniority/buying role/location/experience/timing), mentioning the letter grade in parentheses, and explaining the chosen score within the band."
            },

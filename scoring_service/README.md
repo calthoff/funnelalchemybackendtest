@@ -58,7 +58,8 @@ curl -X POST "http://localhost:8000/score-prospects-batch" \
       "title_keywords": ["Sales Director", "VP of Sales", "Chief Revenue Officer"],
       "seniority_levels": ["Senior Management", "Executive", "Middle Management"],
       "buying_roles": ["Decision Maker", "Influencer", "Budget Holder"],
-      "locations": ["United States", "Canada"]
+      "locations": ["United States", "Canada"],
+      "other_preferences": "Prefer prospects with technical backgrounds or experience in scaling sales teams"
     },
     "prospects": [
       {
@@ -97,7 +98,8 @@ curl -X POST "http://localhost:8000/score_prospects" \
     "scoring_settings": {
       "industries": ["Technology"],
       "employee_range": ["51-200"],
-      "title_keywords": ["Sales Director", "VP of Sales"]
+      "title_keywords": ["Sales Director", "VP of Sales"],
+      "other_preferences": "Prefer technical founders"
     },
     "prospects": [
       {
@@ -130,7 +132,8 @@ Object with configurable fields for evaluation criteria:
   "title_keywords": ["Sales Director", "VP of Sales", "Chief Revenue Officer"],
   "seniority_levels": ["Senior Management", "Executive", "Middle Management"],
   "buying_roles": ["Decision Maker", "Influencer", "Budget Holder"],
-  "locations": ["United States", "Canada"]
+  "locations": ["United States", "Canada"],
+  "other_preferences": "Additional soft guidelines (e.g., 'prefer technical founders')"
 }
 ```
 
@@ -262,6 +265,9 @@ The model evaluates prospects based on:
 - **Seniority level** matching scoring_settings.seniority_levels
 - **Decision-making authority** (is_decision_maker field)
 - **Location compliance** with scoring_settings.locations
+- **B2B vs B2C** filtering (company_is_b2b field)
+- **Management level** (active_experience_management_level)
+- **Additional preferences** (other_preferences field for soft guidelines)
 - **Exclusion criteria** violations result in disqualification
 
 ## Installation & Setup
