@@ -1,0 +1,103 @@
+"""
+testing the funnelprospects library of functions
+:Author: Michel Eric Levy _mel_
+:Creation date: September 2nd, 2025
+:Last updated: 9/3/2025 (_mel_)
+
+"""
+import json
+import datetime
+import logging
+import time
+import json
+
+import funnelprospects as fp
+
+#prospects criteria
+company_industries =  ["Technology", "Software", "SaaS"] 
+company_employee_size_range = ["1-10","10-50", "51-200", "201-500"] 
+company_revenue_range =  ["1M-10M", "10M-50M", "50M-100M"]
+company_funding_stage =  ["Series A", "Series B", "Series C", "Seed"] 
+company_location =  ["United States", "Canada", "United Kingdom"]
+
+personas_title_keywords =  ["CEO", "CTO", "VP Engineering", "Head of Engineering"]
+personas_seniority_levels = ["C-Level", "VP", "Director"]
+personas_buying_roles =  ["Decision Maker", "Influencer"]
+
+company_description =  "Technology companies with engineering teams"
+company_exclusion_criteria =  ["Non-profit", "Government"]
+
+
+
+
+if __name__ == "__main__":
+
+    """
+    #####################################################################################
+    #1 test creating a user (change the email address to perform a test)
+    result = fp.create_customer("test6@test1.com", "michel", "levy", "IBM")
+
+    if result["status"] == "error":
+        print(f"Error occurred: {result['message']}")
+        # Handle the error as needed
+    else:
+        print(f"Success: customer_id=|{result['customer_id']}| and comp_uniuqe_id = |{result['company_unique_id']}|")
+    """
+
+    
+    #####################################################################################
+    #2. testing the customer_propsects update criteria list functions
+    result = fp.updateCustomerProspectCriteria("mlevy-20250905-5730756828", 
+                                            "prospectid_001",
+                                            company_industries,
+                                            company_employee_size_range,
+                                            company_revenue_range,
+                                            company_funding_stage,
+                                            company_location,
+                                            personas_title_keywords,
+                                            personas_seniority_levels,
+                                            personas_buying_roles,
+                                            company_description,
+                                            company_exclusion_criteria)
+    if result["status"] == "error":
+        print(f"Error occurred: {result['message']}")
+        # Handle the error as needed
+    else:
+        print(f"Success: {result['message']}")
+
+    """
+
+    """
+    #####################################################################################
+    #3 test getting a customer data 
+    # lets use test customer with customer_id : "mlevy-20250905-5730756828"
+    result = fp.get_customer("mlevy-20250905-5730756828")
+    if result["status"] == "error":
+        print(f"Error occurred: {result['message']}")
+        # Handle the error as needed
+    else:
+        print(f"Success: customer_id=|{result['customer_id']}| ")
+        print(f"comp_unique_id = |{result['company_unique_id']}|")
+        print(f"First name=|{result['first_name']}| and last_name = |{result['last_name']}|")
+        print(f"company name=|{result['company_name']}| and email_address = |{result['email_address']}|")
+        print(f"List of prospect_profile_ids =|{result['prospect_profiles_ids']}| ")
+
+    
+
+    #####################################################################################
+    #4 test getting matching prospects for a customer
+    # lets use test customer with customer_id : "mlevy-20250905-5730756828"
+    #
+    prospect_id_list = fp.find_matching_prospects("mlevy-20250905-5730756828")
+    print(f"size of prospect list returned = |{len(prospect_id_list)}| and list = |{prospect_id_list}|")
+
+    result = fp.findAndUpdateCustomerProspect("mlevy-20250905-5730756828")
+    print(f" status = |{result['status']}| and message = |{result['message']}|")
+
+
+
+
+
+
+
+
