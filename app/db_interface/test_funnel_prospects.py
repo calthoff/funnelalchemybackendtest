@@ -96,6 +96,25 @@ if __name__ == "__main__":
 
 
 
+    #####################################################################################
+    #5 test getting prospects options and their counts
+    #  and inspecting the dict being returned.
+    #
+    stats = fp.get_prospects_stats()
+    criterias = stats['data']
+    skeys = criterias.keys()
+    for sk in skeys:
+        print(f"type of |{sk}| = |{type(criterias[sk])}|")
+        sk2 = criterias[sk].keys()
+        print(f"list keys of |{sk}| = |{type(list(sk2))}|")
+        print(f"list keys of |{sk}| = |{list(sk2)[0:3]}|")
+
+    print(f"count for sof dev = |{criterias['company_industry']['Software Development']}|")     
+
+    # uncomment next line if you want to display the comprehensive list of options and their counts
+    #fp.display_prospects_stats(stats)
+
+
 
 
 

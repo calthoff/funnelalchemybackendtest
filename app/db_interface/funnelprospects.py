@@ -560,6 +560,21 @@ def findAndUpdateCustomerProspect(customer_id: str) -> Dict:
     """
     This function will both find potential prospects as well as update the
     prospect for that customer in the "customer_prospects" table
+
+    Input parameters:
+    - customer_id: unique ID for that customer
+
+    Returns:
+    Dict with status and count stats about prospects found, example:
+        {
+            "status": "success",
+            "message": f"Successfully processed {len(potential_prospect_list)} prospects. "
+                      f"Inserted: {inserted_count}, Already existed: {existing_count}",
+            "customer_id": customer_id,
+            "total_prospects_found": len(potential_prospect_list),
+            "inserted_count": inserted_count,
+            "existing_count": existing_count
+        }    
     """
     
     # Extract the company_unique_id from the customer_id
@@ -663,3 +678,156 @@ def findAndUpdateCustomerProspect(customer_id: str) -> Dict:
             "customer_id": customer_id,
             "company_unique_id": company_unique_id
         }
+
+
+# Function to get value counts for specified fields in prospects table
+def get_prospects_stats() -> Dict:
+    """
+    This function will scan the main prospects table "prospects" and obtain 
+    the values and count of option used in the following sections:
+    - company_industry (i.e: "Wellness and Fitness Services")
+    - location (i.e: "Chicago, Illinois, United States")
+    - position_title (i.e: "Founder CEO")
+    - company_size_range (i.e: "11-50 employees")
+
+    Input parateres: None
+
+    Returns:
+    A dict with a similar format at=s this one below:
+            return {
+                "status": "success",
+                "message": "Prospects stats retrieved successfully",
+                "customer_id": None,
+                "profile_id": None,
+                "data": stats
+            }
+    'stats' is also a dict with 4 keys 'company_industry', 'location', 'position_title' and  'company_size_range'   
+    EACH of the key is also a dict with option and the value is the count found in the prospects table:
+    For example:
+    stats['company_industry']['Software Development'] is the count of how many time the option 'Sofwtare Development"
+    is used in qll the records we have in the "prospects"
+
+    This "count" will change when we get ore or less records in the "prospects" table and if the "employee" or prospects
+    is changing company and goes for an indusr=try that is or is not "Software Development" related.   
+
+    """
+    try:
+        conn = connect_db()
+        try:
+            cur = conn.cursor()
+            
+            stats = {}
+            
+            # For company_industry (from vendordata->experience[1])
+            cur.execute("""
+                SELECT (vendordata->'experience'->1->>'company_industry') AS company_industry, COUNT(*)
+                FROM prospects
+                WHERE jsonb_array_length(vendordata->'experience') >= 1
+                GROUP BY company_industry
+                ORDER BY COUNT(*) DESC
+            """)
+            rows = cur.fetchall()
+            stats['company_industry'] = {row[0]: row[1] for row in rows if row[0] is not None}
+            
+            # For location (from vendordata->experience[1])
+            cur.execute("""
+                SELECT (vendordata->'experience'->1->>'location') AS location, COUNT(*)
+                FROM prospects
+                WHERE jsonb_array_length(vendordata->'experience') >= 1
+                GROUP BY location
+                ORDER BY COUNT(*) DESC
+            """)
+            rows = cur.fetchall()
+            stats['location'] = {row[0]: row[1] for row in rows if row[0] is not None}
+            
+            # For position_title (from vendordata->experience[1])
+            cur.execute("""
+                SELECT (vendordata->'experience'->1->>'position_title') AS position_title, COUNT(*)
+                FROM prospects
+                WHERE jsonb_array_length(vendordata->'experience') >= 1
+                GROUP BY position_title
+                ORDER BY COUNT(*) DESC
+            """)
+            rows = cur.fetchall()
+            stats['position_title'] = {row[0]: row[1] for row in rows if row[0] is not None}
+
+
+            # For employee-size-range  (from vendordata->experience[1])
+            cur.execute("""
+                SELECT (vendordata->'experience'->1->>'company_size_range') AS company_size_range, COUNT(*)
+                FROM prospects
+                WHERE jsonb_array_length(vendordata->'experience') >= 1
+                GROUP BY company_size_range
+                ORDER BY COUNT(*) DESC
+            """)
+            rows = cur.fetchall()
+            stats['company_size_range'] = {row[0]: row[1] for row in rows if row[0] is not None}
+            
+            
+            cur.close()
+            
+            # Return success response
+            return {
+                "status": "success",
+                "message": "Prospects stats retrieved successfully",
+                "customer_id": None,
+                "profile_id": None,
+                "data": stats
+            }
+        finally:
+            conn.close()
+    except RuntimeError as e:
+        return {
+            "status": "error",
+            "error_type": "RuntimeError",
+            "message": str(e),
+            "customer_id": None,
+            "profile_id": None
+        }
+    except Exception as e:
+        return {
+            "status": "error",
+            "error_type": type(e).__name__,
+            "message": str(e),
+            "customer_id": None,
+            "profile_id": None
+        }
+
+
+# Function to display stats in a formatted, readable way
+def display_prospects_stats(stats: Dict):
+    """
+    Function to be used to display the dict dta returned by the preicous funciton "get_prospects_stats()"
+    example:
+    stats = get_prospects_stats()
+    display_prospects_stats(stats)    
+
+    Input parmeters:
+    The dict returned by the function get_prospects_stats
+
+    Returns:
+    No return, will just display the sections, options and their counts.
+    """
+    if stats.get("status") != "success":
+        print(f"Error: {stats.get('error_type')} - {stats.get('message')}")
+        return
+    
+    print("\nProspects Statistics")
+    print("=" * 50)
+    
+    data = stats.get("data", {})
+    for field in ['company_industry', 'location', 'position_title', 'company_size_range']:
+        if field in data:
+            print(f"\n{field.replace('_', ' ').title()}:")
+            print("-" * 40)
+            # Sort by count (descending) for consistent display
+            sorted_items = sorted(data[field].items(), key=lambda x: x[1], reverse=True)
+            for value, count in sorted_items:
+                print(f"{value:<40} {count:>5}")
+            print("-" * 40)
+        else:
+            print(f"\n{field.replace('_', ' ').title()}: No data available")
+            print("-" * 40)
+
+
+
