@@ -1,23 +1,29 @@
 from fastapi import APIRouter, HTTPException, Depends, Form
 from sqlalchemy.orm import Session
-from sqlalchemy import text, inspect
-from sqlalchemy.exc import ProgrammingError
-from app.db import get_db, Base, engine
-from app.models.user_directory import UserDirectory
-from app.schemas.companies import CompanyCreate, CompanyRead
-from app.schemas.users import UserCreate
-from app.utils.schema_utils import create_company_schema
+from sqlalchemy import text
+from app.db import get_db, engine
+from app.models.users import User
+from app.schemas.users import UserCreate, UserRead
 import uuid
 import jwt
 import os
 from datetime import datetime, timedelta, timezone
 from pydantic import BaseModel
+from typing import Optional
 from app.utils.email_utils import send_verification_email, send_reset_link_email
 import random
 from app.utils.password import hash_password, verify_password
-from typing import List
 from dotenv import load_dotenv
 import secrets
+
+# Try to import funnelprospects, but handle gracefully if it fails
+try:
+    from app.funnelprospects import create_customer
+    FUNNELPROSPECTS_AVAILABLE = True
+except Exception as e:
+    print(f"Warning: Could not import funnelprospects: {e}")
+    FUNNELPROSPECTS_AVAILABLE = False
+    create_customer = None
 
 router = APIRouter(prefix="/auth", tags=["auth"])
 load_dotenv()
@@ -32,6 +38,17 @@ def create_access_token(data: dict, expires_delta: timedelta = None):
     to_encode.update({"exp": expire})
     token = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
     return token
+
+class CompanyCreate(BaseModel):
+    name: str
+
+class UserCreate(BaseModel):
+    first_name: str
+    last_name: str
+    email: str
+    password: str
+    role: Optional[str] = "admin"
+    approval_mode: Optional[str] = "manual"
 
 class SignupRequest(BaseModel):
     company: CompanyCreate
@@ -48,110 +65,101 @@ class ResetPasswordRequest(BaseModel):
     token: str
     new_password: str
 
-def ensure_user_directory_table():
-    inspector = inspect(engine)
-    if not inspector.has_table('user_directory'):
-        UserDirectory.__table__.create(engine, checkfirst=True)
-
-@router.post("/signup", response_model=CompanyRead)
+@router.post("/signup", response_model=UserRead)
 def signup(
     payload: SignupRequest,
     db: Session = Depends(get_db)
 ):
-    company = payload.company
-    user = payload.user
+    print(f"Received signup request - email: {payload.user.email}, company: {payload.company.name}")
     
-    ensure_user_directory_table()
-    
-    try:
-        existing_user = db.query(UserDirectory).filter_by(email=user.email).first()
-        if existing_user:
-            raise HTTPException(
-                status_code=400,
-                detail="Email already registered. Please use a different email or login."
-            )
-    except ProgrammingError as e:
-        if 'relation "user_directory" does not exist' in str(e):
-            ensure_user_directory_table()
-            existing_user = None
-        else:
-            raise
-    
-    schema_name = company.name.lower().replace(" ", "_") + "_" + str(uuid.uuid4())[:8]
-    
-    try:
-        create_company_schema(db.get_bind(), schema_name)
-        
-        company_id = uuid.uuid4()
-        user_id = uuid.uuid4()
-        now = datetime.utcnow()
-        
-        verification_code = str(random.randint(100000, 999999))
-        
-        with engine.connect() as conn:  
-            conn.execute(
-                text(f'INSERT INTO "{schema_name}".companies (id, name, created_at, updated_at) VALUES (:id, :name, :created_at, :updated_at)'),
-                {
-                    "id": company_id,
-                    "name": company.name,
-                    "created_at": now,
-                    "updated_at": now
-                }
-            )
-            conn.execute(
-                text(f'INSERT INTO "{schema_name}".users (id, first_name, last_name, email, role, approval_mode, hashed_password, is_verified, verification_code, created_at, updated_at) VALUES (:id, :first_name, :last_name, :email, :role, :approval_mode, :hashed_password, :is_verified, :verification_code, :created_at, :updated_at)'),
-                {
-                    "id": user_id,
-                    "first_name": user.first_name,
-                    "last_name": user.last_name,
-                    "email": user.email,
-                    "role": "admin",
-                    "approval_mode": "manual",
-                    "hashed_password": hash_password(user.password),
-                    "is_verified": False,
-                    "verification_code": verification_code,
-                    "created_at": now,
-                    "updated_at": now
-                }
-            )
-            conn.execute(
-                text(f'INSERT INTO "{schema_name}".sdrs (id, name, role, territory, notes, status, created_at, updated_at) VALUES (:id, :name, :role, :territory, :notes, :status, :created_at, :updated_at)'),
-                {
-                    "id": str(uuid.uuid4()),
-                    "name": f"{user.first_name} {user.last_name}",
-                    "role": "",
-                    "territory": "",
-                    "notes": "",
-                    "status": "active",
-                    "created_at": now,
-                    "updated_at": now
-                }
-            )
-            conn.commit()
-        
-        db.execute(
-            text('INSERT INTO public.user_directory (email, schema_name, company_name) VALUES (:email, :schema_name, :company_name)'),
-            {
-                "email": user.email,
-                "schema_name": schema_name,
-                "company_name": company.name
-            }
+    # Check if user already exists
+    existing_user = db.query(User).filter_by(email=payload.user.email).first()
+    if existing_user:
+        raise HTTPException(
+            status_code=400,
+            detail="Email already registered. Please use a different email or login."
         )
-        db.commit()
-        send_verification_email(user.email, verification_code)
-        db.close()
-        return CompanyRead(
-            id=str(company_id),
-            name=company.name,
-            created_at=now,
-            updated_at=now
-        )
-    except Exception as e:
+    
+    # Create new user
+    user_id = uuid.uuid4()
+    verification_code = str(random.randint(100000, 999999))
+    
+    new_user = User(
+        id=user_id,
+        role=payload.user.role,
+        first_name=payload.user.first_name,
+        last_name=payload.user.last_name,
+        email=payload.user.email,
+        hashed_password=hash_password(payload.user.password),
+        approval_mode=payload.user.approval_mode,
+        is_verified=False,
+        verification_code=verification_code,
+        company_name=payload.company.name
+    )
+    
+    db.add(new_user)
+    db.commit()
+    db.refresh(new_user)
+    
+    # Create customer in AWS database (if available)
+    aws_customer_result = None
+    if FUNNELPROSPECTS_AVAILABLE and create_customer:
         try:
-            db.rollback()
-        except Exception:
-            pass
-        raise HTTPException(status_code=500, detail=str(e))
+            print(f"Creating customer in AWS database for: {payload.user.email}")
+            aws_customer_result = create_customer(
+                email_address=payload.user.email,
+                first_name=payload.user.first_name,
+                last_name=payload.user.last_name,
+                company_name=payload.company.name
+            )
+            
+            if aws_customer_result["status"] == "success":
+                print(f"✅ AWS customer created successfully: {aws_customer_result['customer_id']}")
+                # Store AWS customer_id in local user record
+                new_user.aws_customer_id = str(aws_customer_result['customer_id'])
+                db.commit()
+            else:
+                print(f"❌ AWS customer creation failed: {aws_customer_result['message']}")
+                
+        except Exception as e:
+            print(f"❌ Error creating AWS customer: {str(e)}")
+            aws_customer_result = {
+                "status": "error",
+                "message": f"Failed to create AWS customer: {str(e)}"
+            }
+    else:
+        print("⚠️ AWS funnelprospects not available - skipping AWS customer creation")
+        aws_customer_result = {
+            "status": "skipped",
+            "message": "AWS integration not available"
+        }
+    
+    # Send verification email
+    try:
+        send_verification_email(payload.user.email, verification_code)
+    except Exception as e:
+        print(f"Failed to send verification email: {e}")
+    
+    # Prepare response
+    response_data = UserRead(
+        id=new_user.id,
+        role=new_user.role,
+        first_name=new_user.first_name,
+        last_name=new_user.last_name,
+        email=new_user.email,
+        approval_mode=new_user.approval_mode,
+        is_verified=new_user.is_verified,
+        created_at=new_user.created_at,
+        updated_at=new_user.updated_at,
+        company_name=new_user.company_name
+    )
+    
+    # Add AWS customer info to response if available
+    if aws_customer_result and aws_customer_result["status"] == "success":
+        response_data.aws_customer_id = str(aws_customer_result.get("customer_id"))
+        response_data.aws_company_unique_id = aws_customer_result.get("company_unique_id")
+    
+    return response_data
 
 @router.post("/login")
 def login(
@@ -159,21 +167,17 @@ def login(
     password: str = Form(...),
     db: Session = Depends(get_db)
 ):
-    directory = db.query(UserDirectory).filter_by(email=email).first()
-    if not directory:
+    user = db.query(User).filter_by(email=email).first()
+    if not user:
         raise HTTPException(status_code=400, detail="User not found")
-    schema_name = directory.schema_name
-    with engine.connect() as conn:
-        result = conn.execute(
-            text(f'SELECT * FROM "{schema_name}".users WHERE email = :email'),
-            {"email": email}
-        )
-        user_data = result.fetchone()
-    if not user_data or not verify_password(password, user_data.hashed_password):
+    
+    if not verify_password(password, user.hashed_password):
         raise HTTPException(status_code=400, detail="Invalid credentials")
-    if not user_data.is_verified:
+    
+    if not user.is_verified:
         raise HTTPException(status_code=403, detail="Please verify your email before logging in.")
-    access_token = create_access_token(data={"sub": user_data.email, "schema_name": schema_name})
+    
+    access_token = create_access_token(data={"sub": user.email})
     return {"access_token": access_token, "token_type": "bearer"}
 
 @router.post("/verify")
@@ -181,107 +185,169 @@ def verify_email(payload: VerifyRequest, db: Session = Depends(get_db)):
     email = payload.email
     code = payload.code
     
-    directory = db.query(UserDirectory).filter_by(email=email).first()
-    if not directory:
+    user = db.query(User).filter_by(email=email).first()
+    if not user:
         raise HTTPException(status_code=404, detail="User not found")
     
-    schema_name = directory.schema_name
-    if not schema_name:
-        raise HTTPException(status_code=500, detail="Schema name not found for user")
+    if user.is_verified:
+        access_token = create_access_token(data={"sub": email})
+        return {"access_token": access_token, "token_type": "bearer"}
+    
+    stored_code = str(user.verification_code) if user.verification_code else ""
+    provided_code = str(code) if code else ""
+    
+    if stored_code != provided_code:
+        raise HTTPException(status_code=400, detail="Invalid verification code")
+    
+    # Update user as verified
+    user.is_verified = True
+    user.verification_code = None
+    user.updated_at = datetime.utcnow()
+    db.commit()
+    
+    access_token = create_access_token(data={"sub": email})
+    return {"access_token": access_token, "token_type": "bearer"}
+
+@router.post("/forgot-password")
+def forgot_password(payload: ForgotPasswordRequest, db: Session = Depends(get_db)):
+    user = db.query(User).filter_by(email=payload.email).first()
+    if not user:
+        # Don't reveal if email exists or not for security
+        return {"message": "If the email exists, a password reset link has been sent"}
+    
+    # Generate reset token
+    reset_token = secrets.token_urlsafe(32)
+    reset_token_expires = datetime.utcnow() + timedelta(hours=1)
+    
+    user.reset_token = reset_token
+    user.reset_token_expires = reset_token_expires
+    db.commit()
+    
+    # Send reset email
+    try:
+        send_reset_link_email(payload.email, reset_token)
+    except Exception as e:
+        print(f"Failed to send reset email: {e}")
+    
+    return {"message": "If the email exists, a password reset link has been sent"}
+
+@router.post("/reset-password")
+def reset_password(payload: ResetPasswordRequest, db: Session = Depends(get_db)):
+    user = db.query(User).filter_by(reset_token=payload.token).first()
+    
+    if not user or not user.reset_token_expires or datetime.utcnow() > user.reset_token_expires:
+        raise HTTPException(status_code=400, detail="Invalid or expired token")
+    
+    # Update password
+    user.hashed_password = hash_password(payload.new_password)
+    user.reset_token = None
+    user.reset_token_expires = None
+    user.updated_at = datetime.utcnow()
+    db.commit()
+    
+    return {"message": "Password reset successful"}
+def get_customer_info(
+    customer_id: int,
+    db: Session = Depends(get_db)
+):
+    """
+    Get customer information from AWS database by customer_id
+    """
+    if not FUNNELPROSPECTS_AVAILABLE or not get_customer:
+        raise HTTPException(
+            status_code=503,
+            detail="AWS integration not available"
+        )
     
     try:
-        with engine.connect() as conn:
-            result = conn.execute(
-                text(f'SELECT * FROM "{schema_name}".users WHERE email = :email'),
-                {"email": email}
+        print(f"Getting customer info for ID: {customer_id}")
+        result = get_customer(customer_id)
+        
+        if result["status"] == "success":
+            return {
+                "status": "success",
+                "data": {
+                    "customer_id": result["customer_id"],
+                    "first_name": result["first_name"],
+                    "last_name": result["last_name"],
+                    "company_name": result["company_name"],
+                    "email_address": result["email_address"],
+                    "company_unique_id": result["company_unique_id"],
+                    "prospect_profiles_ids": result["prospect_profiles_ids"]
+                }
+            }
+        else:
+            raise HTTPException(
+                status_code=404,
+                detail=result["message"]
             )
-            user_data = result.fetchone()
-            
-            if not user_data:
-                raise HTTPException(status_code=404, detail="User not found")
-            
-            if user_data.is_verified:
-                access_token = create_access_token(data={"sub": email, "schema_name": schema_name})
-                return {"access_token": access_token, "token_type": "bearer"}
-            
-            stored_code = str(user_data.verification_code) if user_data.verification_code else ""
-            provided_code = str(code) if code else ""
-            
-            if stored_code != provided_code:
-                raise HTTPException(status_code=400, detail="Invalid verification code")
-            
-            conn.execute(
-                text(f'UPDATE "{schema_name}".users SET is_verified = true, verification_code = NULL, updated_at = NOW() WHERE email = :email'),
-                {"email": email}
-            )
-            conn.commit()
-            
-            access_token = create_access_token(data={"sub": email, "schema_name": schema_name})
-            return {"access_token": access_token, "token_type": "bearer"}
             
     except HTTPException:
         raise
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Verification failed: {str(e)}")
-
-@router.post("/forgot-password")
-def forgot_password(payload: ForgotPasswordRequest, db: Session = Depends(get_db)):
-    directory = db.query(UserDirectory).filter_by(email=payload.email).first()
-    if not directory:
-        raise HTTPException(status_code=404, detail="User not found")
-    schema_name = directory.schema_name
-    with engine.connect() as conn:
-        result = conn.execute(
-            text(f'SELECT * FROM "{schema_name}".users WHERE email = :email'),
-            {"email": payload.email}
+        print(f"Error getting customer info: {str(e)}")
+        raise HTTPException(
+            status_code=500,
+            detail=f"Failed to get customer information: {str(e)}"
         )
-        user_data = result.fetchone()
-        if not user_data:
-            raise HTTPException(status_code=404, detail="User not found")
-        token = secrets.token_urlsafe(32)
-        conn.execute(
-            text(f'UPDATE "{schema_name}".users SET reset_token = :token, reset_token_expires = :expires WHERE email = :email'),
-            {
-                "token": token,
-                "expires": datetime.now(timezone.utc) + timedelta(hours=1),
-                "email": payload.email
-            }
-        )
-        conn.commit()
-    reset_link = f"https://funnel-alchemy-production.up.railway.app/reset-password?token={token}"
-    send_reset_link_email(user_data.email, reset_link)
-    return {"message": "Password reset link sent"}
 
-@router.post("/reset-password")
-def reset_password(payload: ResetPasswordRequest, db: Session = Depends(get_db)):
-    from sqlalchemy import Table, MetaData, select, update
-    from datetime import datetime, timezone
-    directory_table = Table('user_directory', MetaData(schema='public'), autoload_with=db.bind)
-    with db.bind.connect() as conn:
-        schemas = conn.execute(select(directory_table.c.schema_name)).fetchall()
-        schema_name = None
-        user_email = None
-        for row in schemas:
-            schema = row._mapping['schema_name']
-            user_table_schema = Table('users', MetaData(schema=schema), autoload_with=db.bind)
-            user_row = conn.execute(select(user_table_schema).where(user_table_schema.c.reset_token == payload.token)).fetchone()
-            if user_row:
-                schema_name = schema
-                user_email = user_row._mapping['email']
-                break
-        if not schema_name or not user_email:
-            raise HTTPException(status_code=404, detail="User not found")
-        user_table_schema = Table('users', MetaData(schema=schema_name), autoload_with=db.bind)
-        user_row = conn.execute(select(user_table_schema).where(user_table_schema.c.reset_token == payload.token)).fetchone()
-        if not user_row or not user_row._mapping['reset_token_expires'] or datetime.now(timezone.utc) > user_row._mapping['reset_token_expires']:
-            raise HTTPException(status_code=400, detail="Invalid or expired token")
-        conn.execute(update(user_table_schema)
-            .where(user_table_schema.c.reset_token == payload.token)
-            .values(
-                hashed_password=hash_password(payload.new_password),
-                reset_token=None,
-                reset_token_expires=None
+@router.get("/customer/by-email/{email}")
+def get_customer_by_email(
+    email: str,
+    db: Session = Depends(get_db)
+):
+    """
+    Get customer information from AWS database by email address
+    """
+    if not FUNNELPROSPECTS_AVAILABLE or not get_customer:
+        raise HTTPException(
+            status_code=503,
+            detail="AWS integration not available"
+        )
+    
+    try:
+        # First, get the customer_id from local database
+        user = db.query(User).filter_by(email=email).first()
+        if not user:
+            raise HTTPException(
+                status_code=404,
+                detail="User not found in local database"
             )
+        
+        # Check if user has AWS customer_id stored
+        if not hasattr(user, 'aws_customer_id') or not user.aws_customer_id:
+            raise HTTPException(
+                status_code=404,
+                detail="User not found in AWS database"
+            )
+        
+        print(f"Getting customer info for email: {email}, AWS ID: {user.aws_customer_id}")
+        result = get_customer(user.aws_customer_id)
+        
+        if result["status"] == "success":
+            return {
+                "status": "success",
+                "data": {
+                    "customer_id": result["customer_id"],
+                    "first_name": result["first_name"],
+                    "last_name": result["last_name"],
+                    "company_name": result["company_name"],
+                    "email_address": result["email_address"],
+                    "company_unique_id": result["company_unique_id"],
+                    "prospect_profiles_ids": result["prospect_profiles_ids"]
+                }
+            }
+        else:
+            raise HTTPException(
+                status_code=404,
+                detail=result["message"]
+            )
+            
+    except HTTPException:
+        raise
+    except Exception as e:
+        print(f"Error getting customer info by email: {str(e)}")
+        raise HTTPException(
+            status_code=500,
+            detail=f"Failed to get customer information: {str(e)}"
         )
-        conn.commit()
-    return {"message": "Password reset successful"} 

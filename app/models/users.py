@@ -6,6 +6,7 @@ from app.db import Base
 
 class User(Base):
     __tablename__ = 'users'
+    __table_args__ = {'schema': 'public'}  # Use public schema for single database approach
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4, index=True)
     role = Column(String, nullable=False)
     first_name = Column(String, nullable=False)
@@ -19,3 +20,5 @@ class User(Base):
     updated_at = Column(DateTime(timezone=True), onupdate=func.now())
     reset_token = Column(String, nullable=True)
     reset_token_expires = Column(DateTime(timezone=True), nullable=True)
+    company_name = Column(String, nullable=True)  # Add company name to user table
+    aws_customer_id = Column(String, nullable=True)  # AWS customer ID for funnelprospects integration

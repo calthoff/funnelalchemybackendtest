@@ -32,6 +32,7 @@ class UserRead(UserBase):
     id: UUID
     created_at: datetime
     updated_at: Optional[datetime]
+    company_name: Optional[str] = None
+    aws_customer_id: Optional[str] = None
 
-    class Config:
-        from_attributes = True 
+    model_config = {"from_attributes": True} 
