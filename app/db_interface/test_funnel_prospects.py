@@ -114,9 +114,41 @@ if __name__ == "__main__":
     # uncomment next line if you want to display the comprehensive list of options and their counts
     #fp.display_prospects_stats(stats)
 
+    #####################################################################################
+    #6 test adding prospects into the daily list of a customer
+    #  "coresignal434550710", "coresignal182874843", "coresignal236777753" are real prospect_id
+    #
+    
+    customer_id = "mlevy-20250905-5730756828"
+    
+    # Example 1: Add single prospect to daily list
+    single_prospect = ["coresignal434550710"]
+    result1 = fp.add_to_daily_list(customer_id, single_prospect)
+    print("Single prospect result:", result1)
+    
+    # Example 2: Add multiple prospects to daily list
+    multiple_prospects = ["coresignal434550710", "coresignal182874843", "coresignal236777753"]
+    result2 = fp.add_to_daily_list(customer_id, multiple_prospects)
+    print("Multiple prospects result:", result2)
+    
+    # Example 3: Error case - empty list
+    empty_list = []
+    result3 = fp.add_to_daily_list(customer_id, empty_list)
+    print("Empty list result:", result3)
+    
+    # Example 4: Error case - empty customer_id
+    result4 = fp.add_to_daily_list("", ["coresignal236777753"])
+    print("Empty customer_id result:", result4)
 
 
+    #####################################################################################
+    #7 test "removing" prospects from the daily list of a customer
+    #  "coresignal434550710", "coresignal182874843", "coresignal236777753" are real prospect_id
+    #  that were previously added to the daily_list
 
-
+    # Example 1: Add multiple prospects to daily list
+    multiple_prospects = ["coresignal434550710", "coresignal182874843", "coresignal236777753"]
+    result2 = fp.remove_from_daily_list(customer_id, multiple_prospects)
+    print("Multiple prospects result:", result2)
 
 

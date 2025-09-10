@@ -830,4 +830,224 @@ def display_prospects_stats(stats: Dict):
             print("-" * 40)
 
 
+def add_to_daily_list(customer_id: str, prospect_id_list: List[str]) -> Dict:
+    """
+    Set the flag "is_inside_daily_list" to True for prospect_ids in the list
+    
+    Input parameters:
+        customer_id (str): Customer ID
+        prospect_id_list (List[str]): List of prospect IDs to add to daily list
+    
+    Returns:
+        Dict: Response with status and message, see example below
+            return {
+                "status": "success",
+                "message": message,
+                "customer_id": customer_id,
+                "total_prospects_processed": len(prospect_id_list),
+                "updated_count": updated_count,
+                "not_found_count": not_found_count
+            }        
+    """
+    
+    try:
+        # Validate required parameters
+        if not customer_id or customer_id.strip() == "":
+            raise RuntimeError("customer_id is required and cannot be empty")
+        
+        if not prospect_id_list or len(prospect_id_list) == 0:
+            raise RuntimeError("prospect_id_list is required and cannot be empty")
+        
+        """
+        Example of non-empty list containing invalid prospect_ids
+        prospect_id_list = [""] - list has 1 item, but that item is empty
+        prospect_id_list = ["12345", "", "67890"] - list has 3 items, but one is empty
+        prospect_id_list = ["   ", "12345"] - list has 2 items, but one is just whitespace
+        """        
+        # Validate that prospect_id_list contains valid IDs
+        for prospect_id in prospect_id_list:
+            if not prospect_id or prospect_id.strip() == "":
+                raise RuntimeError("All prospect_ids in the list must be non-empty")
+
+        
+        # Connect to the database
+        conn = connect_db()
+        try:
+            cur = conn.cursor()
+            
+            # Get current timestamp for last_updated
+            current_timestamp = datetime.datetime.now()
+            
+            # Track how many records were updated
+            updated_count = 0
+            not_found_count = 0
+            
+            # Process each prospect_id in the list
+            for prospect_id in prospect_id_list:
+                # Check if the record exists first
+                cur.execute("""
+                    SELECT COUNT(*) 
+                    FROM customer_prospects 
+                    WHERE customer_id = %s AND prospect_id = %s
+                """, (customer_id, prospect_id))
+                
+                exists = cur.fetchone()[0] > 0
+                
+                if exists:
+                    # Update the is_inside_daily_list flag and last_updated timestamp
+                    cur.execute("""
+                        UPDATE customer_prospects 
+                        SET is_inside_daily_list = %s, last_updated = %s
+                        WHERE customer_id = %s AND prospect_id = %s
+                    """, (True, current_timestamp, customer_id, prospect_id))
+                    
+                    updated_count += 1
+                else:
+                    not_found_count += 1
+            
+            # Commit all updates
+            conn.commit()
+            cur.close()
+            
+            # Prepare response message
+            if not_found_count > 0:
+                message = f"Prospect(s) successfully added to the daily list. Updated: {updated_count}, Not found: {not_found_count}"
+            else:
+                message = f"Prospect(s) successfully added to the daily list. Updated: {updated_count}"
+            
+            # Return success response
+            return {
+                "status": "success",
+                "message": message,
+                "customer_id": customer_id,
+                "total_prospects_processed": len(prospect_id_list),
+                "updated_count": updated_count,
+                "not_found_count": not_found_count
+            }
+            
+        finally:
+            conn.close()
+            
+    except RuntimeError as e:
+        return {
+            "status": "error",
+            "error_type": "RuntimeError",
+            "message": str(e),
+            "customer_id": customer_id if 'customer_id' in locals() else None,
+        }
+    except Exception as e:
+        return {
+            "status": "error",
+            "error_type": "DatabaseError",
+            "message": f"Database error occurred: {str(e)}",
+            "customer_id": customer_id if 'customer_id' in locals() else None,
+        }
+
+
+def remove_from_daily_list(customer_id: str, prospect_id_list: List[str]) -> Dict:
+    """
+    Set the flag "is_inside_daily_list" to False for prospect_ids in the list
+    
+    Input parameters:
+        customer_id (str): Customer ID
+        prospect_id_list (List[str]): List of prospect IDs to remove from daily list
+    
+    Returns:
+        Dict: Response with status and message, see example below
+            return {
+                "status": "success",
+                "message": message,
+                "customer_id": customer_id,
+                "total_prospects_processed": len(prospect_id_list),
+                "updated_count": updated_count,
+                "not_found_count": not_found_count
+            }        
+    """
+    
+    try:
+        # Validate required parameters
+        if not customer_id or customer_id.strip() == "":
+            raise RuntimeError("customer_id is required and cannot be empty")
+        
+        if not prospect_id_list or len(prospect_id_list) == 0:
+            raise RuntimeError("prospect_id_list is required and cannot be empty")
+        
+        # Validate that prospect_id_list contains valid IDs
+        for prospect_id in prospect_id_list:
+            if not prospect_id or prospect_id.strip() == "":
+                raise RuntimeError("All prospect_ids in the list must be non-empty")
+        
+        # Connect to the database
+        conn = connect_db()
+        try:
+            cur = conn.cursor()
+            
+            # Get current timestamp for last_updated
+            current_timestamp = datetime.datetime.now()
+            
+            # Track how many records were updated
+            updated_count = 0
+            not_found_count = 0
+            
+            # Process each prospect_id in the list
+            for prospect_id in prospect_id_list:
+                # Check if the record exists first
+                cur.execute("""
+                    SELECT COUNT(*) 
+                    FROM customer_prospects 
+                    WHERE customer_id = %s AND prospect_id = %s
+                """, (customer_id, prospect_id))
+                
+                exists = cur.fetchone()[0] > 0
+                
+                if exists:
+                    # Update the is_inside_daily_list flag and last_updated timestamp
+                    cur.execute("""
+                        UPDATE customer_prospects 
+                        SET is_inside_daily_list = %s, last_updated = %s
+                        WHERE customer_id = %s AND prospect_id = %s
+                    """, (False, current_timestamp, customer_id, prospect_id))
+                    
+                    updated_count += 1
+                else:
+                    not_found_count += 1
+            
+            # Commit all updates
+            conn.commit()
+            cur.close()
+            
+            # Prepare response message
+            if not_found_count > 0:
+                message = f"Prospect(s) successfully removed from the daily list. Updated: {updated_count}, Not found: {not_found_count}"
+            else:
+                message = f"Prospect(s) successfully removed from the daily list. Updated: {updated_count}"
+            
+            # Return success response
+            return {
+                "status": "success",
+                "message": message,
+                "customer_id": customer_id,
+                "total_prospects_processed": len(prospect_id_list),
+                "updated_count": updated_count,
+                "not_found_count": not_found_count
+            }
+            
+        finally:
+            conn.close()
+            
+    except RuntimeError as e:
+        return {
+            "status": "error",
+            "error_type": "RuntimeError",
+            "message": str(e),
+            "customer_id": customer_id if 'customer_id' in locals() else None,
+        }
+    except Exception as e:
+        return {
+            "status": "error",
+            "error_type": "DatabaseError",
+            "message": f"Database error occurred: {str(e)}",
+            "customer_id": customer_id if 'customer_id' in locals() else None,
+        }
+
 
