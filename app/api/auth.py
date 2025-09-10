@@ -157,7 +157,6 @@ def signup(
     # Add AWS customer info to response if available
     if aws_customer_result and aws_customer_result["status"] == "success":
         response_data.aws_customer_id = str(aws_customer_result.get("customer_id"))
-        response_data.aws_company_unique_id = aws_customer_result.get("company_unique_id")
     
     return response_data
 

@@ -8,6 +8,7 @@ from dotenv import load_dotenv
 from pathlib import Path
 import psycopg2
 import boto3
+import threading
 
 
 
@@ -42,27 +43,53 @@ POSTGRES_REGION = os.getenv("POSTGRES_REGION")
 AWS_ACCESS_KEY_ID=os.getenv("AWS_ACCESS_KEY_ID")
 AWS_SECRET_ACCESS_KEY=os.getenv("AWS_SECRET_ACCESS_KEY")
 
+# Global persistent connection
+_aws_connection = None
+_connection_lock = threading.Lock()
+
+def get_aws_connection():
+    """Get or create a persistent AWS RDS connection"""
+    global _aws_connection
+    
+    if _aws_connection is None or _aws_connection.closed:
+        with _connection_lock:
+            if _aws_connection is None or _aws_connection.closed:
+                try:
+                    print("🔌 Creating persistent AWS RDS connection...")
+                    
+                    # Generate AWS IAM token
+                    session = boto3.Session(
+                        aws_access_key_id=AWS_ACCESS_KEY_ID,
+                        aws_secret_access_key=AWS_SECRET_ACCESS_KEY,
+                        region_name=POSTGRES_REGION
+                    )
+                    client = session.client("rds")
+                    token = client.generate_db_auth_token(
+                        DBHostname=POSTGRES_ENDPOINT, 
+                        Port=POSTGRES_PORT, 
+                        DBUsername=POSTGRES_IAM_USER, 
+                        Region=POSTGRES_REGION
+                    )
+                    
+                    # Create persistent connection
+                    _aws_connection = psycopg2.connect(
+                        host=POSTGRES_ENDPOINT,
+                        port=POSTGRES_PORT,
+                        database=POSTGRES_DBNAME,
+                        user=POSTGRES_IAM_USER,
+                        password=token,
+                        sslmode="require"
+                    )
+                    print("✅ Persistent AWS RDS connection created successfully")
+                except Exception as e:
+                    print(f"❌ Failed to create AWS connection: {e}")
+                    raise
+    
+    return _aws_connection
+
 def connect_db():
-    ENDPOINT = POSTGRES_ENDPOINT
-    PORT = POSTGRES_PORT
-    DBNAME = POSTGRES_DBNAME
-    USER = POSTGRES_IAM_USER
-    REGION = POSTGRES_REGION
-
-    # Use AWS credentials from environment variables
-    session = boto3.Session(
-        aws_access_key_id=os.getenv("AWS_ACCESS_KEY_ID"),
-        aws_secret_access_key=os.getenv("AWS_SECRET_ACCESS_KEY"),
-        region_name=REGION
-    )
-    client = session.client("rds")
-    token = client.generate_db_auth_token(DBHostname=ENDPOINT, Port=PORT, DBUsername=USER, Region=REGION)
-
-    conn = psycopg2.connect(
-        host=ENDPOINT, port=PORT, database=DBNAME, user=USER, password=token,
-        sslmode="require"
-    )
-    return conn
+    """Get the persistent AWS connection (legacy function for compatibility)"""
+    return get_aws_connection()
 
 # Create a new customer
 def create_customer(email_address: str, 
@@ -160,7 +187,8 @@ def create_customer(email_address: str,
                 "prospect_profiles_ids": prospect_profiles_ids
             }
         finally:
-            conn.close()
+            # Don't close the persistent connection
+            pass
     except RuntimeError as e:
         return {
             "status": "error",
@@ -246,7 +274,8 @@ def get_customer(customer_id: int) -> Dict:
                 "prospect_profiles_ids": prospect_profiles_ids
             }
         finally:
-            conn.close()
+            # Don't close the persistent connection
+            pass
     except RuntimeError as e:
         return {
             "status": "error",
@@ -397,7 +426,8 @@ def updateCustomerProspectCriteria(customer_id: str,
                 "profile_id": prospect_profile_id
             }
         finally:
-            conn.close()
+            # Don't close the persistent connection
+            pass
     except RuntimeError as e:
         return {
             "status": "error",
@@ -758,7 +788,8 @@ def get_prospects_stats() -> Dict:
                 "data": stats
             }
         finally:
-            conn.close()
+            # Don't close the persistent connection
+            pass
     except RuntimeError as e:
         return {
             "status": "error",
@@ -909,7 +940,8 @@ def add_to_daily_list(customer_id: str, prospect_id_list: List[str]) -> Dict:
             }
             
         finally:
-            conn.close()
+            # Don't close the persistent connection
+            pass
             
     except RuntimeError as e:
         return {
@@ -1016,7 +1048,8 @@ def remove_from_daily_list(customer_id: str, prospect_id_list: List[str]) -> Dic
             }
             
         finally:
-            conn.close()
+            # Don't close the persistent connection
+            pass
             
     except RuntimeError as e:
         return {

@@ -55,6 +55,15 @@ def create_tables():
 async def startup_event():
     """Initialize database on startup"""
     create_tables()
+    
+    # Initialize AWS RDS connection
+    try:
+        from app.funnelprospects import get_aws_connection
+        get_aws_connection()
+        print("✅ AWS RDS connection initialized on startup")
+    except Exception as e:
+        print(f"⚠️ AWS RDS connection failed on startup: {e}")
+        print("AWS features will not be available")
 
 @app.exception_handler(Exception)
 async def global_exception_handler(request, exc):
