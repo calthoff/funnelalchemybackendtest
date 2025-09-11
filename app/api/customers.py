@@ -5,7 +5,6 @@ from app.models.users import User
 from pydantic import BaseModel
 from typing import Optional, List
 
-# Try to import funnelprospects, but handle gracefully if it fails
 try:
     from app.funnelprospects import (
         create_customer, 
@@ -54,9 +53,6 @@ class DailyListRequest(BaseModel):
 
 @router.get("/{customer_id}")
 def get_customer_info(customer_id: str):
-    """
-    Get customer information from AWS database by customer_id
-    """
     if not FUNNELPROSPECTS_AVAILABLE or not get_customer:
         raise HTTPException(
             status_code=503,
@@ -65,14 +61,10 @@ def get_customer_info(customer_id: str):
     
     try:
         print(f"Getting customer info for ID: {customer_id}")
-        # Try to convert to int first (for old integer customer IDs)
         try:
             customer_id_int = int(customer_id)
             result = get_customer(customer_id_int)
         except ValueError:
-            # If it's not an integer, it might be a string customer ID
-            # For now, we'll try to get customer info using the string ID
-            # This might need to be adjusted based on the actual AWS API
             result = get_customer(customer_id)
         
         if result["status"] == "success":
@@ -110,9 +102,6 @@ def get_customer_info(customer_id: str):
 
 @router.post("/prospect-criteria")
 def update_prospect_criteria(payload: ProspectCriteriaRequest):
-    """
-    Update prospect criteria for a customer in AWS database
-    """
     if not FUNNELPROSPECTS_AVAILABLE or not updateCustomerProspectCriteria:
         raise HTTPException(
             status_code=503,
@@ -159,9 +148,6 @@ def update_prospect_criteria(payload: ProspectCriteriaRequest):
 
 @router.get("/{customer_id}/matching-prospects")
 def find_matching_prospects_for_customer(customer_id: str):
-    """
-    Find matching prospects for a customer based on their criteria
-    """
     if not FUNNELPROSPECTS_AVAILABLE or not find_matching_prospects:
         raise HTTPException(
             status_code=503,
@@ -189,9 +175,6 @@ def find_matching_prospects_for_customer(customer_id: str):
 
 @router.post("/{customer_id}/update-prospects")
 def update_customer_prospects(customer_id: str):
-    """
-    Find and update customer prospects
-    """
     if not FUNNELPROSPECTS_AVAILABLE or not findAndUpdateCustomerProspect:
         raise HTTPException(
             status_code=503,
@@ -199,7 +182,6 @@ def update_customer_prospects(customer_id: str):
         )
     
     try:
-        print(f"Updating prospects for customer: {customer_id}")
         result = findAndUpdateCustomerProspect(customer_id)
         
         if result["status"] == "success":
@@ -225,9 +207,6 @@ def update_customer_prospects(customer_id: str):
 
 @router.get("/stats")
 def get_prospect_stats():
-    """
-    Get prospect statistics
-    """
     if not FUNNELPROSPECTS_AVAILABLE or not get_prospects_stats:
         raise HTTPException(
             status_code=503,
@@ -257,9 +236,6 @@ def get_prospect_stats():
 
 @router.post("/daily-list/add")
 def add_to_daily_list_endpoint(payload: DailyListRequest):
-    """
-    Add prospects to daily list
-    """
     if not FUNNELPROSPECTS_AVAILABLE or not add_to_daily_list:
         raise HTTPException(
             status_code=503,
@@ -293,9 +269,6 @@ def add_to_daily_list_endpoint(payload: DailyListRequest):
 
 @router.post("/daily-list/remove")
 def remove_from_daily_list_endpoint(payload: DailyListRequest):
-    """
-    Remove prospects from daily list
-    """
     if not FUNNELPROSPECTS_AVAILABLE or not remove_from_daily_list:
         raise HTTPException(
             status_code=503,
@@ -327,48 +300,8 @@ def remove_from_daily_list_endpoint(payload: DailyListRequest):
             detail=f"Failed to remove from daily list: {str(e)}"
         )
 
-@router.get("/health")
-def health_check():
-    """
-    Health check endpoint to verify AWS connectivity
-    """
-    try:
-        if not FUNNELPROSPECTS_AVAILABLE:
-            return {
-                "status": "error",
-                "message": "AWS integration not available",
-                "aws_connected": False
-            }
-        
-        # Try to get a connection
-        from app.funnelprospects import get_aws_connection
-        conn = get_aws_connection()
-        
-        if conn and not conn.closed:
-            return {
-                "status": "success",
-                "message": "AWS RDS connection is healthy",
-                "aws_connected": True
-            }
-        else:
-            return {
-                "status": "error",
-                "message": "AWS RDS connection is closed",
-                "aws_connected": False
-            }
-            
-    except Exception as e:
-        return {
-            "status": "error",
-            "message": f"AWS RDS connection failed: {str(e)}",
-            "aws_connected": False
-        }
-
-@router.get("/{customer_id}/get-prospect-criteria/{prospect_profile_id}")
-def get_customer_prospect_criteria_endpoint(customer_id: str, prospect_profile_id: str):
-    """
-    Get prospect criteria for a customer and prospect profile
-    """
+@router.get("/{customer_id}/get-prospect-criteria")
+def get_customer_prospect_criteria_endpoint(customer_id: str):
     if not FUNNELPROSPECTS_AVAILABLE or not get_customer_prospect_criteria:
         raise HTTPException(
             status_code=503,
@@ -376,8 +309,7 @@ def get_customer_prospect_criteria_endpoint(customer_id: str, prospect_profile_i
         )
     
     try:
-        print(f"Getting prospect criteria for customer: {customer_id}, profile: {prospect_profile_id}")
-        result = get_customer_prospect_criteria(customer_id, prospect_profile_id)
+        result = get_customer_prospect_criteria(customer_id)
         
         if result["status"] == "success":
             return {

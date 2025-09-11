@@ -154,7 +154,6 @@ def signup(
         company_name=new_user.company_name
     )
     
-    # Add AWS customer info to response if available
     if aws_customer_result and aws_customer_result["status"] == "success":
         response_data.aws_customer_id = str(aws_customer_result.get("customer_id"))
     
@@ -198,7 +197,6 @@ def verify_email(payload: VerifyRequest, db: Session = Depends(get_db)):
     if stored_code != provided_code:
         raise HTTPException(status_code=400, detail="Invalid verification code")
     
-    # Update user as verified
     user.is_verified = True
     user.verification_code = None
     user.updated_at = datetime.utcnow()
@@ -211,10 +209,8 @@ def verify_email(payload: VerifyRequest, db: Session = Depends(get_db)):
 def forgot_password(payload: ForgotPasswordRequest, db: Session = Depends(get_db)):
     user = db.query(User).filter_by(email=payload.email).first()
     if not user:
-        # Don't reveal if email exists or not for security
         return {"message": "If the email exists, a password reset link has been sent"}
     
-    # Generate reset token
     reset_token = secrets.token_urlsafe(32)
     reset_token_expires = datetime.utcnow() + timedelta(hours=1)
     
@@ -222,7 +218,6 @@ def forgot_password(payload: ForgotPasswordRequest, db: Session = Depends(get_db
     user.reset_token_expires = reset_token_expires
     db.commit()
     
-    # Send reset email
     try:
         send_reset_link_email(payload.email, reset_token)
     except Exception as e:
@@ -237,7 +232,6 @@ def reset_password(payload: ResetPasswordRequest, db: Session = Depends(get_db))
     if not user or not user.reset_token_expires or datetime.utcnow() > user.reset_token_expires:
         raise HTTPException(status_code=400, detail="Invalid or expired token")
     
-    # Update password
     user.hashed_password = hash_password(payload.new_password)
     user.reset_token = None
     user.reset_token_expires = None
@@ -249,9 +243,6 @@ def get_customer_info(
     customer_id: int,
     db: Session = Depends(get_db)
 ):
-    """
-    Get customer information from AWS database by customer_id
-    """
     if not FUNNELPROSPECTS_AVAILABLE or not get_customer:
         raise HTTPException(
             status_code=503,
@@ -285,67 +276,6 @@ def get_customer_info(
         raise
     except Exception as e:
         print(f"Error getting customer info: {str(e)}")
-        raise HTTPException(
-            status_code=500,
-            detail=f"Failed to get customer information: {str(e)}"
-        )
-
-@router.get("/customer/by-email/{email}")
-def get_customer_by_email(
-    email: str,
-    db: Session = Depends(get_db)
-):
-    """
-    Get customer information from AWS database by email address
-    """
-    if not FUNNELPROSPECTS_AVAILABLE or not get_customer:
-        raise HTTPException(
-            status_code=503,
-            detail="AWS integration not available"
-        )
-    
-    try:
-        # First, get the customer_id from local database
-        user = db.query(User).filter_by(email=email).first()
-        if not user:
-            raise HTTPException(
-                status_code=404,
-                detail="User not found in local database"
-            )
-        
-        # Check if user has AWS customer_id stored
-        if not hasattr(user, 'aws_customer_id') or not user.aws_customer_id:
-            raise HTTPException(
-                status_code=404,
-                detail="User not found in AWS database"
-            )
-        
-        print(f"Getting customer info for email: {email}, AWS ID: {user.aws_customer_id}")
-        result = get_customer(user.aws_customer_id)
-        
-        if result["status"] == "success":
-            return {
-                "status": "success",
-                "data": {
-                    "customer_id": result["customer_id"],
-                    "first_name": result["first_name"],
-                    "last_name": result["last_name"],
-                    "company_name": result["company_name"],
-                    "email_address": result["email_address"],
-                    "company_unique_id": result["company_unique_id"],
-                    "prospect_profiles_ids": result["prospect_profiles_ids"]
-                }
-            }
-        else:
-            raise HTTPException(
-                status_code=404,
-                detail=result["message"]
-            )
-            
-    except HTTPException:
-        raise
-    except Exception as e:
-        print(f"Error getting customer info by email: {str(e)}")
         raise HTTPException(
             status_code=500,
             detail=f"Failed to get customer information: {str(e)}"
