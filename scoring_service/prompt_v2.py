@@ -30,7 +30,6 @@ def generate_prompt(scoring_settings: dict, prospect: dict) -> str:
         FROM `prospects`:
         prospect_id, active_experience_title, active_experience_management_level, is_decision_maker, company_industry, company_size_range, company_last_funding_round_date, total_experience_duration_months
         , is_working, position_title, department, management_level, location, company_name, company_is_b2b
-        , company_employees_count_change_yearly_percentage, company_last_funding_round_amount_raised, certifications, awards, department_specific_experience_months
         
         All other fields in the JSON input are optional and may serve as context only.
 
@@ -43,12 +42,8 @@ def generate_prompt(scoring_settings: dict, prospect: dict) -> str:
            presence of a function/department where our product would "live", maturity signals (hiring/growth/stack). Pay special attention to company_is_b2b field to filter out B2C companies.
         3) PERSONA FIT: use title from current_job.active_experience_title and seniority (e.g., current_company.management_level) to judge if
            the person is an owner of the problem or can strongly initiate adoption. The active_experience_management_level and is_decision_maker fields are key indicators.
-           Also consider: technical maturity (certifications, awards) and deep tenure in relevant departments 
-           (department_specific_experience_months from total_experience breakdowns).
         4) TIMING/TRIGGERS: funding (stage/date/amount) if found in scoring_settings.funding_stages or prospect data,
            active hiring in relevant function, growth signals, recent role change, compatible stack.
-           Also consider: company growth velocity (company_employees_count_change_yearly_percentage) and 
-           funding strength (company_last_funding_round_amount_raised).
         Do NOT penalize for missing data; treat missing fields as "Unknown". Do NOT invent data.
 
         SCORE REFINEMENT
@@ -59,11 +54,6 @@ def generate_prompt(scoring_settings: dict, prospect: dict) -> str:
         - Time at current company (`duration_months`) — longer presence may indicate stronger influence.
         - Department relevance (`department`, `active_experience_department`) — check if the person is likely to use or benefit from the product.
         - Broader background: total experience, career trajectory, and (if present) education or certifications can help clarify maturity and fit.
-        - Growth momentum: company_employees_count_change_yearly_percentage shows company growth velocity and momentum.
-        - Funding strength: company_last_funding_round_amount_raised indicates the strength of funding events beyond just stage/date.
-        - Technical maturity: certifications (e.g., Salesforce/Gong certs) signal technical maturity and tool adoption.
-        - Recognition: awards indicate top performer status and differentiate "average" vs "elite" prospects.
-        - Deep tenure: department_specific_experience_months from total_experience breakdowns favor deep tenure in Sales/BD vs spread-out experience.
 
         LOCATION RULE
         • If scoring_settings.location is provided (meaning the search is for that country) and
@@ -140,7 +130,6 @@ def generate_batch_prompt(scoring_settings: dict, prospects: list) -> str:
         FROM `prospects`:
         prospect_id, active_experience_title, active_experience_management_level, is_decision_maker, company_industry, company_size_range, company_last_funding_round_date, total_experience_duration_months
         , is_working, position_title, department, management_level, location, company_name, company_is_b2b
-        , company_employees_count_change_yearly_percentage, company_last_funding_round_amount_raised, certifications, awards, department_specific_experience_months
         
         All other fields in the JSON input are optional and may serve as context only.
 
@@ -153,12 +142,8 @@ def generate_batch_prompt(scoring_settings: dict, prospects: list) -> str:
            presence of a function/department where our product would "live", maturity signals (hiring/growth/stack). Pay special attention to company_is_b2b field to filter out B2C companies.
         3) PERSONA FIT: use title from current_job.active_experience_title and seniority (e.g., current_company.management_level) to judge if
            the person is an owner of the problem or can strongly initiate adoption. The active_experience_management_level and is_decision_maker fields are key indicators.
-           Also consider: technical maturity (certifications, awards) and deep tenure in relevant departments 
-           (department_specific_experience_months from total_experience breakdowns).
         4) TIMING/TRIGGERS: funding (stage/date/amount) if found in scoring_settings.funding_stages or prospect data,
            active hiring in relevant function, growth signals, recent role change, compatible stack.
-           Also consider: company growth velocity (company_employees_count_change_yearly_percentage) and 
-           funding strength (company_last_funding_round_amount_raised).
         Do NOT penalize for missing data; treat missing fields as "Unknown". Do NOT invent data.
 
         SCORE REFINEMENT
@@ -169,11 +154,6 @@ def generate_batch_prompt(scoring_settings: dict, prospects: list) -> str:
         - Time at current company (`duration_months`) — longer presence may indicate stronger influence.
         - Department relevance (`department`, `active_experience_department`) — check if the person is likely to use or benefit from the product.
         - Broader background: total experience, career trajectory, and (if present) education or certifications can help clarify maturity and fit.
-        - Growth momentum: company_employees_count_change_yearly_percentage shows company growth velocity and momentum.
-        - Funding strength: company_last_funding_round_amount_raised indicates the strength of funding events beyond just stage/date.
-        - Technical maturity: certifications (e.g., Salesforce/Gong certs) signal technical maturity and tool adoption.
-        - Recognition: awards indicate top performer status and differentiate "average" vs "elite" prospects.
-        - Deep tenure: department_specific_experience_months from total_experience breakdowns favor deep tenure in Sales/BD vs spread-out experience.
 
         LOCATION RULE
         • If scoring_settings.location is provided (meaning the search is for that country) and

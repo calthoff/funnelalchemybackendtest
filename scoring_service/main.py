@@ -172,6 +172,8 @@ def score_prospects_internal(request: ScoringRequest, response: Response) -> Lis
 
         except RateLimitError as e:
             retries_total += max(0, int(getattr(e, "attempts", 1)) - 1)
+            # Log rate limit details for monitoring
+            log.warning(f"Rate limit hit for chunk {start//CHUNK_SIZE + 1}, attempts: {getattr(e, 'attempts', 1)}")
             for idx, pid in zip(idxs, pids):
                 results_by_index[idx] = ScoringResult(
                     prospect_id=pid, score=0,
@@ -182,6 +184,7 @@ def score_prospects_internal(request: ScoringRequest, response: Response) -> Lis
 
         except Timeout as e:
             retries_total += max(0, int(getattr(e, "attempts", 1)) - 1)
+            log.warning(f"Timeout for chunk {start//CHUNK_SIZE + 1}, attempts: {getattr(e, 'attempts', 1)}")
             for idx, pid in zip(idxs, pids):
                 results_by_index[idx] = ScoringResult(
                     prospect_id=pid, score=0,
@@ -192,6 +195,7 @@ def score_prospects_internal(request: ScoringRequest, response: Response) -> Lis
 
         except ValueError as e:
             retries_total += max(0, int(getattr(e, "attempts", 1)) - 1)
+            log.warning(f"Invalid JSON for chunk {start//CHUNK_SIZE + 1}, attempts: {getattr(e, 'attempts', 1)}")
             for idx, pid in zip(idxs, pids):
                 results_by_index[idx] = ScoringResult(
                     prospect_id=pid, score=0,
@@ -202,6 +206,7 @@ def score_prospects_internal(request: ScoringRequest, response: Response) -> Lis
 
         except (APIError, OpenAIError, Exception) as e:
             retries_total += max(0, int(getattr(e, "attempts", 1)) - 1)
+            log.error(f"API failure for chunk {start//CHUNK_SIZE + 1}, attempts: {getattr(e, 'attempts', 1)}, error: {str(e)}")
             for idx, pid in zip(idxs, pids):
                 results_by_index[idx] = ScoringResult(
                     prospect_id=pid, score=0,

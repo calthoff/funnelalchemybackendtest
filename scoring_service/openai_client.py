@@ -85,7 +85,14 @@ def get_batch_scores_from_model(prompt: str, return_meta: bool = False):
         except (RateLimitError, Timeout, APIError, OpenAIError, RuntimeError) as e:
             last_exc = e
             if attempt < total_attempts - 1:
-                time.sleep(backoff * (attempt + 1))
+                # Exponential backoff with jitter for rate limits
+                if isinstance(e, RateLimitError):
+                    # Longer backoff for rate limits
+                    sleep_time = backoff * (2 ** attempt) + (time.time() % 1)
+                else:
+                    # Standard backoff for other errors
+                    sleep_time = backoff * (attempt + 1)
+                time.sleep(sleep_time)
             else:
                 # перед підняттям додаємо скільки спроб було
                 try:

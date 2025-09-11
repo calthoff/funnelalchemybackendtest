@@ -8,7 +8,7 @@ Funnel Alchemy Scoring API is a service for evaluating potential customers (pros
 
 - **Batch Processing**: Process up to 20 prospects per request
 - **Flexible Scoring**: Configurable evaluation criteria through scoring_settings
-- **Error Handling**: Standardized error handling with detailed messages
+- **Error Handling**: Improved retry logic with exponential backoff for rate limits and API errors
 - **Rate Limiting**: 60 requests per minute per API key
 - **Authentication**: Bearer token authentication
 - **Health Checks**: Endpoints for service monitoring
@@ -77,11 +77,19 @@ curl -X POST "http://localhost:8000/score-prospects-batch" \
         "current_company": {
           "company_industry": "Technology",
           "company_size_range": "501-1000",
-          "company_is_b2b": true
+          "company_is_b2b": true,
+          "company_employees_count_change_yearly_percentage": 25.5,
+          "company_last_funding_round_amount_raised": 5000000
         },
         "total_experience": {
-          "total_experience_duration_months": 144
-        }
+          "total_experience_duration_months": 144,
+          "department_specific_experience_months": {
+            "Sales": 60,
+            "Business Development": 24
+          }
+        },
+        "certifications": ["Salesforce Admin", "Gong Certified"],
+        "awards": ["Top Performer 2023", "Sales Excellence Award"]
       }
     ]
   }'
@@ -109,8 +117,12 @@ curl -X POST "http://localhost:8000/score_prospects" \
         },
         "current_company": {
           "company_industry": "Technology",
-          "company_size_range": "51-200"
-        }
+          "company_size_range": "51-200",
+          "company_employees_count_change_yearly_percentage": 45.2,
+          "company_last_funding_round_amount_raised": 2000000
+        },
+        "certifications": ["HubSpot Certified"],
+        "awards": ["Rookie of the Year 2023"]
       }
     ]
   }'
