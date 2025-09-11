@@ -301,7 +301,7 @@ def remove_from_daily_list_endpoint(payload: DailyListRequest):
         )
 
 @router.get("/{customer_id}/get-prospect-criteria")
-def get_customer_prospect_criteria_endpoint(customer_id: str):
+def get_customer_prospect_criteria_endpoint(customer_id: str, prospect_profile_id: str = "default"):
     if not FUNNELPROSPECTS_AVAILABLE or not get_customer_prospect_criteria:
         raise HTTPException(
             status_code=503,
@@ -309,7 +309,7 @@ def get_customer_prospect_criteria_endpoint(customer_id: str):
         )
     
     try:
-        result = get_customer_prospect_criteria(customer_id)
+        result = get_customer_prospect_criteria(customer_id, prospect_profile_id)
         
         if result["status"] == "success":
             return {
