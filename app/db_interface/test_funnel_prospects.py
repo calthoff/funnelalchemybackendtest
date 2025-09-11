@@ -2,7 +2,7 @@
 testing the funnelprospects library of functions
 :Author: Michel Eric Levy _mel_
 :Creation date: September 2nd, 2025
-:Last updated: 9/3/2025 (_mel_)
+:Last updated: 9/11/2025 (_mel_)
 
 """
 import json
@@ -19,6 +19,7 @@ company_employee_size_range = ["1-10","10-50", "51-200", "201-500"]
 company_revenue_range =  ["1M-10M", "10M-50M", "50M-100M"]
 company_funding_stage =  ["Series A", "Series B", "Series C", "Seed"] 
 company_location =  ["United States", "Canada", "United Kingdom"]
+additional_preferences = "some additional information"
 
 personas_title_keywords =  ["CEO", "CTO", "VP Engineering", "Head of Engineering"]
 personas_seniority_levels = ["C-Level", "VP", "Director"]
@@ -58,16 +59,15 @@ if __name__ == "__main__":
                                             personas_seniority_levels,
                                             personas_buying_roles,
                                             company_description,
-                                            company_exclusion_criteria)
+                                            company_exclusion_criteria,
+                                            additional_preferences)
     if result["status"] == "error":
         print(f"Error occurred: {result['message']}")
         # Handle the error as needed
     else:
         print(f"Success: {result['message']}")
 
-    """
 
-    """
     #####################################################################################
     #3 test getting a customer data 
     # lets use test customer with customer_id : "mlevy-20250905-5730756828"

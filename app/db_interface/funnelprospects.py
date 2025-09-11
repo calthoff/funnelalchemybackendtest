@@ -294,7 +294,8 @@ def updateCustomerProspectCriteria(customer_id: str,
                                    personas_seniority_levels: Optional[List[str]] = None,
                                    personas_buying_roles: Optional[List[str]] = None,
                                    company_description: str = "",
-                                   company_exclusion_criteria: Optional[List[str]] = None
+                                   company_exclusion_criteria: Optional[List[str]] = None,
+                                   additional_preferences: str = ""
                                 ) -> Dict:
     """
     This function creates a JSON from the provided 'criteria' parameters and updates or inserts it into the
@@ -313,6 +314,7 @@ def updateCustomerProspectCriteria(customer_id: str,
     - personas_buying_roles: list of preferred buying roles (e.g., ["Decision Maker", "Influencer"])
     - company_description: string providing a company description (e.g., "Technology companies with engineering teams")
     - company_exclusion_criteria: list of exclusion criteria (e.g., ["Non-profit", "Government"])
+    - additional_preferences: Text provided on first profile/criteria page (free text)
 
     Returns:
     - Dictionnary with  status, customer_id as well as prospect_profile_id
@@ -354,7 +356,8 @@ def updateCustomerProspectCriteria(customer_id: str,
                 "employee_size_range": company_employee_size_range,
                 "revenue_range": company_revenue_range,
                 "funding_stages": company_funding_stage,
-                "location": company_location
+                "location": company_location,
+                "additional_preferences": additional_preferences
             }],
             "personas": [{
                 "title_keywords": personas_title_keywords,
