@@ -1,11 +1,11 @@
 """
 Class and functions to be used 
-1/ by the frtont-end to read fro and write to the funnel-prospects database table
+1/ by the front-end to read from and write to the funnel-prospects database tables
 2/ to update the customer-prospects table.
 
 :Author: Michel Eric Levy _mel_
 :Creation date: September 2nd, 2025
-:Last updated: 9/8/2025 (_mel_)
+:Last updated: 9/11/2025 (_mel_)
 
 """
 # pylint: disable=C0301,W1203, R0914, R0913, R0912, R0915,C0103, C0111, R0903, C0321, C0303
@@ -1049,5 +1049,203 @@ def remove_from_daily_list(customer_id: str, prospect_id_list: List[str]) -> Dic
             "message": f"Database error occurred: {str(e)}",
             "customer_id": customer_id if 'customer_id' in locals() else None,
         }
+
+
+
+def get_customer_prospect_criteria(customer_id: str, prospect_profile_id: str) -> Dict:
+    """
+    Retrieve the criteria_dataset JSON for a particular customer/company
+    
+    Input parameters:
+        customer_id (str): Customer ID
+        prospect_profile_id (str): Prospect profile ID
+    
+    Returns:
+        Dict: Response with status, message, and criteria_dataset, see example below
+                return {
+                    "status": "error",
+                    "message": "No criteria found for the provided customer_id and prospect_profile_id",
+                    "customer_id": customer_id,
+                    "profile_id": prospect_profile_id,
+                    "criteria_dataset": None
+                }        
+    """
+    
+    try:
+        # Validate required parameters
+        if not customer_id or customer_id.strip() == "":
+            raise RuntimeError("customer_id is required and cannot be empty")
+        if not prospect_profile_id or prospect_profile_id.strip() == "":
+            raise RuntimeError("prospect_profile_id is required and cannot be empty")
+
+        # Extract company_unique_id from customer_id (format: <...>-<...>-<company_unique_id>)
+        try:
+            company_unique_id = customer_id.split("-")[-1]
+        except IndexError:
+            raise RuntimeError("Invalid customer_id format; expected format: <...>-<...>-<company_unique_id>")
+
+        # Connect to the database
+        conn = connect_db()
+        try:
+            cur = conn.cursor()
+
+            # Execute the SQL query to get criteria_dataset
+            select_sql = """
+                SELECT criteria_dataset 
+                FROM customer_prospects_profiles 
+                WHERE company_unique_id = %s AND prospect_profile_id = %s
+            """
+            cur.execute(select_sql, (company_unique_id, prospect_profile_id))
+            
+            result = cur.fetchone()
+            cur.close()
+
+            if result is None:
+                return {
+                    "status": "error",
+                    "message": "No criteria found for the provided customer_id and prospect_profile_id",
+                    "customer_id": customer_id,
+                    "profile_id": prospect_profile_id,
+                    "criteria_dataset": None
+                }
+
+            # Extract the criteria_dataset (it's already a JSON object/dict)
+            criteria_dataset = result[0]
+
+            # Return success response with the criteria_dataset
+            return {
+                "status": "success",
+                "message": "Criteria dataset retrieved successfully",
+                "customer_id": customer_id,
+                "profile_id": prospect_profile_id,
+                "criteria_dataset": criteria_dataset
+            }
+
+        finally:
+            conn.close()
+
+    except RuntimeError as e:
+        return {
+            "status": "error",
+            "error_type": "RuntimeError",
+            "message": str(e),
+            "customer_id": customer_id if 'customer_id' in locals() else None,
+            "profile_id": prospect_profile_id if 'prospect_profile_id' in locals() else None,
+            "criteria_dataset": None
+        }
+    except Exception as e:
+        return {
+            "status": "error",
+            "error_type": type(e).__name__,
+            "message": str(e),
+            "customer_id": customer_id if 'customer_id' in locals() else None,
+            "profile_id": prospect_profile_id if 'prospect_profile_id' in locals() else None,
+            "criteria_dataset": None
+        }
+
+
+
+def update_daily_list_prospect_status(customer_id: str, prospect_id: str, status: str, activity_history: str) -> Dict:
+    """
+    This function will update the "status" and "activity_history" fields of a prospect in the "customer_prospects" table
+    
+    Input parameters:
+        customer_id (str): Customer ID
+        prospect_id (str): Prospect ID
+        status (str): New status value (must be 'contacted', 'not-a-fit', or 'later')
+        activity_history (str): Activity history to update (will be converted to JSON)
+    
+    Returns:
+        Dict: Response with status and message and dict with the format below:
+            {
+                "status": "success",
+                "message": "Prospect status updated successfully",
+                "customer_id": customer_id,
+                "prospect_id": prospect_id,
+                "new_status": status
+            }        
+    """
+    
+    try:
+        # Validate required parameters
+        if not customer_id or customer_id.strip() == "":
+            raise RuntimeError("customer_id is required and cannot be empty")
+        if not prospect_id or prospect_id.strip() == "":
+            raise RuntimeError("prospect_id is required and cannot be empty")
+        if not status or status.strip() == "" or status not in ["contacted", "not-a-fit", "later"]:
+            raise RuntimeError("status is required and cannot be empty and has to be either 'contacted', 'not-a-fit' or 'later'")
+
+        # Connect to the database
+        conn = connect_db()
+        try:
+            cur = conn.cursor()
+
+            # Check if the record exists first
+            cur.execute("""
+                SELECT COUNT(*) 
+                FROM customer_prospects 
+                WHERE customer_id = %s AND prospect_id = %s
+            """, (customer_id, prospect_id))
+            
+            exists = cur.fetchone()[0] > 0
+
+            if not exists:
+                cur.close()
+                return {
+                    "status": "error",
+                    "message": "No prospect found for the provided customer_id and prospect_id",
+                    "customer_id": customer_id,
+                    "prospect_id": prospect_id
+                }
+
+            # Get current timestamp for last_updated
+            current_timestamp = datetime.datetime.now()
+
+            # Convert activity_history to JSON if it's a string
+            if isinstance(activity_history, str):
+                activity_history_json = json.dumps(activity_history)
+            else:
+                activity_history_json = json.dumps(activity_history)
+
+            # Update the status, activity_history, and last_updated timestamp
+            cur.execute("""
+                UPDATE customer_prospects 
+                SET status = %s, activity_history = %s, last_updated = %s
+                WHERE customer_id = %s AND prospect_id = %s
+            """, (status, activity_history_json, current_timestamp, customer_id, prospect_id))
+
+            # Commit the update
+            conn.commit()
+            cur.close()
+
+            # Return success response
+            return {
+                "status": "success",
+                "message": "Prospect status updated successfully",
+                "customer_id": customer_id,
+                "prospect_id": prospect_id,
+                "new_status": status
+            }
+
+        finally:
+            conn.close()
+
+    except RuntimeError as e:
+        return {
+            "status": "error",
+            "error_type": "RuntimeError",
+            "message": str(e),
+            "customer_id": customer_id if 'customer_id' in locals() else None,
+            "prospect_id": prospect_id if 'prospect_id' in locals() else None
+        }
+    except Exception as e:
+        return {
+            "status": "error",
+            "error_type": type(e).__name__,
+            "message": str(e),
+            "customer_id": customer_id if 'customer_id' in locals() else None,
+            "prospect_id": prospect_id if 'prospect_id' in locals() else None
+        }
+
 
 

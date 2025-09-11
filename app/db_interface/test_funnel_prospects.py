@@ -145,10 +145,31 @@ if __name__ == "__main__":
     #7 test "removing" prospects from the daily list of a customer
     #  "coresignal434550710", "coresignal182874843", "coresignal236777753" are real prospect_id
     #  that were previously added to the daily_list
+    #
 
     # Example 1: Add multiple prospects to daily list
     multiple_prospects = ["coresignal434550710", "coresignal182874843", "coresignal236777753"]
     result2 = fp.remove_from_daily_list(customer_id, multiple_prospects)
     print("Multiple prospects result:", result2)
 
+
+
+    #####################################################################################
+    #8 test retrieving the json/dict corresponding at the criteri list for a customer/profile_id
+    #  lets use : customer_id = "coresignal434550710", prospect_profile_id = 'default'
+    #  
+    result = fp.get_customer_prospect_criteria("aasd-20250910-9433157152","default")
+    print("\nJSON criteria dataset is", result['criteria_dataset'])
+
+
+    #####################################################################################
+    #9 test changing the status of a customer prospects to "connected" 
+    #  lets use : customer_id = "mlevy-20250905-5730756828", prospect_id = "coresignal267051946"
+    #  
+    activity_history = json.dumps({
+    "date": "2025-09-10",
+    "action": "Called prospect, left voicemail"
+    })
+    result = fp.update_daily_list_prospect_status("mlevy-20250905-5730756828", "coresignal267051946", "contacted", activity_history)
+    print("\nresult dict from updating status", result)
 
