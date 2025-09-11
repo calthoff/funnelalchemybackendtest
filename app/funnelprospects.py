@@ -20,20 +20,27 @@ logger.setLevel(logging.INFO)
 
 
 
-dotenv_path = Path(__file__).parent / '.env'
+# Try to find .env file in multiple locations
+dotenv_paths = [
+    Path(__file__).parent / '.env',  # /app/app/.env
+    Path(__file__).parent.parent / '.env',  # /app/.env
+    Path.cwd() / '.env',  # Current working directory
+]
 
-for i in range(3):
-    if dotenv_path.exists():
-        print("Found .env file !")
+dotenv_path = None
+for path in dotenv_paths:
+    if path.exists():
+        print(f"Found .env file at: {path}")
+        dotenv_path = path
         break
     else:
-        print(f"WARNING: .env file does not exist at {dotenv_path}, trying parent directory...")
-        dotenv_path = dotenv_path.parent.parent / '.env'
-if not dotenv_path.exists():
-    raise FileNotFoundError(f"Could not find .env file in the directory tree starting from {Path(__file__).parent}")
+        print(f"WARNING: .env file does not exist at {path}")
 
-
-load_dotenv(dotenv_path)
+if not dotenv_path:
+    print("WARNING: Could not find .env file, using environment variables directly")
+    # Don't raise an error, just use environment variables directly
+else:
+    load_dotenv(dotenv_path)
 
 POSTGRES_ENDPOINT = os.getenv("POSTGRES_HOST")
 POSTGRES_PORT = int(os.getenv("POSTGRES_PORT"))
@@ -48,42 +55,55 @@ _aws_connection = None
 _connection_lock = threading.Lock()
 
 def get_aws_connection():
-    """Get or create a persistent AWS RDS connection"""
+    """Get or create a persistent AWS RDS connection with retry logic"""
     global _aws_connection
     
     if _aws_connection is None or _aws_connection.closed:
         with _connection_lock:
             if _aws_connection is None or _aws_connection.closed:
-                try:
-                    print("🔌 Creating persistent AWS RDS connection...")
-                    
-                    # Generate AWS IAM token
-                    session = boto3.Session(
-                        aws_access_key_id=AWS_ACCESS_KEY_ID,
-                        aws_secret_access_key=AWS_SECRET_ACCESS_KEY,
-                        region_name=POSTGRES_REGION
-                    )
-                    client = session.client("rds")
-                    token = client.generate_db_auth_token(
-                        DBHostname=POSTGRES_ENDPOINT, 
-                        Port=POSTGRES_PORT, 
-                        DBUsername=POSTGRES_IAM_USER, 
-                        Region=POSTGRES_REGION
-                    )
-                    
-                    # Create persistent connection
-                    _aws_connection = psycopg2.connect(
-                        host=POSTGRES_ENDPOINT,
-                        port=POSTGRES_PORT,
-                        database=POSTGRES_DBNAME,
-                        user=POSTGRES_IAM_USER,
-                        password=token,
-                        sslmode="require"
-                    )
-                    print("✅ Persistent AWS RDS connection created successfully")
-                except Exception as e:
-                    print(f"❌ Failed to create AWS connection: {e}")
-                    raise
+                max_retries = 3
+                retry_delay = 5  # seconds
+                
+                for attempt in range(max_retries):
+                    try:
+                        print(f"🔌 Creating persistent AWS RDS connection... (attempt {attempt + 1}/{max_retries})")
+                        
+                        # Generate AWS IAM token
+                        session = boto3.Session(
+                            aws_access_key_id=AWS_ACCESS_KEY_ID,
+                            aws_secret_access_key=AWS_SECRET_ACCESS_KEY,
+                            region_name=POSTGRES_REGION
+                        )
+                        client = session.client("rds")
+                        token = client.generate_db_auth_token(
+                            DBHostname=POSTGRES_ENDPOINT, 
+                            Port=POSTGRES_PORT, 
+                            DBUsername=POSTGRES_IAM_USER, 
+                            Region=POSTGRES_REGION
+                        )
+                        
+                        # Create persistent connection
+                        _aws_connection = psycopg2.connect(
+                            host=POSTGRES_ENDPOINT,
+                            port=POSTGRES_PORT,
+                            database=POSTGRES_DBNAME,
+                            user=POSTGRES_IAM_USER,
+                            password=token,
+                            sslmode="require",
+                            connect_timeout=10
+                        )
+                        print("✅ Persistent AWS RDS connection created successfully")
+                        break
+                        
+                    except Exception as e:
+                        print(f"❌ Failed to create AWS connection (attempt {attempt + 1}/{max_retries}): {e}")
+                        if attempt < max_retries - 1:
+                            print(f"⏳ Retrying in {retry_delay} seconds...")
+                            import time
+                            time.sleep(retry_delay)
+                        else:
+                            print("⚠️ AWS RDS connection failed after all retries")
+                            raise
     
     return _aws_connection
 
@@ -1066,3 +1086,198 @@ def remove_from_daily_list(customer_id: str, prospect_id_list: List[str]) -> Dic
             "customer_id": customer_id if 'customer_id' in locals() else None,
         }
 
+        
+def get_customer_prospect_criteria(customer_id: str, prospect_profile_id: str) -> Dict:
+    """
+    Retrieve the criteria_dataset JSON for a particular customer/company
+    
+    Input parameters:
+        customer_id (str): Customer ID
+        prospect_profile_id (str): Prospect profile ID
+    
+    Returns:
+        Dict: Response with status, message, and criteria_dataset, see example below
+                return {
+                    "status": "error",
+                    "message": "No criteria found for the provided customer_id and prospect_profile_id",
+                    "customer_id": customer_id,
+                    "profile_id": prospect_profile_id,
+                    "criteria_dataset": None
+                }        
+    """
+    
+    try:
+        # Validate required parameters
+        if not customer_id or customer_id.strip() == "":
+            raise RuntimeError("customer_id is required and cannot be empty")
+        if not prospect_profile_id or prospect_profile_id.strip() == "":
+            raise RuntimeError("prospect_profile_id is required and cannot be empty")
+
+        # Extract company_unique_id from customer_id (format: <...>-<...>-<company_unique_id>)
+        try:
+            company_unique_id = customer_id.split("-")[-1]
+        except IndexError:
+            raise RuntimeError("Invalid customer_id format; expected format: <...>-<...>-<company_unique_id>")
+
+        # Connect to the database
+        conn = connect_db()
+        try:
+            cur = conn.cursor()
+
+            # Execute the SQL query to get criteria_dataset
+            select_sql = """
+                SELECT criteria_dataset 
+                FROM customer_prospects_profiles 
+                WHERE company_unique_id = %s AND prospect_profile_id = %s
+            """
+            cur.execute(select_sql, (company_unique_id, prospect_profile_id))
+            
+            result = cur.fetchone()
+            cur.close()
+
+            if result is None:
+                return {
+                    "status": "error",
+                    "message": "No criteria found for the provided customer_id and prospect_profile_id",
+                    "customer_id": customer_id,
+                    "profile_id": prospect_profile_id,
+                    "criteria_dataset": None
+                }
+
+            # Extract the criteria_dataset (it's already a JSON object/dict)
+            criteria_dataset = result[0]
+
+            # Return success response with the criteria_dataset
+            return {
+                "status": "success",
+                "message": "Criteria dataset retrieved successfully",
+                "customer_id": customer_id,
+                "profile_id": prospect_profile_id,
+                "criteria_dataset": criteria_dataset
+            }
+
+        finally:
+            conn.close()
+
+    except RuntimeError as e:
+        return {
+            "status": "error",
+            "error_type": "RuntimeError",
+            "message": str(e),
+            "customer_id": customer_id if 'customer_id' in locals() else None,
+            "profile_id": prospect_profile_id if 'prospect_profile_id' in locals() else None,
+            "criteria_dataset": None
+        }
+    except Exception as e:
+        return {
+            "status": "error",
+            "error_type": type(e).__name__,
+            "message": str(e),
+            "customer_id": customer_id if 'customer_id' in locals() else None,
+            "profile_id": prospect_profile_id if 'prospect_profile_id' in locals() else None,
+            "criteria_dataset": None
+        }
+
+
+
+def update_daily_list_prospect_status(customer_id: str, prospect_id: str, status: str, activity_history: str) -> Dict:
+    """
+    This function will update the "status" and "activity_history" fields of a prospect in the "customer_prospects" table
+    
+    Input parameters:
+        customer_id (str): Customer ID
+        prospect_id (str): Prospect ID
+        status (str): New status value (must be 'contacted', 'not-a-fit', or 'later')
+        activity_history (str): Activity history to update (will be converted to JSON)
+    
+    Returns:
+        Dict: Response with status and message and dict with the format below:
+            {
+                "status": "success",
+                "message": "Prospect status updated successfully",
+                "customer_id": customer_id,
+                "prospect_id": prospect_id,
+                "new_status": status
+            }        
+    """
+    
+    try:
+        # Validate required parameters
+        if not customer_id or customer_id.strip() == "":
+            raise RuntimeError("customer_id is required and cannot be empty")
+        if not prospect_id or prospect_id.strip() == "":
+            raise RuntimeError("prospect_id is required and cannot be empty")
+        if not status or status.strip() == "" or status not in ["contacted", "not-a-fit", "later"]:
+            raise RuntimeError("status is required and cannot be empty and has to be either 'contacted', 'not-a-fit' or 'later'")
+
+        # Connect to the database
+        conn = connect_db()
+        try:
+            cur = conn.cursor()
+
+            # Check if the record exists first
+            cur.execute("""
+                SELECT COUNT(*) 
+                FROM customer_prospects 
+                WHERE customer_id = %s AND prospect_id = %s
+            """, (customer_id, prospect_id))
+            
+            exists = cur.fetchone()[0] > 0
+
+            if not exists:
+                cur.close()
+                return {
+                    "status": "error",
+                    "message": "No prospect found for the provided customer_id and prospect_id",
+                    "customer_id": customer_id,
+                    "prospect_id": prospect_id
+                }
+
+            # Get current timestamp for last_updated
+            current_timestamp = datetime.datetime.now()
+
+            # Convert activity_history to JSON if it's a string
+            if isinstance(activity_history, str):
+                activity_history_json = json.dumps(activity_history)
+            else:
+                activity_history_json = json.dumps(activity_history)
+
+            # Update the status, activity_history, and last_updated timestamp
+            cur.execute("""
+                UPDATE customer_prospects 
+                SET status = %s, activity_history = %s, last_updated = %s
+                WHERE customer_id = %s AND prospect_id = %s
+            """, (status, activity_history_json, current_timestamp, customer_id, prospect_id))
+
+            # Commit the update
+            conn.commit()
+            cur.close()
+
+            # Return success response
+            return {
+                "status": "success",
+                "message": "Prospect status updated successfully",
+                "customer_id": customer_id,
+                "prospect_id": prospect_id,
+                "new_status": status
+            }
+
+        finally:
+            conn.close()
+
+    except RuntimeError as e:
+        return {
+            "status": "error",
+            "error_type": "RuntimeError",
+            "message": str(e),
+            "customer_id": customer_id if 'customer_id' in locals() else None,
+            "prospect_id": prospect_id if 'prospect_id' in locals() else None
+        }
+    except Exception as e:
+        return {
+            "status": "error",
+            "error_type": type(e).__name__,
+            "message": str(e),
+            "customer_id": customer_id if 'customer_id' in locals() else None,
+            "prospect_id": prospect_id if 'prospect_id' in locals() else None
+        }

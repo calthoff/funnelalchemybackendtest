@@ -15,7 +15,8 @@ try:
         findAndUpdateCustomerProspect,
         get_prospects_stats,
         add_to_daily_list,
-        remove_from_daily_list
+        remove_from_daily_list,
+        get_customer_prospect_criteria
     )
     FUNNELPROSPECTS_AVAILABLE = True
 except Exception as e:
@@ -29,6 +30,7 @@ except Exception as e:
     get_prospects_stats = None
     add_to_daily_list = None
     remove_from_daily_list = None
+    get_customer_prospect_criteria = None
 
 router = APIRouter(prefix="/customers", tags=["customers"])
 
@@ -323,4 +325,79 @@ def remove_from_daily_list_endpoint(payload: DailyListRequest):
         raise HTTPException(
             status_code=500,
             detail=f"Failed to remove from daily list: {str(e)}"
+        )
+
+@router.get("/health")
+def health_check():
+    """
+    Health check endpoint to verify AWS connectivity
+    """
+    try:
+        if not FUNNELPROSPECTS_AVAILABLE:
+            return {
+                "status": "error",
+                "message": "AWS integration not available",
+                "aws_connected": False
+            }
+        
+        # Try to get a connection
+        from app.funnelprospects import get_aws_connection
+        conn = get_aws_connection()
+        
+        if conn and not conn.closed:
+            return {
+                "status": "success",
+                "message": "AWS RDS connection is healthy",
+                "aws_connected": True
+            }
+        else:
+            return {
+                "status": "error",
+                "message": "AWS RDS connection is closed",
+                "aws_connected": False
+            }
+            
+    except Exception as e:
+        return {
+            "status": "error",
+            "message": f"AWS RDS connection failed: {str(e)}",
+            "aws_connected": False
+        }
+
+@router.get("/{customer_id}/get-prospect-criteria/{prospect_profile_id}")
+def get_customer_prospect_criteria_endpoint(customer_id: str, prospect_profile_id: str):
+    """
+    Get prospect criteria for a customer and prospect profile
+    """
+    if not FUNNELPROSPECTS_AVAILABLE or not get_customer_prospect_criteria:
+        raise HTTPException(
+            status_code=503,
+            detail="AWS integration not available"
+        )
+    
+    try:
+        print(f"Getting prospect criteria for customer: {customer_id}, profile: {prospect_profile_id}")
+        result = get_customer_prospect_criteria(customer_id, prospect_profile_id)
+        
+        if result["status"] == "success":
+            return {
+                "status": "success",
+                "message": result["message"],
+                "data": {
+                    "customer_id": result["customer_id"],
+                    "profile_id": result["profile_id"],
+                    "criteria_dataset": result["criteria_dataset"]
+                }
+            }
+        else:
+            raise HTTPException(
+                status_code=404,
+                detail=result["message"]
+            )
+            
+    except Exception as e:
+        print(f"Error getting prospect criteria: {str(e)}")
+        raise HTTPException(
+            status_code=500,
+            detail=f"Failed to get prospect criteria: {str(e)}"
         )
