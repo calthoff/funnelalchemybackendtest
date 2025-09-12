@@ -1177,7 +1177,8 @@ def get_customer_prospect_criteria(customer_id: str, prospect_profile_id: str) -
             "criteria_dataset": None
         }
 
-        
+
+
 def update_daily_list_prospect_status(customer_id: str, prospect_id: str, status: str, activity_history: str) -> Dict:
     """
     This function will update the "status" and "activity_history" fields of a prospect in the "customer_prospects" table
