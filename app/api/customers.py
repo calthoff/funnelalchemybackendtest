@@ -51,6 +51,34 @@ class DailyListRequest(BaseModel):
     customer_id: str
     prospect_id_list: List[str]
 
+@router.get("/stats")
+def get_prospect_stats():
+    if not FUNNELPROSPECTS_AVAILABLE or not get_prospects_stats:
+        raise HTTPException(
+            status_code=503,
+            detail="AWS integration not available"
+        )
+    try:
+        result = get_prospects_stats()
+        
+        if result["status"] == "success":
+            return {
+                "status": "success",
+                "data": result
+            }
+        else:
+            raise HTTPException(
+                status_code=400,
+                detail=result["message"]
+            )
+            
+    except Exception as e:
+        print(f"Error getting prospect stats: {str(e)}")
+        raise HTTPException(
+            status_code=500,
+            detail=f"Failed to get prospect stats: {str(e)}"
+        )
+
 @router.get("/{customer_id}")
 def get_customer_info(customer_id: str):
     if not FUNNELPROSPECTS_AVAILABLE or not get_customer:
@@ -203,35 +231,6 @@ def update_customer_prospects(customer_id: str):
         raise HTTPException(
             status_code=500,
             detail=f"Failed to update customer prospects: {str(e)}"
-        )
-
-@router.get("/stats")
-def get_prospect_stats():
-    if not FUNNELPROSPECTS_AVAILABLE or not get_prospects_stats:
-        raise HTTPException(
-            status_code=503,
-            detail="AWS integration not available"
-        )
-    
-    try:
-        result = get_prospects_stats()
-        
-        if result["status"] == "success":
-            return {
-                "status": "success",
-                "data": result
-            }
-        else:
-            raise HTTPException(
-                status_code=400,
-                detail=result["message"]
-            )
-            
-    except Exception as e:
-        print(f"Error getting prospect stats: {str(e)}")
-        raise HTTPException(
-            status_code=500,
-            detail=f"Failed to get prospect stats: {str(e)}"
         )
 
 @router.post("/daily-list/add")

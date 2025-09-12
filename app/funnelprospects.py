@@ -742,7 +742,7 @@ def get_prospects_stats() -> Dict:
 
     This "count" will change when we get ore or less records in the "prospects" table and if the "employee" or prospects
     is changing company and goes for an indusr=try that is or is not "Software Development" related.   
-
+    
     """
     try:
         conn = connect_db()
@@ -750,7 +750,6 @@ def get_prospects_stats() -> Dict:
             cur = conn.cursor()
             
             stats = {}
-            
             # For company_industry (from vendordata->experience[1])
             cur.execute("""
                 SELECT (vendordata->'experience'->1->>'company_industry') AS company_industry, COUNT(*)
@@ -1178,8 +1177,7 @@ def get_customer_prospect_criteria(customer_id: str, prospect_profile_id: str) -
             "criteria_dataset": None
         }
 
-
-
+        
 def update_daily_list_prospect_status(customer_id: str, prospect_id: str, status: str, activity_history: str) -> Dict:
     """
     This function will update the "status" and "activity_history" fields of a prospect in the "customer_prospects" table

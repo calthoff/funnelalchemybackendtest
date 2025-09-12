@@ -21,257 +21,290 @@ class CoreSignalService:
                 "bool": {
                     "must": [
                         {
-                            "bool": {
-                                "should": [
-                                    {
-                                        "nested": {
-                                            "path": "experience",
-                                            "query": {
-                                                "bool": {
-                                                    "must": [
-                                                        {
-                                                            "term": {
-                                                                "experience.active_experience": 1
-                                                            }
-                                                        }
-                                                    ],
-                                                    "filter": []
+                            "nested": {
+                                "path": "experience",
+                                "query": {
+                                    "bool": {
+                                        "must": [
+                                            {
+                                                "term": {
+                                                    "experience.active_experience": 1
                                                 }
                                             }
-                                        }
+                                        ]
                                     }
-                                ],
-                                "minimum_should_match": 1
+                                }
                             }
                         }
-                    ],
-                    "filter": []
+                    ]
                 }
             }
         }
         
-        experience_must = query["query"]["bool"]["must"][0]["bool"]["should"][0]["nested"]["query"]["bool"]["must"]
-        experience_filter = query["query"]["bool"]["must"][0]["bool"]["should"][0]["nested"]["query"]["bool"]["filter"]
+        nested_must = query["query"]["bool"]["must"][0]["nested"]["query"]["bool"]["must"]
         
-        if company_profiles and len(company_profiles) > 0:
-            icp = company_profiles[0]
-            
-            if icp.get('industries'):
-                industries = icp['industries'] if isinstance(icp['industries'], list) else []
-                if industries:
-                    industry_conditions = []
-                    for industry in industries:
-                        industry_conditions.extend([
-                            {
-                                "match": {
-                                    "experience.company_industry": industry
-                                }
-                            },
-                            {
-                                "query_string": {
-                                    "query": industry,
-                                    "default_field": "experience.company_categories_and_keywords"
-                                }
-                            }
-                        ])
-                    experience_filter.append({
-                        "bool": {
-                            "should": industry_conditions,
-                            "minimum_should_match": 1
+        icp = company_profiles[0] if company_profiles and len(company_profiles) > 0 else {}
+        persona = personas[0] if personas and len(personas) > 0 else {}
+        
+        if persona.get('position_title'):
+            titles = persona['position_title'] if isinstance(persona['position_title'], list) else []
+            if titles:
+                if len(titles) == 1:
+                    query["query"]["bool"]["must"].insert(0, {
+                        "match_phrase": {
+                            "active_experience_title": titles[0]
                         }
                     })
-            
-            if icp.get('employee_size_range'):
-                size_ranges = icp['employee_size_range'] if isinstance(icp['employee_size_range'], list) else []
-                if size_ranges:
-                    size_conditions = []
-                    for size_range in size_ranges:
-                        if "-" in str(size_range):
-                            parts = str(size_range).split("-")
-                            if len(parts) == 2:
-                                try:
-                                    min_size = int(parts[0])
-                                    max_size = int(parts[1]) if parts[1] != "+" else 100000
-                                    size_conditions.append({
-                                        "range": {
-                                            "experience.company_employees_count": {
-                                                "gte": min_size,
-                                                "lte": max_size
-                                            }
-                                        }
-                                    })
-                                except ValueError:
-                                    continue
-                        elif str(size_range).endswith("+"):
-                            try:
-                                min_size = int(str(size_range).replace("+", ""))
-                                size_conditions.append({
-                                    "range": {
-                                        "experience.company_employees_count": {
-                                            "gte": min_size
-                                        }
+                else:
+                    nested_must.append({
+                        "bool": {
+                            "should": [
+                                {
+                                    "match_phrase": {
+                                        "experience.position_title": title
                                     }
-                                })
-                            except ValueError:
-                                continue
-                    
-                    if size_conditions:
-                        experience_filter.append({
-                            "bool": {
-                                "should": size_conditions,
-                                "minimum_should_match": 1
-                            }
-                        })
-            
-            if icp.get('revenue_range'):
-                revenue_ranges = icp['revenue_range'] if isinstance(icp['revenue_range'], list) else []
-                if revenue_ranges:
-                    revenue_conditions = []
-                    for revenue_range in revenue_ranges:
-                        if "-" in str(revenue_range):
-                            parts = str(revenue_range).split("-")
-                            if len(parts) == 2:
-                                try:
-                                    min_revenue = int(parts[0].replace("M", "")) * 1000000
-                                    max_revenue = int(parts[1].replace("M", "")) * 1000000
-                                    revenue_conditions.append({
-                                        "range": {
-                                            "experience.company_annual_revenue_source_5": {
-                                                "gte": min_revenue,
-                                                "lte": max_revenue
-                                            }
-                                        }
-                                    })
-                                except ValueError:
-                                    continue
-                    
-                    if revenue_conditions:
-                        experience_filter.append({
-                            "bool": {
-                                "should": revenue_conditions,
-                                "minimum_should_match": 1
-                            }
-                        })
-            
-            if icp.get('funding_stages'):
-                funding_stages = icp['funding_stages'] if isinstance(icp['funding_stages'], list) else []
-                if funding_stages:
-                    funding_conditions = []
-                    for stage in funding_stages:
-                        funding_conditions.extend([
-                            {
-                                "match": {
-                                    "experience.company_funding_stage": stage
-                                }
-                            },
-                            {
-                                "query_string": {
-                                    "query": stage,
-                                    "default_field": "experience.company_categories_and_keywords"
-                                }
-                            }
-                        ])
-                    
-                    if funding_conditions:
-                        experience_filter.append({
-                            "bool": {
-                                "should": funding_conditions,
-                                "minimum_should_match": 1
-                            }
-                        })
-            
-            if icp.get('location'):
-                locations = icp['location'] if isinstance(icp['location'], list) else []
-                if locations:
-                    location_conditions = []
-                    for location in locations:
-                        location_conditions.extend([
-                            {
-                                "match": {
-                                    "location_country": location
-                                }
-                            },
-                            {
-                                "match": {
-                                    "experience.company_hq_country": location
-                                }
-                            }
-                        ])
-                    experience_filter.append({
-                        "bool": {
-                            "should": location_conditions,
+                                } for title in titles
+                            ],
                             "minimum_should_match": 1
                         }
                     })
         
-        if personas and len(personas) > 0:
-            persona = personas[0]
-            
-            if persona.get('title_keywords'):
-                titles = persona['title_keywords'] if isinstance(persona['title_keywords'], list) else []
-                if titles:
-                    title_query = " OR ".join([f'"{title}"' for title in titles])
-                    experience_filter.append({
-                        "query_string": {
-                            "query": title_query,
-                            "default_field": "experience.position_title"
+        if persona.get('seniority_levels'):
+            seniority_levels = persona['seniority_levels'] if isinstance(persona['seniority_levels'], list) else []
+            if seniority_levels:
+                if len(seniority_levels) == 1:
+                    nested_must.append({
+                        "match_phrase": {
+                            "experience.management_level": seniority_levels[0]
                         }
                     })
-            
-            if persona.get('seniority_levels'):
-                seniority = persona['seniority_levels'] if isinstance(persona['seniority_levels'], list) else []
-                if seniority:
-                    seniority_conditions = []
-                    for level in seniority:
-                        seniority_conditions.append({
-                            "match": {
-                                "experience.management_level": level
-                            }
-                        })
-                    experience_filter.append({
-                        "bool": {
-                            "should": seniority_conditions,
-                            "minimum_should_match": 1
-                        }
-                    })
-            
-            if persona.get('buying_roles'):
-                buying_roles = persona['buying_roles'] if isinstance(persona['buying_roles'], list) else []
-                if buying_roles:
-                    role_conditions = []
-                    for role in buying_roles:
-                        role_conditions.append({
-                            "match": {
-                                "experience.position_title": role
-                            }
-                        })
-                    experience_filter.append({
-                        "bool": {
-                            "should": role_conditions,
-                            "minimum_should_match": 1
+                else:
+                    nested_must.append({
+                        "terms": {
+                            "experience.management_level.exact": seniority_levels
                         }
                     })
         
-        if company_description and company_description.get('exclusion_criteria'):
-            exclusion_criteria = company_description['exclusion_criteria'] if isinstance(company_description['exclusion_criteria'], list) else []
-            if exclusion_criteria:
-                exclusion_conditions = []
-                for criteria in exclusion_criteria:
-                    exclusion_conditions.append({
+        if company_description and company_description.get('description'):
+            description = company_description['description']
+            nested_must.append({
+                "query_string": {
+                    "query": description,
+                    "default_field": "experience.company_categories_and_keywords",
+                    "default_operator": "AND"
+                }
+            })
+        
+        if icp.get('industries'):
+            industries = icp['industries'] if isinstance(icp['industries'], list) else []
+            if industries:
+                if len(industries) == 1:
+                    nested_must.append({
+                        "match": {
+                            "experience.company_industry": industries[0]
+                        }
+                    })
+                else:
+                    expanded_queries = []
+                    for industry in industries:
+                        expanded_query = self._expand_industry_keywords(industry)
+                        expanded_queries.append(expanded_query)
+                    
+                    combined_query = " OR ".join(expanded_queries)
+                    
+                    nested_must.append({
                         "bool": {
-                            "must_not": [
+                            "should": [
                                 {
                                     "query_string": {
-                                        "query": criteria,
-                                        "default_field": "experience.company_industry"
+                                        "query": combined_query,
+                                        "default_field": "experience.company_categories_and_keywords",
+                                        "default_operator": "OR"
+                                    }
+                                },
+                                {
+                                    "query_string": {
+                                        "query": combined_query,
+                                        "default_field": "experience.company_industry",
+                                        "default_operator": "OR"
                                     }
                                 }
-                            ]
+                            ],
+                            "minimum_should_match": 1
                         }
                     })
-                query["query"]["bool"]["filter"].extend(exclusion_conditions)
+        
+        if icp.get('location'):
+            locations = icp['location'] if isinstance(icp['location'], list) else []
+            if locations:
+                location = locations[0]
+                if self._is_city(location):
+                    nested_must.append({
+                        "match": {
+                            "experience.company_hq_city": location
+                        }
+                    })
+                else:
+                    nested_must.append({
+                        "term": {
+                            "experience.company_hq_country": location
+                        }
+                    })
+        
+        if icp.get('employee_size_range'):
+            size_ranges = icp['employee_size_range'] if isinstance(icp['employee_size_range'], list) else []
+            if size_ranges:
+                min_size = float('inf')
+                max_size = 0
+                
+                for size_range in size_ranges:
+                    if "-" in str(size_range):
+                        parts = str(size_range).split("-")
+                        if len(parts) == 2:
+                            try:
+                                range_min = int(parts[0])
+                                range_max = int(parts[1])
+                                min_size = min(min_size, range_min)
+                                max_size = max(max_size, range_max)
+                            except ValueError:
+                                continue
+                    elif str(size_range).endswith("+"):
+                        try:
+                            min_size = min(min_size, int(str(size_range).replace("+", "")))
+                            max_size = float('inf')
+                        except ValueError:
+                            continue
+                
+                if min_size != float('inf'):
+                    range_filter = {
+                        "range": {
+                            "experience.company_employees_count": {
+                                "gte": min_size
+                            }
+                        }
+                    }
+                    if max_size != float('inf'):
+                        range_filter["range"]["experience.company_employees_count"]["lte"] = max_size
+                    
+                    nested_must.append(range_filter)
+
+        if icp.get('revenue_range'):
+            revenue_ranges = icp['revenue_range'] if isinstance(icp['revenue_range'], list) else []
+            if revenue_ranges:
+                min_revenue = float('inf')
+                max_revenue = 0
+                
+                for revenue_range in revenue_ranges:
+                    if "-" in str(revenue_range):
+                        parts = str(revenue_range).split("-")
+                        if len(parts) == 2:
+                            try:
+                                min_val = parts[0].replace("M", "").replace("$", "").strip()
+                                max_val = parts[1].replace("M", "").replace("$", "").strip()
+                                min_revenue = min(min_revenue, int(min_val) * 1000000)
+                                max_revenue = max(max_revenue, int(max_val) * 1000000)
+                            except ValueError:
+                                continue
+                    elif str(revenue_range).endswith("+"):
+                        try:
+                            val = str(revenue_range).replace("+", "").replace("M", "").replace("$", "").strip()
+                            min_revenue = min(min_revenue, int(val) * 1000000)
+                            max_revenue = float('inf')
+                        except ValueError:
+                            continue
+                
+                if min_revenue != float('inf'):
+                    range_filter = {
+                        "bool": {
+                            "should": [
+                                {
+                                    "range": {
+                                        "experience.company_annual_revenue_source_1": {
+                                            "gte": min_revenue
+                                        }
+                                    }
+                                },
+                                {
+                                    "range": {
+                                        "experience.company_annual_revenue_source_5": {
+                                            "gte": min_revenue
+                                        }
+                                    }
+                                }
+                            ],
+                            "minimum_should_match": 1
+                        }
+                    }
+                    
+                    if max_revenue != float('inf'):
+                        range_filter["bool"]["should"][0]["range"]["experience.company_annual_revenue_source_1"]["lte"] = max_revenue
+                        range_filter["bool"]["should"][1]["range"]["experience.company_annual_revenue_source_5"]["lte"] = max_revenue
+                    
+                    nested_must.append(range_filter)
         
         return query
+    
+    def _expand_industry_keywords(self, industry: str) -> str:
+        industry_lower = industry.lower().strip()
+        
+        industry_abbreviations = {
+            'saas': ['saas', 'software as a service'],
+            'ai': ['ai', 'artificial intelligence'],
+            'fintech': ['fintech', 'financial technology'],
+            'healthtech': ['healthtech', 'health technology'],
+            'edtech': ['edtech', 'education technology'],
+            'cybersecurity': ['cybersecurity', 'cyber security'],
+            'blockchain': ['blockchain', 'cryptocurrency'],
+            'ecommerce': ['ecommerce', 'e-commerce'],
+            'biotech': ['biotech', 'biotechnology'],
+            'cleantech': ['cleantech', 'clean technology'],
+            'martech': ['martech', 'marketing technology'],
+            'hrtech': ['hrtech', 'hr technology'],
+            'proptech': ['proptech', 'property technology'],
+            'agtech': ['agtech', 'agricultural technology'],
+            'telecom': ['telecom', 'telecommunications'],
+            'ml': ['ml', 'machine learning'],
+            'iot': ['iot', 'internet of things'],
+            'vr': ['vr', 'virtual reality'],
+            'ar': ['ar', 'augmented reality'],
+            'api': ['api', 'application programming interface'],
+            'crm': ['crm', 'customer relationship management'],
+            'erp': ['erp', 'enterprise resource planning'],
+            'hr': ['hr', 'human resources'],
+            'it': ['it', 'information technology'],
+            'ui': ['ui', 'user interface'],
+            'ux': ['ux', 'user experience'],
+            'seo': ['seo', 'search engine optimization'],
+            'sem': ['sem', 'search engine marketing'],
+            'ppc': ['ppc', 'pay per click'],
+            'cpa': ['cpa', 'cost per acquisition'],
+            'roi': ['roi', 'return on investment'],
+            'kpi': ['kpi', 'key performance indicator'],
+            'b2b': ['b2b', 'business to business'],
+            'b2c': ['b2c', 'business to consumer'],
+            'paas': ['paas', 'platform as a service'],
+            'iaas': ['iaas', 'infrastructure as a service']
+        }
+        
+        if industry_lower in industry_abbreviations:
+            variations = industry_abbreviations[industry_lower]
+            return ' OR '.join([f'"{var}"' for var in variations])
+        
+        return f'"{industry}"'
+    
+    def _is_city(self, location: str) -> bool:
+        countries = {
+            'United States', 'USA', 'US', 'Canada', 'United Kingdom', 'UK', 'Germany', 
+            'France', 'Italy', 'Spain', 'Netherlands', 'Belgium', 'Switzerland', 
+            'Austria', 'Sweden', 'Norway', 'Denmark', 'Finland', 'Poland', 'Japan', 
+            'China', 'India', 'Singapore', 'Australia', 'New Zealand', 
+            'Brazil', 'Mexico', 'Argentina', 'Chile', 'Colombia', 'South Africa', 
+            'Nigeria', 'Kenya', 'Egypt', 'Morocco', 'Tunisia', 'Russia', 'Ukraine', 
+            'Belarus', 'Kazakhstan', 'Turkey', 'Israel', 'Saudi Arabia', 'UAE', 
+            'Qatar', 'Kuwait', 'Bahrain', 'Thailand', 'Vietnam', 'Malaysia', 
+            'Indonesia', 'Philippines', 'Taiwan', 'Hong Kong', 'Macau'
+        }
+        return location not in countries
     
     async def search_prospects(self, company_profiles: List[Dict], personas: List[Dict], company_description: Dict, limit: int) -> List[Dict]:
         try:
@@ -294,7 +327,7 @@ class CoreSignalService:
             data = response.json()
             prospect_ids = data if isinstance(data, list) else []
             print(f"Found {len(prospect_ids)} prospect IDs from CoreSignal API")
-            
+            print(f"Prospect IDs: {prospect_ids}")
             if len(prospect_ids) > limit:
                 selected_prospect_ids = random.sample(prospect_ids, limit)
             else:
@@ -349,21 +382,21 @@ class CoreSignalService:
 
 def main():
     company_description = {
-        'description': 'SaaS companies that sell B2B software solutions to mid-market and enterprise customers',  # Mandatory
-        'exclusion_criteria': ['Non-profit', 'Government', 'Agency']  # Optional
+        'description': '',
+        'exclusion_criteria': []
     }
     
     company_profiles = [{
-        'industries': ['Technology', 'Software', 'SaaS'],
-        'employee_size_range': ['10-50', '51-200', '201-500'],
-        'revenue_range': [],
+        'industries': ['Higher Education'],
+        'employee_size_range': ['500+'],
+        'revenue_range': ['50M+'],
         'funding_stages': [],
-        'location': ['United States', 'Canada', 'United Kingdom']
+        'location': ['San Francisco']
     }]
     
     personas = [{
-        'title_keywords': ['CEO', 'CTO', 'VP Engineering', 'Head of Engineering'],
-        'seniority_levels': ['C-Level', 'VP', 'Director'],
+        'position_title': ['CTO', 'CEO'],
+        'seniority_levels': ['C-Level', 'VP'],
         'buying_roles': []
     }]
     
@@ -371,15 +404,13 @@ def main():
     print(f"Industries: {company_profiles[0]['industries']}")
     print(f"Employee Ranges: {company_profiles[0]['employee_size_range']}")
     print(f"Revenue Ranges: {company_profiles[0]['revenue_range']}")
-    print(f"Title Keywords: {personas[0]['title_keywords']}")
+    print(f"Title Keywords: {personas[0]['position_title']}")
     print(f"Seniority Levels: {personas[0]['seniority_levels']}")
     print()
     
     # search limit
-    limit = 1
+    limit = 0
 
-    # Section 2: Initialize the CoreSignal service
-    print("Initializing Service")
     try:
         coresignal_service = CoreSignalService()
         print("Service initialized")
@@ -388,7 +419,6 @@ def main():
         print("Make sure to set CORESIGNAL_API_KEY environment variable")
         return
     
-    # Section 3: Build the Elasticsearch DSL query
     print("Building Search Query")
     try:
         query = coresignal_service.build_search_query(company_profiles=company_profiles, personas=personas, company_description=company_description)
@@ -399,7 +429,6 @@ def main():
         return
     print()
     
-    # Section 4: Call the API and get results
     print("Calling CoreSignal API")
     try:
         async def search_prospects():
@@ -415,7 +444,6 @@ def main():
         print(f"API call successful!")
         print(f"Found {len(prospects)} prospects")
         
-        # Display results
         print("\nResults")
         for i, prospect in enumerate(prospects, 1):
             print(f"\nProspect {i}:")
@@ -425,7 +453,6 @@ def main():
             print(f"  Email: {prospect.get('email', '')}")
             print(f"  LinkedIn: {prospect.get('linkedin_url', '')}")
         
-        # Save to JSON file
         with open("coresignal_results.json", 'w') as f:
             json.dump(prospects, f, indent=2)
         print(f"\nResults saved to: coresignal_results.json")
