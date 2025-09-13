@@ -88,10 +88,10 @@ if __name__ == "__main__":
     #4 test getting matching prospects for a customer
     # lets use test customer with customer_id : "mlevy-20250905-5730756828"
     #
-    prospect_id_list = fp.find_matching_prospects("mlevy-20250905-5730756828")
+    prospect_id_list = fp.find_matching_prospects("mlevy-20250905-5730756828", "prospectid_001")
     print(f"size of prospect list returned = |{len(prospect_id_list)}| and list = |{prospect_id_list}|")
 
-    result = fp.findAndUpdateCustomerProspect("mlevy-20250905-5730756828")
+    result = fp.findAndUpdateCustomerProspect("mlevy-20250905-5730756828", "prospectid_001")
     print(f" status = |{result['status']}| and message = |{result['message']}|")
 
 
@@ -173,3 +173,31 @@ if __name__ == "__main__":
     result = fp.update_daily_list_prospect_status("mlevy-20250905-5730756828", "coresignal267051946", "contacted", activity_history)
     print("\nresult dict from updating status", result)
 
+
+
+    #####################################################################################
+    #10 test changing the status of the has_replied to True, 
+    #   done, when customer moved the reply item to the REPLIED section (to the right)
+    #   lets use : customer_id = "mlevy-20250905-5730756828", prospect_id = "coresignal267051946"
+    #  
+    activity_history = json.dumps({
+    "date": "2025-09-10",
+    "action": "The prospect has replied"
+    })
+    result = fp.update_has_replied_status("mlevy-20250905-5730756828", "coresignal267051946", True, activity_history)
+    print("\nresult dict from updating has_replied", result)
+
+
+
+
+    #####################################################################################
+    #11 test retrieving the propect list of a given customer.
+    #   this data will come from the "customer_proepcts" tabble and will be displayed on the
+    #   "Find Prospects" page
+    #   lets use : customer_id = "mlevy-20250905-5730756828", prospect_id = "coresignal267051946"
+    #  
+    result = fp.get_customer_prospects_list("mlevy-20250905-5730756828","prospectid_001") 
+    print("\nresult dict from retrieving prospects", result['message'])
+    if(result['status']=="success"):
+        print(f" number of prospects eturned = |{result['nb_prospects_returned']}|")
+        print(f" prospects #1 = |{result['prospect_list'][0]}|")
