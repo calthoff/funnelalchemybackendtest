@@ -185,7 +185,7 @@ def update_prospect_criteria(payload: ProspectCriteriaRequest):
         )
 
 @router.get("/{customer_id}/matching-prospects")
-def find_matching_prospects_for_customer(customer_id: str):
+def find_matching_prospects_for_customer(customer_id: str, prospect_profile_id: str = "default"):
     if not FUNNELPROSPECTS_AVAILABLE or not find_matching_prospects:
         raise HTTPException(
             status_code=503,
@@ -193,8 +193,8 @@ def find_matching_prospects_for_customer(customer_id: str):
         )
     
     try:
-        print(f"Finding matching prospects for customer: {customer_id}")
-        result = find_matching_prospects(customer_id)
+        print(f"Finding matching prospects for customer: {customer_id}, profile: {prospect_profile_id}")
+        result = find_matching_prospects(customer_id, prospect_profile_id)
         
         return {
             "status": "success",
@@ -212,7 +212,7 @@ def find_matching_prospects_for_customer(customer_id: str):
         )
 
 @router.post("/{customer_id}/update-prospects")
-def update_customer_prospects(customer_id: str):
+def update_customer_prospects(customer_id: str, prospect_profile_id: str = "default"):
     if not FUNNELPROSPECTS_AVAILABLE or not findAndUpdateCustomerProspect:
         raise HTTPException(
             status_code=503,
@@ -220,7 +220,7 @@ def update_customer_prospects(customer_id: str):
         )
     
     try:
-        result = findAndUpdateCustomerProspect(customer_id)
+        result = findAndUpdateCustomerProspect(customer_id, prospect_profile_id)
         
         if result["status"] == "success":
             return {
