@@ -467,7 +467,7 @@ def updateCustomerProspectCriteria(customer_id: str,
 
 
 #discover new potential prospects that can be added to the customer_prospects list
-def find_matching_prospects(customer_id: str) -> list[str]:
+def find_matching_prospects(customer_id: str, prospect_profile_id: str) -> list[str]:
     """
     Function will find prospects that match criteria from a customer's profile.
     
@@ -490,12 +490,12 @@ def find_matching_prospects(customer_id: str) -> list[str]:
         cur.execute("""
             SELECT criteria_dataset 
             FROM customer_prospects_profiles 
-            WHERE company_unique_id = %s
-        """, (company_unique_id,))
+            WHERE company_unique_id = %s and prospect_profile_id = %s
+        """, (company_unique_id, prospect_profile_id))
         
         result = cur.fetchone()
         if not result:
-            print("No criteria found for this company_unique_id")
+            print(f"No criteria found for this company_unique_id:|{company_unique_id}| and prospect_profile_id:|{prospect_profile_id}|")
             return []
         
         criteria_json = result[0]
@@ -588,14 +588,14 @@ def find_matching_prospects(customer_id: str) -> list[str]:
         return []
 
 
-
-def findAndUpdateCustomerProspect(customer_id: str) -> Dict:
+def findAndUpdateCustomerProspect(customer_id: str, prospect_profile_id: str) -> Dict:
     """
     This function will both find potential prospects as well as update the
     prospect for that customer in the "customer_prospects" table
 
     Input parameters:
     - customer_id: unique ID for that customer
+    - prospect_profile_id: id for that prospect profile
 
     Returns:
     Dict with status and count stats about prospects found, example:
@@ -605,6 +605,7 @@ def findAndUpdateCustomerProspect(customer_id: str) -> Dict:
                       f"Inserted: {inserted_count}, Already existed: {existing_count}",
             "customer_id": customer_id,
             "total_prospects_found": len(potential_prospect_list),
+            "prospect_profile_id: prospect_profile_id,
             "inserted_count": inserted_count,
             "existing_count": existing_count
         }    
@@ -614,7 +615,7 @@ def findAndUpdateCustomerProspect(customer_id: str) -> Dict:
     company_unique_id = customer_id.split("-")[-1]
     
     # Get potential prospects
-    potential_prospect_list = find_matching_prospects(customer_id)
+    potential_prospect_list = find_matching_prospects(customer_id, prospect_profile_id)
     
     # Check if list is empty
     if not potential_prospect_list:
@@ -622,7 +623,8 @@ def findAndUpdateCustomerProspect(customer_id: str) -> Dict:
             "status": "success",
             "message": "No prospects found so no insert/update to the 'customer_prospects' table",
             "customer_id": customer_id,
-            "company_unique_id": company_unique_id
+            "company_unique_id": company_unique_id,
+            "prospect_profile_id": prospect_profile_id
         }
 
     db_connection = connect_db()
@@ -643,8 +645,8 @@ def findAndUpdateCustomerProspect(customer_id: str) -> Dict:
             cur.execute("""
                 SELECT COUNT(*) 
                 FROM customer_prospects 
-                WHERE customer_id = %s AND prospect_id = %s
-            """, (customer_id, prospect_id))
+                WHERE customer_id = %s AND prospect_id = %s AND prospect_profile_id = %s 
+            """, (customer_id, prospect_id, prospect_profile_id))
             
             exists = cur.fetchone()[0] > 0
             
@@ -654,6 +656,7 @@ def findAndUpdateCustomerProspect(customer_id: str) -> Dict:
                     INSERT INTO customer_prospects (
                         customer_id,
                         prospect_id,
+                        prospect_profile_id,
                         score,
                         score_reason,
                         how_is_this_score,
@@ -665,11 +668,12 @@ def findAndUpdateCustomerProspect(customer_id: str) -> Dict:
                         created_at,
                         last_updated
                     ) VALUES (
-                        %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s
+                        %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s
                     )
                 """, (
                     customer_id,           # customer_id
                     prospect_id,           # prospect_id
+                    prospect_profile_id,   # prospect_profile_id
                     0,                     # score (set to zero)
                     "",                    # score_reason (empty string)
                     "",                    # how_is_this_score (empty string)
@@ -694,6 +698,7 @@ def findAndUpdateCustomerProspect(customer_id: str) -> Dict:
             "message": f"Successfully processed {len(potential_prospect_list)} prospects. "
                       f"Inserted: {inserted_count}, Already existed: {existing_count}",
             "customer_id": customer_id,
+            "prospect_profile_id": prospect_profile_id,
             "total_prospects_found": len(potential_prospect_list),
             "inserted_count": inserted_count,
             "existing_count": existing_count
@@ -1279,4 +1284,245 @@ def update_daily_list_prospect_status(customer_id: str, prospect_id: str, status
             "message": str(e),
             "customer_id": customer_id if 'customer_id' in locals() else None,
             "prospect_id": prospect_id if 'prospect_id' in locals() else None
+        }
+
+
+def update_has_replied_status(customer_id: str, prospect_id: str, has_replied: bool, activity_history: str="") -> Dict:
+    """
+    This function will update the "has_replied" and "activity_history" fields of a prospect in the "customer_prospects" table
+    This function should reaaly only be used to change the has_replied from False to True, since
+    the default value is False.
+    
+    Input parameters:
+        customer_id (str): Customer ID
+        prospect_id (str): Prospect ID
+        has_replied (bool): True if the prospect has replied to the customer contacting him
+        activity_history (str): Activity history to update (will be converted to JSON)
+    
+    Returns:
+        Dict: Response with status and message and dict with the format below:
+            {
+                "status": "success",
+                "message": "Prospect status updated successfully",
+                "customer_id": customer_id,
+                "prospect_id": prospect_id,
+                "new_has_replied_status": status
+            }        
+    """
+    
+    try:
+        # Validate required parameters
+        if not customer_id or customer_id.strip() == "":
+            raise RuntimeError("customer_id is required and cannot be empty")
+        if not prospect_id or prospect_id.strip() == "":
+            raise RuntimeError("prospect_id is required and cannot be empty")
+        if has_replied is None:
+            raise RuntimeError("has_replied is required and cannot be None")
+        if not isinstance(has_replied, bool):
+            raise RuntimeError("has_replied must be a Boolean value (True or False)")
+
+        # Connect to the database
+        conn = connect_db()
+        try:
+            cur = conn.cursor()
+
+            # Check if the record exists first
+            cur.execute("""
+                SELECT COUNT(*) 
+                FROM customer_prospects 
+                WHERE customer_id = %s AND prospect_id = %s
+            """, (customer_id, prospect_id))
+            
+            exists = cur.fetchone()[0] > 0
+
+            if not exists:
+                cur.close()
+                return {
+                    "status": "error",
+                    "message": "No prospect found for the provided customer_id and prospect_id",
+                    "customer_id": customer_id,
+                    "prospect_id": prospect_id
+                }
+
+            # Get current timestamp for last_updated
+            current_timestamp = datetime.datetime.now()
+
+            # Convert activity_history to JSON if it's a string
+            if isinstance(activity_history, str):
+                activity_history_json = json.dumps(activity_history)
+            else:
+                activity_history_json = json.dumps(activity_history)
+
+            # Update the status, activity_history, and last_updated timestamp
+            cur.execute("""
+                UPDATE customer_prospects 
+                SET has_replied = %s, activity_history = %s, last_updated = %s
+                WHERE customer_id = %s AND prospect_id = %s
+            """, (has_replied, activity_history_json, current_timestamp, customer_id, prospect_id))
+
+            # Commit the update
+            conn.commit()
+            cur.close()
+
+            # Return success response
+            return {
+                "status": "success",
+                "message": "Prospect status updated successfully",
+                "customer_id": customer_id,
+                "prospect_id": prospect_id,
+                "new_status": has_replied
+            }
+
+        finally:
+            conn.close()
+
+    except RuntimeError as e:
+        return {
+            "status": "error",
+            "error_type": "RuntimeError",
+            "message": str(e),
+            "customer_id": customer_id if 'customer_id' in locals() else None,
+            "prospect_id": prospect_id if 'prospect_id' in locals() else None
+        }
+    except Exception as e:
+        return {
+            "status": "error",
+            "error_type": type(e).__name__,
+            "message": str(e),
+            "customer_id": customer_id if 'customer_id' in locals() else None,
+            "prospect_id": prospect_id if 'prospect_id' in locals() else None
+        }
+
+
+
+def get_customer_prospects_list(customer_id: str, prospect_profile_id: str, show_thumbs_down: bool = False) -> Dict:
+    """
+    Function will return all the prospects for a given customer that are NOT yet in his daily list
+    or does not have its thumbs_down flag set to True (unless the 3rd parameter is set to True)
+    """ 
+    try:
+        # Validate required parameters
+        if not customer_id or customer_id.strip() == "":
+            raise RuntimeError("customer_id is required and cannot be empty")
+        if not prospect_profile_id or prospect_profile_id.strip() == "":
+            raise RuntimeError("prospect_profile_id is required and cannot be empty")
+        if show_thumbs_down is None or not isinstance(show_thumbs_down, bool):
+            raise RuntimeError("show_thumbs_down is required and must be a Boolean value (True or False)")
+
+        # Extract company_unique_id from customer_id (format: <...>-<...>-<company_unique_id>)
+        try:
+            company_unique_id = customer_id.split("-")[-1]
+        except IndexError:
+            raise RuntimeError("Invalid customer_id format; expected format: <...>-<...>-<company_unique_id>")
+
+        # Connect to the database
+        conn = connect_db()
+        try:
+            cur = conn.cursor()
+
+            # Build the SQL query with JOIN
+            if show_thumbs_down:
+                # Include prospects with thumbs_down = True
+                sql_query = """
+                    SELECT 
+                        cp.prospect_id,
+                        cp.score,
+                        p.full_name,
+                        p.first_name,
+                        p.last_name,
+                        LEFT((p.vendordata->'experience'->1->>'company_name'),50) AS company_name,
+                        LEFT((p.vendordata->'experience'->1->>'position_title'),50) AS position_title,
+                        LEFT((p.vendordata->'experience'->1->>'department'),50) AS department,
+                        LEFT((p.vendordata->'experience'->1->>'management_level'),50) AS management_level,
+                        LEFT((p.vendordata->'experience'->1->>'company_type'),50) AS company_type,
+                        LEFT((p.vendordata->'experience'->1->>'company_annual_revenue_source_5'),50) AS revenue_source_5,
+                        LEFT((p.vendordata->'experience'->1->>'company_annual_revenue_source_1'),50) AS revenue_source_1
+                    FROM customer_prospects cp
+                    JOIN prospects p ON cp.prospect_id = p.id
+                    WHERE cp.customer_id = %s 
+                        AND cp.prospect_profile_id = %s 
+                        AND cp.is_inside_daily_list = %s
+                """
+                params = (customer_id, prospect_profile_id, False)
+            else:
+                # Exclude prospects with thumbs_down = True
+                sql_query = """
+                    SELECT 
+                        cp.prospect_id,
+                        cp.score,
+                        p.full_name,
+                        p.first_name,
+                        p.last_name,
+                        LEFT((p.vendordata->'experience'->1->>'company_name'),50) AS company_name,
+                        LEFT((p.vendordata->'experience'->1->>'position_title'),50) AS position_title,
+                        LEFT((p.vendordata->'experience'->1->>'department'),50) AS department,
+                        LEFT((p.vendordata->'experience'->1->>'management_level'),50) AS management_level,
+                        LEFT((p.vendordata->'experience'->1->>'company_type'),50) AS company_type,
+                        LEFT((p.vendordata->'experience'->1->>'company_annual_revenue_source_5'),50) AS revenue_source_5,
+                        LEFT((p.vendordata->'experience'->1->>'company_annual_revenue_source_1'),50) AS revenue_source_1
+                    FROM customer_prospects cp
+                    JOIN prospects p ON cp.prospect_id = p.id
+                    WHERE cp.customer_id = %s 
+                        AND cp.prospect_profile_id = %s 
+                        AND cp.is_inside_daily_list = %s
+                        AND (cp.thumbs_down = %s OR cp.thumbs_down IS NULL)
+                """
+                params = (customer_id, prospect_profile_id, False, False)
+
+            # Execute the query
+            cur.execute(sql_query, params)
+            results = cur.fetchall()
+            cur.close()
+
+            # Convert results to list of dictionaries
+            result_list = []
+            for row in results:
+                prospect_dict = {
+                    "prospect_id": row[0],
+                    "score": row[1],
+                    "full_name": row[2],
+                    "first_name": row[3],
+                    "last_name": row[4],
+                    "company_name": row[5],
+                    "position_title": row[6],
+                    "department": row[7],
+                    "management_level": row[8],
+                    "company_type": row[9],
+                    "revenue_source_5": row[10],
+                    "revenue_source_1": row[11]
+                }
+                result_list.append(prospect_dict)
+
+            # Return success response with the prospect list
+            return {
+                "status": "success",
+                "message": "Prospect list successfully retrieved",
+                "customer_id": customer_id,
+                "prospect_profile_id": prospect_profile_id,
+                "nb_prospects_returned": len(result_list),
+                "prospect_list": result_list
+            }
+
+        finally:
+            conn.close()
+
+    except RuntimeError as e:
+        return {
+            "status": "error",
+            "error_type": "RuntimeError",
+            "message": str(e),
+            "customer_id": customer_id if 'customer_id' in locals() else None,
+            "prospect_profile_id": prospect_profile_id if 'prospect_profile_id' in locals() else None,
+            "nb_prospects_returned": 0,
+            "prospect_list": []
+        }
+    except Exception as e:
+        return {
+            "status": "error",
+            "error_type": type(e).__name__,
+            "message": str(e),
+            "customer_id": customer_id if 'customer_id' in locals() else None,
+            "prospect_profile_id": prospect_profile_id if 'prospect_profile_id' in locals() else None,
+            "nb_prospects_returned": 0,
+            "prospect_list": []
         }

@@ -15,7 +15,9 @@ try:
         get_prospects_stats,
         add_to_daily_list,
         remove_from_daily_list,
-        get_customer_prospect_criteria
+        get_customer_prospect_criteria,
+        get_customer_prospects_list,
+        update_daily_list_prospect_status
     )
     FUNNELPROSPECTS_AVAILABLE = True
 except Exception as e:
@@ -30,6 +32,8 @@ except Exception as e:
     add_to_daily_list = None
     remove_from_daily_list = None
     get_customer_prospect_criteria = None
+    get_customer_prospects_list = None
+    update_daily_list_prospect_status = None
 
 router = APIRouter(prefix="/customers", tags=["customers"])
 
@@ -50,6 +54,12 @@ class ProspectCriteriaRequest(BaseModel):
 class DailyListRequest(BaseModel):
     customer_id: str
     prospect_id_list: List[str]
+
+class ProspectStatusRequest(BaseModel):
+    customer_id: str
+    prospect_id: str
+    status: str
+    activity_history: str
 
 @router.get("/stats")
 def get_prospect_stats():
@@ -233,72 +243,6 @@ def update_customer_prospects(customer_id: str):
             detail=f"Failed to update customer prospects: {str(e)}"
         )
 
-@router.post("/daily-list/add")
-def add_to_daily_list_endpoint(payload: DailyListRequest):
-    if not FUNNELPROSPECTS_AVAILABLE or not add_to_daily_list:
-        raise HTTPException(
-            status_code=503,
-            detail="AWS integration not available"
-        )
-    
-    try:
-        result = add_to_daily_list(
-            customer_id=payload.customer_id,
-            prospect_id_list=payload.prospect_id_list
-        )
-        
-        if result["status"] == "success":
-            return {
-                "status": "success",
-                "message": result["message"],
-                "data": result
-            }
-        else:
-            raise HTTPException(
-                status_code=400,
-                detail=result["message"]
-            )
-            
-    except Exception as e:
-        print(f"Error adding to daily list: {str(e)}")
-        raise HTTPException(
-            status_code=500,
-            detail=f"Failed to add to daily list: {str(e)}"
-        )
-
-@router.post("/daily-list/remove")
-def remove_from_daily_list_endpoint(payload: DailyListRequest):
-    if not FUNNELPROSPECTS_AVAILABLE or not remove_from_daily_list:
-        raise HTTPException(
-            status_code=503,
-            detail="AWS integration not available"
-        )
-    
-    try:
-        result = remove_from_daily_list(
-            customer_id=payload.customer_id,
-            prospect_id_list=payload.prospect_id_list
-        )
-        
-        if result["status"] == "success":
-            return {
-                "status": "success",
-                "message": result["message"],
-                "data": result
-            }
-        else:
-            raise HTTPException(
-                status_code=400,
-                detail=result["message"]
-            )
-            
-    except Exception as e:
-        print(f"Error removing from daily list: {str(e)}")
-        raise HTTPException(
-            status_code=500,
-            detail=f"Failed to remove from daily list: {str(e)}"
-        )
-
 @router.get("/{customer_id}/get-prospect-criteria")
 def get_customer_prospect_criteria_endpoint(customer_id: str, prospect_profile_id: str = "default"):
     if not FUNNELPROSPECTS_AVAILABLE or not get_customer_prospect_criteria:
@@ -331,4 +275,37 @@ def get_customer_prospect_criteria_endpoint(customer_id: str, prospect_profile_i
         raise HTTPException(
             status_code=500,
             detail=f"Failed to get prospect criteria: {str(e)}"
+        )
+
+    if not FUNNELPROSPECTS_AVAILABLE or not update_daily_list_prospect_status:
+        raise HTTPException(
+            status_code=503,
+            detail="AWS integration not available"
+        )
+    
+    try:
+        result = update_daily_list_prospect_status(
+            customer_id=payload.customer_id,
+            prospect_id=payload.prospect_id,
+            status=payload.status,
+            activity_history=payload.activity_history
+        )
+        
+        if result["status"] == "success":
+            return {
+                "status": "success",
+                "message": result["message"],
+                "data": result
+            }
+        else:
+            raise HTTPException(
+                status_code=400,
+                detail=result["message"]
+            )
+            
+    except Exception as e:
+        print(f"Error updating prospect status: {str(e)}")
+        raise HTTPException(
+            status_code=500,
+            detail=f"Failed to update prospect status: {str(e)}"
         )
