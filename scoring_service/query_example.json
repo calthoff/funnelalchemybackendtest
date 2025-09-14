@@ -1,0 +1,358 @@
+{
+  "scoring_settings": {
+    "company_description": "We are a B2B SaaS company specializing in sales automation and CRM solutions for mid-market and enterprise companies. Our platform helps sales teams increase productivity, improve lead management, and drive revenue growth through intelligent automation and analytics.",
+    "exclusion_criteria": "We don't sell to companies with less than 50 employees, companies in the healthcare industry due to compliance requirements, or companies that are not B2B focused. We also exclude companies that are in financial distress or have recently laid off significant portions of their sales team.",
+    "industries": [
+      "Technology",
+      "Financial Services",
+      "Manufacturing",
+      "Professional Services",
+      "Real Estate",
+      "Insurance",
+      "Consulting",
+      "Software Development",
+      "E-commerce",
+      "Telecommunications"
+    ],
+    "employee_range": [
+      "51-200",
+      "201-500",
+      "501-1000",
+      "1001-5000",
+      "5001-10000"
+    ],
+    "revenue_range": [
+      "$10M-$50M",
+      "$50M-$100M",
+      "$100M-$500M",
+      "$500M-$1B",
+      "$1B+"
+    ],
+    "funding_stages": [
+      "Series A",
+      "Series B",
+      "Series C",
+      "Series D",
+      "IPO",
+      "Private Equity"
+    ],
+    "title_keywords": [
+      "Sales Director",
+      "VP of Sales",
+      "Chief Revenue Officer",
+      "Sales Manager",
+      "Revenue Manager",
+      "Business Development Director",
+      "Sales Operations Manager",
+      "Account Executive",
+      "Sales Representative",
+      "Sales Executive"
+    ],
+    "seniority_levels": [
+      "Senior Management",
+      "Executive",
+      "Middle Management",
+      "Senior Individual Contributor"
+    ],
+    "buying_roles": [
+      "Decision Maker",
+      "Influencer",
+      "Budget Holder",
+      "Technical Evaluator",
+      "End User"
+    ],
+    "locations": [
+      "United States",
+      "Canada"
+    ],
+    "other_preferences": "Prefer technical founders and candidates with strong B2B SaaS experience. Prioritize prospects with recent funding rounds and high growth metrics."
+  },
+  "prospects": [
+    {
+      "prospect_id": "12346",
+      "full_name": "Sarah Johnson",
+      "basic_profile": {
+        "headline": "VP of Sales at TechFlow Solutions",
+        "summary": "Strategic sales leader with 12+ years experience in B2B SaaS, specializing in scaling sales operations and driving revenue growth for high-growth technology companies.",
+        "location_country": "United States",
+        "location_full": "San Francisco, California, United States",
+        "inferred_skills": ["Sales Strategy", "Revenue Operations", "Team Building", "B2B SaaS", "Sales Process Optimization"],
+        "connections_count": 1200,
+        "followers_count": 1800
+      },
+      "current_job": {
+        "is_working": true,
+        "active_experience_title": "VP of Sales",
+        "active_experience_description": "Leading sales organization of 50+ reps, managing $50M+ annual revenue, implementing sales enablement programs",
+        "active_experience_department": "Sales",
+        "active_experience_management_level": "Executive",
+        "is_decision_maker": true
+      },
+      "current_company": {
+        "position_title": "VP of Sales",
+        "department": "Sales",
+        "management_level": "Executive",
+        "duration_months": 18,
+        "location": "San Francisco, CA",
+        "company_id": "comp_790",
+        "company_name": "TechFlow Solutions",
+        "company_industry": "Technology",
+        "company_followers_count": 25000,
+        "company_size_range": "501-1000",
+        "company_employees_count": 750,
+        "company_categories_and_keywords": ["SaaS", "Sales Automation", "CRM", "B2B", "Enterprise"],
+        "company_hq_country": "United States",
+        "company_last_funding_round_date": "2023-12-01",
+        "company_last_funding_round_amount_raised": 75000000,
+        "company_employees_count_change_yearly_percentage": 60,
+        "company_hq_full_address": "456 Innovation Drive, San Francisco, CA 94105",
+        "company_is_b2b": true
+      },
+      "total_experience": {
+        "total_experience_duration_months": 144,
+        "total_experience_duration_months_breakdown_department": {
+          "Sales": 120,
+          "Marketing": 18,
+          "Business Development": 6
+        },
+        "total_experience_duration_months_breakdown_management_level": {
+          "Executive": 24,
+          "Senior Management": 48,
+          "Middle Management": 48,
+          "Individual Contributor": 24
+        }
+      },
+      "education": {
+        "education_degrees": [
+          {
+            "degree": "MBA",
+            "field": "Marketing",
+            "institution": "Harvard Business School",
+            "graduation_year": 2012
+          },
+          {
+            "degree": "Bachelor of Arts",
+            "field": "Economics",
+            "institution": "Yale University",
+            "graduation_year": 2008
+          }
+        ]
+      },
+      "languages": [
+        {
+          "language": "English",
+          "proficiency": "Native"
+        },
+        {
+          "language": "French",
+          "proficiency": "Fluent"
+        }
+      ],
+      "additional_info": {
+        "awards": [
+          "Sales Leader of the Year 2023",
+          "Top 40 Under 40 Sales Leaders"
+        ],
+        "certifications": [
+          "Salesforce Certified Sales Cloud Consultant",
+          "Gong Sales Enablement Certification",
+          "Revenue Operations Professional"
+        ],
+        "courses": [
+          "Executive Sales Leadership",
+          "Revenue Operations Strategy"
+        ]
+      },
+      "contact_info": {
+        "email": "sarah.johnson@techflow.com",
+        "phone_number": "+1-555-234-5678",
+        "linkedin_url": "https://linkedin.com/in/sarahjohnson-techflow"
+      }
+    },
+    {
+      "prospect_id": "12347",
+      "full_name": "Michael Chen",
+      "basic_profile": {
+        "headline": "Sales Director at TechFlow Solutions",
+        "summary": "Results-driven sales leader with 8+ years in B2B technology sales, specializing in enterprise account management and team development.",
+        "location_country": "United States",
+        "location_full": "San Francisco, California, United States",
+        "inferred_skills": ["Enterprise Sales", "Account Management", "Team Leadership", "Sales Strategy", "Customer Success"],
+        "connections_count": 650,
+        "followers_count": 950
+      },
+      "current_job": {
+        "is_working": true,
+        "active_experience_title": "Sales Director",
+        "active_experience_description": "Managing team of 12 enterprise sales reps, focusing on Fortune 500 accounts and strategic partnerships",
+        "active_experience_department": "Sales",
+        "active_experience_management_level": "Senior Management",
+        "is_decision_maker": true
+      },
+      "current_company": {
+        "position_title": "Sales Director",
+        "department": "Sales",
+        "management_level": "Senior Management",
+        "duration_months": 12,
+        "location": "San Francisco, CA",
+        "company_id": "comp_790",
+        "company_name": "TechFlow Solutions",
+        "company_industry": "Technology",
+        "company_followers_count": 25000,
+        "company_size_range": "501-1000",
+        "company_employees_count": 750,
+        "company_categories_and_keywords": ["SaaS", "Sales Automation", "CRM", "B2B", "Enterprise"],
+        "company_hq_country": "United States",
+        "company_last_funding_round_date": "2023-12-01",
+        "company_last_funding_round_amount_raised": 75000000,
+        "company_employees_count_change_yearly_percentage": 60,
+        "company_hq_full_address": "456 Innovation Drive, San Francisco, CA 94105",
+        "company_is_b2b": true
+      },
+      "total_experience": {
+        "total_experience_duration_months": 96,
+        "total_experience_duration_months_breakdown_department": {
+          "Sales": 84,
+          "Business Development": 12
+        },
+        "total_experience_duration_months_breakdown_management_level": {
+          "Senior Management": 24,
+          "Middle Management": 48,
+          "Individual Contributor": 24
+        }
+      },
+      "education": {
+        "education_degrees": [
+          {
+            "degree": "Bachelor of Science",
+            "field": "Business Administration",
+            "institution": "UC Berkeley",
+            "graduation_year": 2015
+          }
+        ]
+      },
+      "languages": [
+        {
+          "language": "English",
+          "proficiency": "Native"
+        },
+        {
+          "language": "Mandarin",
+          "proficiency": "Fluent"
+        }
+      ],
+      "additional_info": {
+        "awards": [
+          "Top Sales Director 2023",
+          "Excellence in Leadership Award"
+        ],
+        "certifications": [
+          "Salesforce Certified Administrator",
+          "LinkedIn Sales Navigator Certification",
+          "Enterprise Sales Professional"
+        ],
+        "courses": [
+          "Advanced Sales Management",
+          "Enterprise Account Strategy"
+        ]
+      },
+      "contact_info": {
+        "email": "michael.chen@techflow.com",
+        "phone_number": "+1-555-345-6789",
+        "linkedin_url": "https://linkedin.com/in/michaelchen-sales"
+      }
+    },
+    {
+      "prospect_id": "12348",
+      "full_name": "Jennifer Williams",
+      "basic_profile": {
+        "headline": "Senior Account Executive at TechFlow Solutions",
+        "summary": "High-performing sales professional with 6+ years in B2B SaaS sales, specializing in mid-market and enterprise client acquisition.",
+        "location_country": "United States",
+        "location_full": "Los Angeles, California, United States",
+        "inferred_skills": ["B2B Sales", "Account Management", "Solution Selling", "Pipeline Management", "Client Relations"],
+        "connections_count": 450,
+        "followers_count": 720
+      },
+      "current_job": {
+        "is_working": true,
+        "active_experience_title": "Senior Account Executive",
+        "active_experience_description": "Managing $5M+ sales pipeline, focusing on mid-market technology companies and enterprise prospects",
+        "active_experience_department": "Sales",
+        "active_experience_management_level": "Senior Individual Contributor",
+        "is_decision_maker": false
+      },
+      "current_company": {
+        "position_title": "Senior Account Executive",
+        "department": "Sales",
+        "management_level": "Senior Individual Contributor",
+        "duration_months": 24,
+        "location": "Los Angeles, CA",
+        "company_id": "comp_790",
+        "company_name": "TechFlow Solutions",
+        "company_industry": "Technology",
+        "company_followers_count": 25000,
+        "company_size_range": "501-1000",
+        "company_employees_count": 750,
+        "company_categories_and_keywords": ["SaaS", "Sales Automation", "CRM", "B2B", "Enterprise"],
+        "company_hq_country": "United States",
+        "company_last_funding_round_date": "2023-12-01",
+        "company_last_funding_round_amount_raised": 75000000,
+        "company_employees_count_change_yearly_percentage": 60,
+        "company_hq_full_address": "456 Innovation Drive, San Francisco, CA 94105",
+        "company_is_b2b": true
+      },
+      "total_experience": {
+        "total_experience_duration_months": 72,
+        "total_experience_duration_months_breakdown_department": {
+          "Sales": 60,
+          "Business Development": 12
+        },
+        "total_experience_duration_months_breakdown_management_level": {
+          "Senior Individual Contributor": 36,
+          "Individual Contributor": 36
+        }
+      },
+      "education": {
+        "education_degrees": [
+          {
+            "degree": "Bachelor of Science",
+            "field": "Marketing",
+            "institution": "UCLA",
+            "graduation_year": 2017
+          }
+        ]
+      },
+      "languages": [
+        {
+          "language": "English",
+          "proficiency": "Native"
+        },
+        {
+          "language": "Spanish",
+          "proficiency": "Conversational"
+        }
+      ],
+      "additional_info": {
+        "awards": [
+          "Top Performer 2023",
+          "President's Club 2022"
+        ],
+        "certifications": [
+          "Salesforce Certified Sales Representative",
+          "HubSpot Sales Software Certification",
+          "Solution Selling Professional"
+        ],
+        "courses": [
+          "Advanced B2B Sales Techniques",
+          "Solution Selling Methodology"
+        ]
+      },
+      "contact_info": {
+        "email": "jennifer.williams@techflow.com",
+        "phone_number": "+1-555-456-7890",
+        "linkedin_url": "https://linkedin.com/in/jenniferwilliams-ae"
+      }
+    }
+  ]
+}

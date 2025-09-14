@@ -375,6 +375,19 @@ Service logs all requests with detailed information:
 - Execution time
 - Retry count
 
+## Python Client Module
+
+For easy integration, use the provided Python client module:
+
+```python
+import score_api_score as sc
+
+# Simple usage
+result = sc.scoring_function(scoring_settings, prospects)
+```
+
+See [CLIENT_README.md](CLIENT_README.md) for detailed client documentation and examples.
+
 ## Support
 
 For technical support, contact the development team or create an issue in the repository.
