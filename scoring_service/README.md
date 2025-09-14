@@ -65,29 +65,21 @@ curl -X POST "http://localhost:8000/score-prospects-batch" \
       {
         "prospect_id": "12346",
         "full_name": "Sarah Johnson",
-        "basic_profile": {
-          "headline": "VP of Sales at TechFlow Solutions",
-          "location_country": "United States"
-        },
-        "current_job": {
-          "active_experience_title": "VP of Sales",
-          "active_experience_management_level": "Executive",
-          "is_decision_maker": true
-        },
-        "current_company": {
-          "company_industry": "Technology",
-          "company_size_range": "501-1000",
-          "company_is_b2b": true,
-          "company_employees_count_change_yearly_percentage": 25.5,
-          "company_last_funding_round_amount_raised": 5000000
-        },
-        "total_experience": {
-          "total_experience_duration_months": 144,
-          "department_specific_experience_months": {
-            "Sales": 60,
-            "Business Development": 24
-          }
-        },
+        "headline": "VP of Sales at TechFlow Solutions",
+        "location_country": "United States",
+        "active_experience_title": "VP of Sales",
+        "active_experience_management_level": "Executive",
+        "is_decision_maker": true,
+        "company_industry": "Technology",
+        "company_size_range": "501-1000",
+        "company_is_b2b": true,
+        "company_employees_count_change_yearly_percentage": 25.5,
+        "company_last_funding_round_amount_raised": 5000000,
+        "total_experience_duration_months": 144,
+        "total_experience_duration_months_breakdown_department": [
+          {"department": "Sales", "total_experience_duration_months": 60},
+          {"department": "Business Development", "total_experience_duration_months": 24}
+        ],
         "certifications": ["Salesforce Admin", "Gong Certified"],
         "awards": ["Top Performer 2023", "Sales Excellence Award"]
       }
@@ -112,15 +104,11 @@ curl -X POST "http://localhost:8000/score_prospects" \
     "prospects": [
       {
         "prospect_id": "single_prospect",
-        "basic_profile": {
-          "headline": "VP of Sales at Startup"
-        },
-        "current_company": {
-          "company_industry": "Technology",
-          "company_size_range": "51-200",
-          "company_employees_count_change_yearly_percentage": 45.2,
-          "company_last_funding_round_amount_raised": 2000000
-        },
+        "headline": "VP of Sales at Startup",
+        "company_industry": "Technology",
+        "company_size_range": "51-200",
+        "company_employees_count_change_yearly_percentage": 45.2,
+        "company_last_funding_round_amount_raised": 2000000,
         "certifications": ["HubSpot Certified"],
         "awards": ["Rookie of the Year 2023"]
       }
@@ -150,33 +138,37 @@ Object with configurable fields for evaluation criteria:
 ```
 
 ### Prospect Format
-Each prospect is a JSON object with the following structure:
+Each prospect is a JSON object with flat structure (all fields at top level):
 
 ```json
 {
   "prospect_id": "12346",
   "full_name": "Sarah Johnson",
-  "basic_profile": {
-    "headline": "VP of Sales at TechFlow Solutions",
-    "summary": "Strategic sales leader with 12+ years experience...",
-    "location_country": "United States",
-    "location_full": "San Francisco, California, United States"
-  },
-  "current_job": {
-    "is_working": true,
-    "active_experience_title": "VP of Sales",
-    "active_experience_management_level": "Executive",
-    "is_decision_maker": true
-  },
-  "current_company": {
-    "company_industry": "Technology",
-    "company_size_range": "501-1000",
-    "company_is_b2b": true,
-    "company_last_funding_round_amount_raised": "$75M"
-  },
-  "total_experience": {
-    "total_experience_duration_months": 144
-  }
+  "headline": "VP of Sales at TechFlow Solutions",
+  "summary": "Strategic sales leader with 12+ years experience...",
+  "location_country": "United States",
+  "location_full": "San Francisco, California, United States",
+  "is_working": true,
+  "active_experience_title": "VP of Sales",
+  "active_experience_management_level": "Executive",
+  "is_decision_maker": true,
+  "company_industry": "Technology",
+  "company_size_range": "501-1000",
+  "company_is_b2b": true,
+  "company_last_funding_round_amount_raised": 75000000,
+  "total_experience_duration_months": 144,
+  "total_experience_duration_months_breakdown_department": [
+    {"department": "Sales", "total_experience_duration_months": 120},
+    {"department": "Marketing", "total_experience_duration_months": 18}
+  ],
+  "education_degrees": [
+    "Master's degree, Structural Engineering and Engineering Mechanics",
+    "Mathematics"
+  ],
+  "languages": [
+    {"language": "English", "proficiency": "Native"},
+    {"language": "French", "proficiency": "Fluent"}
+  ]
 }
 ```
 
@@ -381,9 +373,14 @@ For easy integration, use the provided Python client module:
 
 ```python
 import score_api_score as sc
+import json
+
+# Load data from query_example.json
+with open('query_example.json', 'r', encoding='utf-8') as f:
+    data = json.load(f)
 
 # Simple usage
-result = sc.scoring_function(scoring_settings, prospects)
+result = sc.scoring_function(data['scoring_settings'], data['prospects'])
 ```
 
 See [CLIENT_README.md](CLIENT_README.md) for detailed client documentation and examples.
