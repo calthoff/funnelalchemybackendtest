@@ -561,7 +561,7 @@ def find_matching_prospects(customer_id: str, prospect_profile_id: str, limit:in
 
 
 
-def findAndUpdateCustomerProspect(customer_id: str, prospect_profile_id: str, limit_prospects=500) -> Dict:
+def findAndUpdateCustomerProspect1(customer_id: str, prospect_profile_id: str, limit_prospects=500) -> Dict:
     """
     This function will both find potential prospects as well as update the
     prospect for that customer in the "customer_prospects" table
@@ -689,6 +689,133 @@ def findAndUpdateCustomerProspect(customer_id: str, prospect_profile_id: str, li
             "customer_id": customer_id,
             "company_unique_id": company_unique_id
         }
+
+
+
+
+def findAndUpdateCustomerProspect(customer_id: str, prospect_profile_id: str, limit_prospects=500) -> Dict:
+    """
+    This function will both find potential prospects as well as update the
+    prospect for that customer in the "customer_prospects" table
+
+    Input parameters:
+    - customer_id: unique ID for that customer
+    - prospect_profile_id: id for that prospect profile
+
+    Returns:
+    Dict with status and count stats about prospects found, example:
+        {
+            "status": "success",
+            "message": f"Successfully processed {len(potential_prospect_list)} prospects. "
+                      f"Inserted: {inserted_count}, Already existed: {existing_count}",
+            "customer_id": customer_id,
+            "total_prospects_found": len(potential_prospect_list),
+            "prospect_profile_id: prospect_profile_id,
+            "inserted_count": inserted_count,
+            "existing_count": existing_count
+        }    
+    """
+
+    # Extract company_unique_id for reference
+    company_unique_id = customer_id.split("-")[-1]
+
+    # Get potential prospects
+    potential_prospect_list: List[str] = find_matching_prospects(customer_id, prospect_profile_id, limit=limit_prospects)
+
+    # If nothing found, return early
+    if not potential_prospect_list:
+        return {
+            "status": "success",
+            "message": "No prospects found so no insert/update to the 'customer_prospects' table",
+            "customer_id": customer_id,
+            "company_unique_id": company_unique_id,
+            "prospect_profile_id": prospect_profile_id
+        }
+
+    db_connection = connect_db()
+    try:
+        cur = db_connection.cursor()
+
+        # Insert all prospects in one query, skipping ones that already exist
+        insert_sql = """
+            INSERT INTO customer_prospects (
+                customer_id,
+                prospect_id,
+                prospect_profile_id,
+                score,
+                score_reason,
+                how_is_this_score,
+                is_inside_daily_list,
+                activity_history,
+                status,
+                reply_content,
+                reply_sentiment,
+                created_at,
+                last_updated
+            )
+            SELECT
+                %(customer_id)s,
+                p.prospect_id,
+                %(prospect_profile_id)s,
+                0,
+                '',
+                '',
+                FALSE,
+                '{}'::json,
+                '',
+                '',
+                '',
+                CURRENT_DATE,
+                CURRENT_DATE
+            FROM unnest(%(prospect_ids)s::text[]) AS p(prospect_id)
+            WHERE NOT EXISTS (
+                SELECT 1
+                FROM customer_prospects c
+                WHERE c.customer_id = %(customer_id)s
+                  AND c.prospect_profile_id = %(prospect_profile_id)s
+                  AND c.prospect_id = p.prospect_id
+            )
+            RETURNING prospect_id;
+        """
+
+        cur.execute(insert_sql, {
+            "customer_id": customer_id,
+            "prospect_profile_id": prospect_profile_id,
+            "prospect_ids": potential_prospect_list
+        })
+
+        # Get how many were actually inserted
+        inserted_ids = [row[0] for row in cur.fetchall()]
+        inserted_count = len(inserted_ids)
+        existing_count = len(potential_prospect_list) - inserted_count
+
+        db_connection.commit()
+        cur.close()
+
+        return {
+            "status": "success",
+            "message": f"Successfully processed {len(potential_prospect_list)} prospects. "
+                       f"Inserted: {inserted_count}, Already existed: {existing_count}",
+            "customer_id": customer_id,
+            "company_unique_id": company_unique_id,
+            "prospect_profile_id": prospect_profile_id,
+            "total_prospects_found": len(potential_prospect_list),
+            "inserted_count": inserted_count,
+            "existing_count": existing_count
+        }
+
+    except Exception as e:
+        db_connection.rollback()
+        if 'cur' in locals():
+            cur.close()
+        return {
+            "status": "error",
+            "message": f"Error processing prospects: {str(e)}",
+            "customer_id": customer_id,
+            "company_unique_id": company_unique_id
+        }
+
+
 
 
 # Function to get value counts for specified fields in prospects table
