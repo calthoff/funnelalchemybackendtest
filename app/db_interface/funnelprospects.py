@@ -1407,7 +1407,8 @@ def get_customer_prospects_list(customer_id: str, prospect_profile_id: str, show
                         LEFT((p.vendordata->'experience'->1->>'management_level'),50) AS management_level,
                         LEFT((p.vendordata->'experience'->1->>'company_type'),50) AS company_type,
                         LEFT((p.vendordata->'experience'->1->>'company_annual_revenue_source_5'),50) AS revenue_source_5,
-                        LEFT((p.vendordata->'experience'->1->>'company_annual_revenue_source_1'),50) AS revenue_source_1
+                        LEFT((p.vendordata->'experience'->1->>'company_annual_revenue_source_1'),50) AS revenue_source_1,
+                        p.vendordata->>'picture_url' AS headshot_url
                     FROM customer_prospects cp
                     JOIN prospects p ON cp.prospect_id = p.id
                     WHERE cp.customer_id = %s 
@@ -1430,7 +1431,8 @@ def get_customer_prospects_list(customer_id: str, prospect_profile_id: str, show
                         LEFT((p.vendordata->'experience'->1->>'management_level'),50) AS management_level,
                         LEFT((p.vendordata->'experience'->1->>'company_type'),50) AS company_type,
                         LEFT((p.vendordata->'experience'->1->>'company_annual_revenue_source_5'),50) AS revenue_source_5,
-                        LEFT((p.vendordata->'experience'->1->>'company_annual_revenue_source_1'),50) AS revenue_source_1
+                        LEFT((p.vendordata->'experience'->1->>'company_annual_revenue_source_1'),50) AS revenue_source_1,
+                        p.vendordata->>'picture_url' AS headshot_url
                     FROM customer_prospects cp
                     JOIN prospects p ON cp.prospect_id = p.id
                     WHERE cp.customer_id = %s 
@@ -1460,7 +1462,8 @@ def get_customer_prospects_list(customer_id: str, prospect_profile_id: str, show
                     "management_level": row[8],
                     "company_type": row[9],
                     "revenue_source_5": row[10],
-                    "revenue_source_1": row[11]
+                    "revenue_source_1": row[11],
+                    "headshot_url": row[12],
                 }
                 result_list.append(prospect_dict)
 

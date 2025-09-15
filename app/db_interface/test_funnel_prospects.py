@@ -201,3 +201,4 @@ if __name__ == "__main__":
     if(result['status']=="success"):
         print(f" number of prospects eturned = |{result['nb_prospects_returned']}|")
         print(f" prospects #1 = |{result['prospect_list'][0]}|")
+        print(f" prospects #1 headshot url = |{result['prospect_list'][0]['headshot_url']}|")
