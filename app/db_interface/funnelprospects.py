@@ -5,7 +5,7 @@ Class and functions to be used
 
 :Author: Michel Eric Levy _mel_
 :Creation date: September 2nd, 2025
-:Last updated: 9/11/2025 (_mel_)
+:Last updated: 9/14/2025 (_mel_)
 
 """
 # pylint: disable=C0301,W1203, R0914, R0913, R0912, R0915,C0103, C0111, R0903, C0321, C0303
@@ -437,12 +437,14 @@ def updateCustomerProspectCriteria(customer_id: str,
 
 
 #discover new potential prospects that can be added to the customer_prospects list
-def find_matching_prospects(customer_id: str, prospect_profile_id: str) -> list[str]:
+def find_matching_prospects(customer_id: str, prospect_profile_id: str, limit:int=500) -> list[str]:
     """
     Function will find prospects that match criteria from a customer's profile.
     
     Input parameters:
         customer_id (str): Customer ID in format AAAA-99999-9999999999
+        prospect_profile_id: the string-ID of the particular profile
+        limit: is used if we wnat to limit the # of prospects being returned
     
     Returns:
         List[Dict]: List of matching prospects with their IDs
@@ -460,8 +462,8 @@ def find_matching_prospects(customer_id: str, prospect_profile_id: str) -> list[
         cur.execute("""
             SELECT criteria_dataset 
             FROM customer_prospects_profiles 
-            WHERE company_unique_id = %s and prospect_profile_id = %s
-        """, (company_unique_id, prospect_profile_id))
+            WHERE company_unique_id = %s and prospect_profile_id = %s limit %s
+        """, (company_unique_id, prospect_profile_id, limit))
         
         result = cur.fetchone()
         if not result:
@@ -559,7 +561,7 @@ def find_matching_prospects(customer_id: str, prospect_profile_id: str) -> list[
 
 
 
-def findAndUpdateCustomerProspect(customer_id: str, prospect_profile_id: str) -> Dict:
+def findAndUpdateCustomerProspect(customer_id: str, prospect_profile_id: str, limit_prospects=500) -> Dict:
     """
     This function will both find potential prospects as well as update the
     prospect for that customer in the "customer_prospects" table
@@ -586,7 +588,7 @@ def findAndUpdateCustomerProspect(customer_id: str, prospect_profile_id: str) ->
     company_unique_id = customer_id.split("-")[-1]
     
     # Get potential prospects
-    potential_prospect_list = find_matching_prospects(customer_id, prospect_profile_id)
+    potential_prospect_list = find_matching_prospects(customer_id, prospect_profile_id, limit=limit_prospects)
     
     # Check if list is empty
     if not potential_prospect_list:

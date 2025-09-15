@@ -91,7 +91,7 @@ if __name__ == "__main__":
     prospect_id_list = fp.find_matching_prospects("mlevy-20250905-5730756828", "prospectid_001")
     print(f"size of prospect list returned = |{len(prospect_id_list)}| and list = |{prospect_id_list}|")
 
-    result = fp.findAndUpdateCustomerProspect("mlevy-20250905-5730756828", "prospectid_001")
+    result = fp.findAndUpdateCustomerProspect("mlevy-20250905-5730756828", "prospectid_001", 500)
     print(f" status = |{result['status']}| and message = |{result['message']}|")
 
 
