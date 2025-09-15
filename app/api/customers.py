@@ -243,6 +243,97 @@ def update_customer_prospects(customer_id: str, prospect_profile_id: str = "defa
             detail=f"Failed to update customer prospects: {str(e)}"
         )
 
+@router.post("/{customer_id}/find-prospects")
+def trigger_prospect_matching(customer_id: str, prospect_profile_id: str = "default"):
+    """
+    Trigger background prospect matching for a customer.
+    Returns immediately with a job ID for tracking progress.
+    """
+    try:
+        from app.background_jobs import start_prospect_matching_background
+        
+        # Start background job
+        job_id = start_prospect_matching_background(customer_id, prospect_profile_id)
+        
+        return {
+            "status": "success",
+            "message": "Prospect matching started in background",
+            "data": {
+                "job_id": job_id,
+                "customer_id": customer_id,
+                "prospect_profile_id": prospect_profile_id,
+                "status": "running"
+            }
+        }
+        
+    except Exception as e:
+        print(f"Error starting prospect matching: {str(e)}")
+        raise HTTPException(
+            status_code=500,
+            detail=f"Failed to start prospect matching: {str(e)}"
+        )
+
+@router.get("/{customer_id}/prospects-status")
+def get_prospect_matching_status(customer_id: str):
+    """
+    Get the status of prospect matching jobs for a customer.
+    """
+    try:
+        from app.background_jobs import job_tracker
+        
+        # Get all jobs for this customer
+        jobs = job_tracker.get_customer_jobs(customer_id)
+        
+        # Sort by started_at (most recent first)
+        jobs.sort(key=lambda x: x["started_at"], reverse=True)
+        
+        return {
+            "status": "success",
+            "message": f"Found {len(jobs)} jobs for customer",
+            "data": {
+                "customer_id": customer_id,
+                "jobs": jobs
+            }
+        }
+        
+    except Exception as e:
+        print(f"Error getting prospect matching status: {str(e)}")
+        raise HTTPException(
+            status_code=500,
+            detail=f"Failed to get prospect matching status: {str(e)}"
+        )
+
+@router.get("/job/{job_id}/status")
+def get_job_status(job_id: str):
+    """
+    Get the status of a specific background job.
+    """
+    try:
+        from app.background_jobs import job_tracker
+        
+        job = job_tracker.get_job(job_id)
+        
+        if not job:
+            raise HTTPException(
+                status_code=404,
+                detail="Job not found"
+            )
+        
+        return {
+            "status": "success",
+            "message": "Job status retrieved",
+            "data": job
+        }
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        print(f"Error getting job status: {str(e)}")
+        raise HTTPException(
+            status_code=500,
+            detail=f"Failed to get job status: {str(e)}"
+        )
+
 @router.get("/{customer_id}/get-prospect-criteria")
 def get_customer_prospect_criteria_endpoint(customer_id: str, prospect_profile_id: str = "default"):
     if not FUNNELPROSPECTS_AVAILABLE or not get_customer_prospect_criteria:
