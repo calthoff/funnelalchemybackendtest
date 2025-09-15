@@ -184,35 +184,8 @@ def update_prospect_criteria(payload: ProspectCriteriaRequest):
             detail=f"Failed to update prospect criteria: {str(e)}"
         )
 
-@router.get("/{customer_id}/matching-prospects")
-def find_matching_prospects_for_customer(customer_id: str, prospect_profile_id: str = "default"):
-    if not FUNNELPROSPECTS_AVAILABLE or not find_matching_prospects:
-        raise HTTPException(
-            status_code=503,
-            detail="AWS integration not available"
-        )
-    
-    try:
-        print(f"Finding matching prospects for customer: {customer_id}, profile: {prospect_profile_id}")
-        result = find_matching_prospects(customer_id, prospect_profile_id)
-        
-        return {
-            "status": "success",
-            "data": {
-                "customer_id": customer_id,
-                "matching_prospects": result
-            }
-        }
-            
-    except Exception as e:
-        print(f"Error finding matching prospects: {str(e)}")
-        raise HTTPException(
-            status_code=500,
-            detail=f"Failed to find matching prospects: {str(e)}"
-        )
-
 @router.post("/{customer_id}/update-prospects")
-def update_customer_prospects(customer_id: str, prospect_profile_id: str = "default"):
+def update_customer_prospects(customer_id: str, prospect_profile_id: str = "default", limit_prospects=500):
     if not FUNNELPROSPECTS_AVAILABLE or not findAndUpdateCustomerProspect:
         raise HTTPException(
             status_code=503,
@@ -220,7 +193,7 @@ def update_customer_prospects(customer_id: str, prospect_profile_id: str = "defa
         )
     
     try:
-        result = findAndUpdateCustomerProspect(customer_id, prospect_profile_id)
+        result = findAndUpdateCustomerProspect(customer_id, prospect_profile_id, limit_prospects = limit_prospects)
         
         if result["status"] == "success":
             return {
@@ -241,36 +214,6 @@ def update_customer_prospects(customer_id: str, prospect_profile_id: str = "defa
         raise HTTPException(
             status_code=500,
             detail=f"Failed to update customer prospects: {str(e)}"
-        )
-
-@router.post("/{customer_id}/find-prospects")
-def trigger_prospect_matching(customer_id: str, prospect_profile_id: str = "default"):
-    """
-    Trigger background prospect matching for a customer.
-    Returns immediately with a job ID for tracking progress.
-    """
-    try:
-        from app.background_jobs import start_prospect_matching_background
-        
-        # Start background job
-        job_id = start_prospect_matching_background(customer_id, prospect_profile_id)
-        
-        return {
-            "status": "success",
-            "message": "Prospect matching started in background",
-            "data": {
-                "job_id": job_id,
-                "customer_id": customer_id,
-                "prospect_profile_id": prospect_profile_id,
-                "status": "running"
-            }
-        }
-        
-    except Exception as e:
-        print(f"Error starting prospect matching: {str(e)}")
-        raise HTTPException(
-            status_code=500,
-            detail=f"Failed to start prospect matching: {str(e)}"
         )
 
 @router.get("/{customer_id}/prospects-status")

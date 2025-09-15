@@ -467,12 +467,14 @@ def updateCustomerProspectCriteria(customer_id: str,
 
 
 #discover new potential prospects that can be added to the customer_prospects list
-def find_matching_prospects(customer_id: str, prospect_profile_id: str) -> list[str]:
+def find_matching_prospects(customer_id: str, prospect_profile_id: str, limit:int=500) -> list[str]:
     """
     Function will find prospects that match criteria from a customer's profile.
     
     Input parameters:
         customer_id (str): Customer ID in format AAAA-99999-9999999999
+        prospect_profile_id: the string-ID of the particular profile
+        limit: is used if we wnat to limit the # of prospects being returned
     
     Returns:
         List[Dict]: List of matching prospects with their IDs
@@ -490,8 +492,8 @@ def find_matching_prospects(customer_id: str, prospect_profile_id: str) -> list[
         cur.execute("""
             SELECT criteria_dataset 
             FROM customer_prospects_profiles 
-            WHERE company_unique_id = %s and prospect_profile_id = %s
-        """, (company_unique_id, prospect_profile_id))
+            WHERE company_unique_id = %s and prospect_profile_id = %s limit %s
+        """, (company_unique_id, prospect_profile_id, limit))
         
         result = cur.fetchone()
         if not result:
@@ -588,7 +590,7 @@ def find_matching_prospects(customer_id: str, prospect_profile_id: str) -> list[
         return []
 
 
-def findAndUpdateCustomerProspect(customer_id: str, prospect_profile_id: str) -> Dict:
+def findAndUpdateCustomerProspect(customer_id: str, prospect_profile_id: str, limit_prospects=500) -> Dict:
     """
     This function will both find potential prospects as well as update the
     prospect for that customer in the "customer_prospects" table
@@ -610,14 +612,14 @@ def findAndUpdateCustomerProspect(customer_id: str, prospect_profile_id: str) ->
             "existing_count": existing_count
         }    
     """
-    
-    # Extract the company_unique_id from the customer_id
+
+    # Extract company_unique_id for reference
     company_unique_id = customer_id.split("-")[-1]
-    
+
     # Get potential prospects
-    potential_prospect_list = find_matching_prospects(customer_id, prospect_profile_id)
-    
-    # Check if list is empty
+    potential_prospect_list: List[str] = find_matching_prospects(customer_id, prospect_profile_id, limit=limit_prospects)
+
+    # If nothing found, return early
     if not potential_prospect_list:
         return {
             "status": "success",
@@ -630,86 +632,79 @@ def findAndUpdateCustomerProspect(customer_id: str, prospect_profile_id: str) ->
     db_connection = connect_db()
     try:
         cur = db_connection.cursor()
-        
-        # Track insertions for response
-        inserted_count = 0
-        existing_count = 0
-        
-        # Get current date
-        from datetime import datetime
-        current_date = datetime.now().date()
-        
-        for prospect_id in potential_prospect_list:
-            
-            # Check if record already exists
-            cur.execute("""
-                SELECT COUNT(*) 
-                FROM customer_prospects 
-                WHERE customer_id = %s AND prospect_id = %s AND prospect_profile_id = %s 
-            """, (customer_id, prospect_id, prospect_profile_id))
-            
-            exists = cur.fetchone()[0] > 0
-            
-            if not exists:
-                # Insert new record
-                cur.execute("""
-                    INSERT INTO customer_prospects (
-                        customer_id,
-                        prospect_id,
-                        prospect_profile_id,
-                        score,
-                        score_reason,
-                        how_is_this_score,
-                        is_inside_daily_list,
-                        activity_history,
-                        status,
-                        reply_content,
-                        reply_sentiment,
-                        created_at,
-                        last_updated
-                    ) VALUES (
-                        %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s
-                    )
-                """, (
-                    customer_id,           # customer_id
-                    prospect_id,           # prospect_id
-                    prospect_profile_id,   # prospect_profile_id
-                    0,                     # score (set to zero)
-                    "",                    # score_reason (empty string)
-                    "",                    # how_is_this_score (empty string)
-                    False,                 # is_inside_daily_list (boolean False)
-                    "{}",                  # activity_history (empty JSON)
-                    "",                    # status (empty string)
-                    "",                    # reply_content (empty string)
-                    "",                    # reply_sentiment (empty string)
-                    current_date,          # inserted_at (current date)
-                    current_date           # last_updated (current date)
-                ))
-                inserted_count += 1
-            else:
-                existing_count += 1
-        
-        # Commit all insertions
+
+        # Insert all prospects in one query, skipping ones that already exist
+        insert_sql = """
+            INSERT INTO customer_prospects (
+                customer_id,
+                prospect_id,
+                prospect_profile_id,
+                score,
+                score_reason,
+                how_is_this_score,
+                is_inside_daily_list,
+                activity_history,
+                status,
+                reply_content,
+                reply_sentiment,
+                created_at,
+                last_updated
+            )
+            SELECT
+                %(customer_id)s,
+                p.prospect_id,
+                %(prospect_profile_id)s,
+                0,
+                '',
+                '',
+                FALSE,
+                '{}'::json,
+                '',
+                '',
+                '',
+                CURRENT_DATE,
+                CURRENT_DATE
+            FROM unnest(%(prospect_ids)s::text[]) AS p(prospect_id)
+            WHERE NOT EXISTS (
+                SELECT 1
+                FROM customer_prospects c
+                WHERE c.customer_id = %(customer_id)s
+                  AND c.prospect_profile_id = %(prospect_profile_id)s
+                  AND c.prospect_id = p.prospect_id
+            )
+            RETURNING prospect_id;
+        """
+
+        cur.execute(insert_sql, {
+            "customer_id": customer_id,
+            "prospect_profile_id": prospect_profile_id,
+            "prospect_ids": potential_prospect_list
+        })
+
+        # Get how many were actually inserted
+        inserted_ids = [row[0] for row in cur.fetchall()]
+        inserted_count = len(inserted_ids)
+        existing_count = len(potential_prospect_list) - inserted_count
+
         db_connection.commit()
         cur.close()
-        
+
         return {
             "status": "success",
             "message": f"Successfully processed {len(potential_prospect_list)} prospects. "
-                      f"Inserted: {inserted_count}, Already existed: {existing_count}",
+                       f"Inserted: {inserted_count}, Already existed: {existing_count}",
             "customer_id": customer_id,
+            "company_unique_id": company_unique_id,
             "prospect_profile_id": prospect_profile_id,
             "total_prospects_found": len(potential_prospect_list),
             "inserted_count": inserted_count,
             "existing_count": existing_count
         }
-        
+
     except Exception as e:
-        # Rollback in case of error
         db_connection.rollback()
         if 'cur' in locals():
             cur.close()
-        
         return {
             "status": "error",
             "message": f"Error processing prospects: {str(e)}",
@@ -1394,7 +1389,6 @@ def update_has_replied_status(customer_id: str, prospect_id: str, has_replied: b
         }
 
 
-
 def get_customer_prospects_list(customer_id: str, prospect_profile_id: str, show_thumbs_down: bool = False) -> Dict:
     """
     Function will return all the prospects for a given customer that are NOT yet in his daily list
@@ -1436,7 +1430,8 @@ def get_customer_prospects_list(customer_id: str, prospect_profile_id: str, show
                         LEFT((p.vendordata->'experience'->1->>'management_level'),50) AS management_level,
                         LEFT((p.vendordata->'experience'->1->>'company_type'),50) AS company_type,
                         LEFT((p.vendordata->'experience'->1->>'company_annual_revenue_source_5'),50) AS revenue_source_5,
-                        LEFT((p.vendordata->'experience'->1->>'company_annual_revenue_source_1'),50) AS revenue_source_1
+                        LEFT((p.vendordata->'experience'->1->>'company_annual_revenue_source_1'),50) AS revenue_source_1,
+                        p.vendordata->>'picture_url' AS headshot_url
                     FROM customer_prospects cp
                     JOIN prospects p ON cp.prospect_id = p.id
                     WHERE cp.customer_id = %s 
@@ -1459,7 +1454,8 @@ def get_customer_prospects_list(customer_id: str, prospect_profile_id: str, show
                         LEFT((p.vendordata->'experience'->1->>'management_level'),50) AS management_level,
                         LEFT((p.vendordata->'experience'->1->>'company_type'),50) AS company_type,
                         LEFT((p.vendordata->'experience'->1->>'company_annual_revenue_source_5'),50) AS revenue_source_5,
-                        LEFT((p.vendordata->'experience'->1->>'company_annual_revenue_source_1'),50) AS revenue_source_1
+                        LEFT((p.vendordata->'experience'->1->>'company_annual_revenue_source_1'),50) AS revenue_source_1,
+                        p.vendordata->>'picture_url' AS headshot_url
                     FROM customer_prospects cp
                     JOIN prospects p ON cp.prospect_id = p.id
                     WHERE cp.customer_id = %s 
@@ -1489,7 +1485,8 @@ def get_customer_prospects_list(customer_id: str, prospect_profile_id: str, show
                     "management_level": row[8],
                     "company_type": row[9],
                     "revenue_source_5": row[10],
-                    "revenue_source_1": row[11]
+                    "revenue_source_1": row[11],
+                    "headshot_url": row[12],
                 }
                 result_list.append(prospect_dict)
 
