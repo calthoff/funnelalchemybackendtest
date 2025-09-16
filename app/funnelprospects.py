@@ -1594,7 +1594,8 @@ def get_customer_prospects_list(customer_id: str, prospect_profile_id: str, show
                         LEFT((p.vendordata->'experience'->1->>'company_type'),50) AS company_type,
                         LEFT((p.vendordata->'experience'->1->>'company_annual_revenue_source_5'),50) AS revenue_source_5,
                         LEFT((p.vendordata->'experience'->1->>'company_annual_revenue_source_1'),50) AS revenue_source_1,
-                        p.vendordata->>'picture_url' AS headshot_url
+                        p.vendordata->>'picture_url' AS headshot_url,
+                        cp.activity_history
                     FROM customer_prospects cp
                     JOIN prospects p ON cp.prospect_id = p.id
                     WHERE cp.customer_id = %s 
@@ -1618,7 +1619,8 @@ def get_customer_prospects_list(customer_id: str, prospect_profile_id: str, show
                         LEFT((p.vendordata->'experience'->1->>'company_type'),50) AS company_type,
                         LEFT((p.vendordata->'experience'->1->>'company_annual_revenue_source_5'),50) AS revenue_source_5,
                         LEFT((p.vendordata->'experience'->1->>'company_annual_revenue_source_1'),50) AS revenue_source_1,
-                        p.vendordata->>'picture_url' AS headshot_url
+                        p.vendordata->>'picture_url' AS headshot_url,
+                        cp.activity_history
                     FROM customer_prospects cp
                     JOIN prospects p ON cp.prospect_id = p.id
                     WHERE cp.customer_id = %s 
@@ -1650,6 +1652,7 @@ def get_customer_prospects_list(customer_id: str, prospect_profile_id: str, show
                     "revenue_source_5": row[10],
                     "revenue_source_1": row[11],
                     "headshot_url": row[12],
+                    "activity_history": row[13],
                 }
                 result_list.append(prospect_dict)
 

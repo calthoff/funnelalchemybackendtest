@@ -1,9 +1,10 @@
-from fastapi import APIRouter, HTTPException, Depends
+from fastapi import APIRouter, HTTPException, Depends, Request
 from sqlalchemy.orm import Session
 from app.db import get_db
 from app.models.users import User
 from pydantic import BaseModel
 from typing import Optional, List
+import json
 
 try:
     from app.funnelprospects import (
@@ -94,39 +95,6 @@ def get_daily_list_endpoint(customer_id: str, prospect_profile_id: str = "defaul
             detail=f"Failed to get daily list: {str(e)}"
         )
 
-@router.post("/add-prospect")
-def add_single_prospect_to_daily_list_endpoint(prospect_id: str, customer_id: str):
-    if not FUNNELPROSPECTS_AVAILABLE or not add_to_daily_list:
-        raise HTTPException(
-            status_code=503,
-            detail="AWS integration not available"
-        )
-    
-    try:
-        result = add_to_daily_list(
-            customer_id=customer_id,
-            prospect_id_list=[prospect_id]
-        )
-        
-        if result["status"] == "success":
-            return {
-                "status": "success",
-                "message": result["message"],
-                "data": result
-            }
-        else:
-            raise HTTPException(
-                status_code=400,
-                detail=result["message"]
-            )
-            
-    except Exception as e:
-        print(f"Error adding prospect to daily list: {str(e)}")
-        raise HTTPException(
-            status_code=500,
-            detail=f"Failed to add prospect to daily list: {str(e)}"
-        )
-
 @router.post("/remove-prospect")
 def remove_single_prospect_from_daily_list_endpoint(prospect_id: str, customer_id: str):
     if not FUNNELPROSPECTS_AVAILABLE or not remove_from_daily_list:
@@ -161,7 +129,7 @@ def remove_single_prospect_from_daily_list_endpoint(prospect_id: str, customer_i
         )
 
 @router.post("/add")
-def add_to_daily_list_endpoint(payload: DailyListRequest):
+async def add_to_daily_list_endpoint(request: Request):
     if not FUNNELPROSPECTS_AVAILABLE or not add_to_daily_list:
         raise HTTPException(
             status_code=503,
@@ -169,10 +137,45 @@ def add_to_daily_list_endpoint(payload: DailyListRequest):
         )
     
     try:
-        result = add_to_daily_list(
-            customer_id=payload.customer_id,
-            prospect_id_list=payload.prospect_id_list
-        )
+        # Get query parameters
+        prospect_id_list = request.query_params.get("prospect_id_list")
+        customer_id = request.query_params.get("customer_id")
+        
+        # Handle query parameters (for frontend requests)
+        if prospect_id_list and customer_id:
+            # Parse comma-separated prospect_id_list
+            prospect_ids = [pid.strip() for pid in prospect_id_list.split(',') if pid.strip()]
+            
+            if not prospect_ids:
+                raise HTTPException(
+                    status_code=400,
+                    detail="No valid prospect IDs provided"
+                )
+            
+            result = add_to_daily_list(
+                customer_id=customer_id,
+                prospect_id_list=prospect_ids
+            )
+        else:
+            # Handle JSON payload (for API requests)
+            try:
+                body = await request.json()
+                payload = DailyListRequest(**body)
+                
+                result = add_to_daily_list(
+                    customer_id=payload.customer_id,
+                    prospect_id_list=payload.prospect_id_list
+                )
+            except json.JSONDecodeError:
+                raise HTTPException(
+                    status_code=400,
+                    detail="Invalid JSON payload"
+                )
+            except Exception as e:
+                raise HTTPException(
+                    status_code=400,
+                    detail=f"Invalid request format: {str(e)}"
+                )
         
         if result["status"] == "success":
             return {
@@ -186,6 +189,8 @@ def add_to_daily_list_endpoint(payload: DailyListRequest):
                 detail=result["message"]
             )
             
+    except HTTPException:
+        raise
     except Exception as e:
         print(f"Error adding to daily list: {str(e)}")
         raise HTTPException(
@@ -194,7 +199,7 @@ def add_to_daily_list_endpoint(payload: DailyListRequest):
         )
 
 @router.post("/remove")
-def remove_from_daily_list_endpoint(payload: DailyListRequest):
+async def remove_from_daily_list_endpoint(request: Request):
     if not FUNNELPROSPECTS_AVAILABLE or not remove_from_daily_list:
         raise HTTPException(
             status_code=503,
@@ -202,10 +207,45 @@ def remove_from_daily_list_endpoint(payload: DailyListRequest):
         )
     
     try:
-        result = remove_from_daily_list(
-            customer_id=payload.customer_id,
-            prospect_id_list=payload.prospect_id_list
-        )
+        # Get query parameters
+        prospect_id_list = request.query_params.get("prospect_id_list")
+        customer_id = request.query_params.get("customer_id")
+        
+        # Handle query parameters (for frontend requests)
+        if prospect_id_list and customer_id:
+            # Parse comma-separated prospect_id_list
+            prospect_ids = [pid.strip() for pid in prospect_id_list.split(',') if pid.strip()]
+            
+            if not prospect_ids:
+                raise HTTPException(
+                    status_code=400,
+                    detail="No valid prospect IDs provided"
+                )
+            
+            result = remove_from_daily_list(
+                customer_id=customer_id,
+                prospect_id_list=prospect_ids
+            )
+        else:
+            # Handle JSON payload (for API requests)
+            try:
+                body = await request.json()
+                payload = DailyListRequest(**body)
+                
+                result = remove_from_daily_list(
+                    customer_id=payload.customer_id,
+                    prospect_id_list=payload.prospect_id_list
+                )
+            except json.JSONDecodeError:
+                raise HTTPException(
+                    status_code=400,
+                    detail="Invalid JSON payload"
+                )
+            except Exception as e:
+                raise HTTPException(
+                    status_code=400,
+                    detail=f"Invalid request format: {str(e)}"
+                )
         
         if result["status"] == "success":
             return {
@@ -219,6 +259,8 @@ def remove_from_daily_list_endpoint(payload: DailyListRequest):
                 detail=result["message"]
             )
             
+    except HTTPException:
+        raise
     except Exception as e:
         print(f"Error removing from daily list: {str(e)}")
         raise HTTPException(
