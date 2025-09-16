@@ -13,6 +13,7 @@ import json
 import timeit
 
 import funnelprospects as fp
+import scoring_prospects as sc
 
 #prospects criteria
 company_industries =  ["Technology", "Software", "SaaS"] 
@@ -27,7 +28,7 @@ personas_seniority_levels = ["C-Level", "VP", "Director"]
 personas_buying_roles =  ["Decision Maker", "Influencer"]
 
 company_description =  "Technology companies with engineering teams"
-company_exclusion_criteria =  ["Non-profit", "Government"]
+company_exclusion_criteria =  "Non-profit and Government"
 
 
 
@@ -170,12 +171,14 @@ if __name__ == "__main__":
 
 
     #####################################################################################
-    #8 test retrieving the json/dict corresponding at the criteri list for a customer/profile_id
+    #8 test retrieving the json/dict corresponding at the dataset criteria for a customer/profile_id
     #  lets use : customer_id = "coresignal434550710", prospect_profile_id = 'default'
     #  
     def test8():
-        result = fp.get_customer_prospect_criteria("aasd-20250910-9433157152","default")
-        print("\nJSON criteria dataset is", result['criteria_dataset'])
+        #result = fp.get_customer_prospect_criteria("CAlthoff-20250911-7008066352","default")
+        result = fp.get_customer_prospect_criteria("mlevy-20250905-5730756828", "prospectid_001")
+        formatted_json = json.dumps(result['criteria_dataset'], indent=4, ensure_ascii=False)
+        print("\nJSON criteria dataset is", formatted_json)
 
 
     #####################################################################################
@@ -222,4 +225,59 @@ if __name__ == "__main__":
             print(f" prospects #1 = |{result['prospect_list'][0]}|")
             print(f" prospects #1 headshot url = |{result['prospect_list'][0]['headshot_url']}|")
 
-    test4()
+
+    #####################################################################################
+    #12 test retrieving prospect data and converting it into the prospect scoring JSON format
+    #   lets use : porspect_id = prospect_id = "coresignal267051946"
+    #  
+    def test12():
+        result = sc.get_scoring_json_prospects("coresignal267051946") 
+        print("\nresult dict from retrieving prospects", result['message'])
+        if(result['status']=="success"):
+            #formatted_json = json.dumps(result['prospect_data'], indent=4, sort_keys=True, ensure_ascii=False)
+            formatted_json = json.dumps(result['prospect_data'], indent=4, ensure_ascii=False)
+            print(f" prospect dtaa returned = |{formatted_json}|")
+        else:
+            print(f"get scoring prospect was NOT successfuul becuse : |{result['message']}|")    
+
+
+    #####################################################################################
+    #13 test retrieving  criteria dataset for a customer and converting them to the 
+    #   format that is exepected by the scoring library 
+    #   lets use : customer_id = 
+    #
+    def test13():
+        #first we get the criteria from the db
+        result = fp.get_customer_prospect_criteria("mlevy-20250905-5730756828", "prospectid_001")
+
+        #second we convert it and display for tetsing
+        scoring_settings = sc.convert_to_scoring_format(result['criteria_dataset'])
+        print("\n\n SCORE SETTINGSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSS")
+        print(json.dumps(scoring_settings['scoring_data']['scoring_settings'], indent=4, ensure_ascii=False))
+      
+
+    #####################################################################################
+    #13 test retrieving  the daily list prospects for a given customer
+    #   lets use : customer_id = ("CAlthoff-20250911-7008066352","default")
+    #
+    def test14():
+        #first we get the prospect list
+        #result = fp.get_daily_list_prospects("mlevy-20250905-5730756828", "prospectid_001")
+        result = fp.get_daily_list_prospects("CAlthoff-20250911-7008066352","default")
+
+        # second, lets display the first one
+        if(result['status'] ==  "success"):
+            prospect_list = result['prospect_list']
+            for p in prospect_list:
+                print(json.dumps(p, indent=4, ensure_ascii=False))
+                break
+        else:
+            print(result['message'])        
+
+
+    test14()
+
+    # test getting and updating criteria dataset
+    #test2()
+    #test8()
+    #test13()
