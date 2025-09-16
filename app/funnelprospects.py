@@ -204,7 +204,6 @@ def create_customer(email_address: str,
                 "prospect_profiles_ids": prospect_profiles_ids
             }
         finally:
-            # Don't close the persistent connection
             pass
     except RuntimeError as e:
         return {
@@ -291,7 +290,6 @@ def get_customer(customer_id: int) -> Dict:
                 "prospect_profiles_ids": prospect_profiles_ids
             }
         finally:
-            # Don't close the persistent connection
             pass
     except RuntimeError as e:
         return {
@@ -449,7 +447,7 @@ def updateCustomerProspectCriteria(customer_id: str,
                 "profile_id": prospect_profile_id
             }
         finally:
-            conn.close()
+            pass
     except RuntimeError as e:
         return {
             "status": "error",
@@ -813,7 +811,7 @@ def get_prospects_stats() -> Dict:
                 "data": stats
             }
         finally:
-            conn.close()
+            pass
     except RuntimeError as e:
         return {
             "status": "error",
@@ -964,7 +962,7 @@ def add_to_daily_list(customer_id: str, prospect_id_list: List[str]) -> Dict:
             }
             
         finally:
-            conn.close()
+            pass
             
     except RuntimeError as e:
         return {
@@ -1092,7 +1090,7 @@ def get_daily_list_prospects(customer_id: str, prospect_profile_id: str) -> dict
             }
 
         finally:
-            conn.close()
+            pass
 
     except RuntimeError as e:
         return {
@@ -1204,7 +1202,7 @@ def remove_from_daily_list(customer_id: str, prospect_id_list: List[str]) -> Dic
             }
             
         finally:
-            conn.close()
+            pass
             
     except RuntimeError as e:
         return {
@@ -1293,7 +1291,7 @@ def get_customer_prospect_criteria(customer_id: str, prospect_profile_id: str) -
             }
 
         finally:
-            conn.close()
+            pass
 
     except RuntimeError as e:
         return {
@@ -1399,7 +1397,7 @@ def update_daily_list_prospect_status(customer_id: str, prospect_id: str, status
             }
 
         finally:
-            conn.close()
+            pass
 
     except RuntimeError as e:
         return {
@@ -1507,7 +1505,7 @@ def update_has_replied_status(customer_id: str, prospect_id: str, has_replied: b
             }
 
         finally:
-            conn.close()
+            pass
 
     except RuntimeError as e:
         return {
@@ -1667,7 +1665,7 @@ def get_customer_prospects_list(customer_id: str, prospect_profile_id: str, show
             }
 
         finally:
-            conn.close()
+            pass
 
     except RuntimeError as e:
         return {
