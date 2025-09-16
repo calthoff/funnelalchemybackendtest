@@ -18,13 +18,10 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
 
-
-
-# Try to find .env file in multiple locations
 dotenv_paths = [
-    Path(__file__).parent / '.env',  # /app/app/.env
-    Path(__file__).parent.parent / '.env',  # /app/.env
-    Path.cwd() / '.env',  # Current working directory
+    Path(__file__).parent / '.env',
+    Path(__file__).parent.parent / '.env',
+    Path.cwd() / '.env',
 ]
 
 dotenv_path = None
@@ -313,8 +310,6 @@ def get_customer(customer_id: int) -> Dict:
             "profile_id": None
         }
 
-
-# Insert or update the list of criteria for a particular customer/company
 def updateCustomerProspectCriteria(customer_id: str,
                                    prospect_profile_id: str,
                                    company_industries: Optional[List[str]] = None,
@@ -326,7 +321,8 @@ def updateCustomerProspectCriteria(customer_id: str,
                                    personas_seniority_levels: Optional[List[str]] = None,
                                    personas_buying_roles: Optional[List[str]] = None,
                                    company_description: str = "",
-                                   company_exclusion_criteria: Optional[List[str]] = None
+                                   company_exclusion_criteria: str="",
+                                   additional_preferences: str = " "
                                 ) -> Dict:
     """
     This function creates a JSON from the provided 'criteria' parameters and updates or inserts it into the
@@ -344,7 +340,8 @@ def updateCustomerProspectCriteria(customer_id: str,
     - personas_seniority_levels: list of preferred seniority levels (e.g., ["C-Level", "VP", "Director"])
     - personas_buying_roles: list of preferred buying roles (e.g., ["Decision Maker", "Influencer"])
     - company_description: string providing a company description (e.g., "Technology companies with engineering teams")
-    - company_exclusion_criteria: list of exclusion criteria (e.g., ["Non-profit", "Government"])
+    - company_exclusion_criteria: exclusion criteria (e.g., "Non-profit and Government")
+    - additional_preferences: Text provided on first profile/criteria page (free text)
 
     Returns:
     - Dictionnary with  status, customer_id as well as prospect_profile_id
@@ -354,6 +351,11 @@ def updateCustomerProspectCriteria(customer_id: str,
            "profile_id": prospect_profile_id
          }
     """
+
+    #convert "company_exclusion_criteria" to string as it cannot be a list
+    if(isinstance(company_exclusion_criteria, list)):
+        company_exclusion_criteria = ", ".join(str(item) for item in company_exclusion_criteria)
+
     try:
         # Validate required parameters
         if not customer_id or customer_id.strip() == "":
@@ -377,7 +379,7 @@ def updateCustomerProspectCriteria(customer_id: str,
         personas_title_keywords = personas_title_keywords or []
         personas_seniority_levels = personas_seniority_levels or []
         personas_buying_roles = personas_buying_roles or []
-        company_exclusion_criteria = company_exclusion_criteria or []
+        #company_exclusion_criteria = company_exclusion_criteria or ""
 
         # Initialize the prospects_criteria dictionary
         prospects_criteria = {
@@ -386,7 +388,8 @@ def updateCustomerProspectCriteria(customer_id: str,
                 "employee_size_range": company_employee_size_range,
                 "revenue_range": company_revenue_range,
                 "funding_stages": company_funding_stage,
-                "location": company_location
+                "location": company_location,
+                "additional_preferences": additional_preferences
             }],
             "personas": [{
                 "title_keywords": personas_title_keywords,
@@ -446,8 +449,7 @@ def updateCustomerProspectCriteria(customer_id: str,
                 "profile_id": prospect_profile_id
             }
         finally:
-            # Don't close the persistent connection
-            pass
+            conn.close()
     except RuntimeError as e:
         return {
             "status": "error",
@@ -590,6 +592,7 @@ def find_matching_prospects(customer_id: str, prospect_profile_id: str, limit:in
         return []
 
 
+
 def findAndUpdateCustomerProspect(customer_id: str, prospect_profile_id: str, limit_prospects=500) -> Dict:
     """
     This function will both find potential prospects as well as update the
@@ -713,6 +716,8 @@ def findAndUpdateCustomerProspect(customer_id: str, prospect_profile_id: str, li
         }
 
 
+
+
 # Function to get value counts for specified fields in prospects table
 def get_prospects_stats() -> Dict:
     """
@@ -742,7 +747,7 @@ def get_prospects_stats() -> Dict:
 
     This "count" will change when we get ore or less records in the "prospects" table and if the "employee" or prospects
     is changing company and goes for an indusr=try that is or is not "Software Development" related.   
-    
+
     """
     try:
         conn = connect_db()
@@ -750,6 +755,7 @@ def get_prospects_stats() -> Dict:
             cur = conn.cursor()
             
             stats = {}
+            
             # For company_industry (from vendordata->experience[1])
             cur.execute("""
                 SELECT (vendordata->'experience'->1->>'company_industry') AS company_industry, COUNT(*)
@@ -807,8 +813,7 @@ def get_prospects_stats() -> Dict:
                 "data": stats
             }
         finally:
-            # Don't close the persistent connection
-            pass
+            conn.close()
     except RuntimeError as e:
         return {
             "status": "error",
@@ -959,8 +964,7 @@ def add_to_daily_list(customer_id: str, prospect_id_list: List[str]) -> Dict:
             }
             
         finally:
-            # Don't close the persistent connection
-            pass
+            conn.close()
             
     except RuntimeError as e:
         return {
@@ -977,6 +981,139 @@ def add_to_daily_list(customer_id: str, prospect_id_list: List[str]) -> Dict:
             "customer_id": customer_id if 'customer_id' in locals() else None,
         }
 
+
+
+
+def get_daily_list_prospects(customer_id: str, prospect_profile_id: str) -> dict:
+    """
+    This function will return the dialy list prospects for a given customer.
+
+    Input parameters:
+    - customer_id: the unique id of a customer
+    - prospect_profile_id : the id associated with this prospect_profile
+
+    Returns:
+    - a list of dict, wgere each dict is a prospect profile with similar structure shown below:
+        {
+            "prospect_id",
+            "score",
+            "full_name",
+            "first_name",
+            "last_name",
+            "company_name",
+            "position_title",
+            "department",
+            "management_level",
+            "company_type",
+            "revenue_source_5",
+            "revenue_source_1",
+            "headshot_url"
+        }    
+    """
+
+    try:
+        # Validate required parameters
+        if not customer_id or customer_id.strip() == "":
+            raise RuntimeError("customer_id is required and cannot be empty")
+        if not prospect_profile_id or prospect_profile_id.strip() == "":
+            raise RuntimeError("prospect_profile_id is required and cannot be empty")
+
+        # Extract company_unique_id from customer_id (format: <...>-<...>-<company_unique_id>)
+        try:
+            company_unique_id = customer_id.split("-")[-1]
+        except IndexError:
+            raise RuntimeError("Invalid customer_id format; expected format: <...>-<...>-<company_unique_id>")
+
+        # Connect to the database
+        conn = connect_db()
+        try:
+            cur = conn.cursor()
+
+            # Build the SQL query with JOIN:
+            # Make sure to specify "is_inside_daily_list" flag 
+            # also make sure the status is empty so it is not "contacted" "not-a-fit" or "later"
+            sql_query = """
+                SELECT 
+                    cp.prospect_id,
+                    cp.score,
+                    p.full_name,
+                    p.first_name,
+                    p.last_name,
+                    LEFT((p.vendordata->'experience'->1->>'company_name'),50) AS company_name,
+                    LEFT((p.vendordata->'experience'->1->>'position_title'),50) AS position_title,
+                    LEFT((p.vendordata->'experience'->1->>'department'),50) AS department,
+                    LEFT((p.vendordata->'experience'->1->>'management_level'),50) AS management_level,
+                    LEFT((p.vendordata->'experience'->1->>'company_type'),50) AS company_type,
+                    LEFT((p.vendordata->'experience'->1->>'company_annual_revenue_source_5'),50) AS revenue_source_5,
+                    LEFT((p.vendordata->'experience'->1->>'company_annual_revenue_source_1'),50) AS revenue_source_1,
+                    p.vendordata->>'picture_url' AS headshot_url
+                FROM customer_prospects cp
+                JOIN prospects p ON cp.prospect_id = p.id
+                WHERE cp.customer_id = %s 
+                    AND cp.prospect_profile_id = %s 
+                    AND cp.is_inside_daily_list = %s
+                    AND (cp.status is null or cp.status = '')
+            """
+            params = (customer_id, prospect_profile_id, True)
+
+            # Execute the query
+            cur.execute(sql_query, params)
+            results = cur.fetchall()
+            cur.close()
+
+            # Convert results to list of dictionaries
+            result_list = []
+            for row in results:
+                prospect_dict = {
+                    "prospect_id": row[0],
+                    "score": row[1],
+                    "full_name": row[2],
+                    "first_name": row[3],
+                    "last_name": row[4],
+                    "company_name": row[5],
+                    "position_title": row[6],
+                    "department": row[7],
+                    "management_level": row[8],
+                    "company_type": row[9],
+                    "revenue_source_5": row[10],
+                    "revenue_source_1": row[11],
+                    "headshot_url": row[12],
+                }
+                result_list.append(prospect_dict)
+
+            # Return success response with the prospect list
+            return {
+                "status": "success",
+                "message": "Prospect list successfully retrieved",
+                "customer_id": customer_id,
+                "prospect_profile_id": prospect_profile_id,
+                "nb_prospects_returned": len(result_list),
+                "prospect_list": result_list
+            }
+
+        finally:
+            conn.close()
+
+    except RuntimeError as e:
+        return {
+            "status": "error",
+            "error_type": "RuntimeError",
+            "message": str(e),
+            "customer_id": customer_id if 'customer_id' in locals() else None,
+            "prospect_profile_id": prospect_profile_id if 'prospect_profile_id' in locals() else None,
+            "nb_prospects_returned": 0,
+            "prospect_list": []
+        }
+    except Exception as e:
+        return {
+            "status": "error",
+            "error_type": type(e).__name__,
+            "message": str(e),
+            "customer_id": customer_id if 'customer_id' in locals() else None,
+            "prospect_profile_id": prospect_profile_id if 'prospect_profile_id' in locals() else None,
+            "nb_prospects_returned": 0,
+            "prospect_list": []
+        }
 
 def remove_from_daily_list(customer_id: str, prospect_id_list: List[str]) -> Dict:
     """
@@ -1067,8 +1204,7 @@ def remove_from_daily_list(customer_id: str, prospect_id_list: List[str]) -> Dic
             }
             
         finally:
-            # Don't close the persistent connection
-            pass
+            conn.close()
             
     except RuntimeError as e:
         return {
@@ -1085,7 +1221,8 @@ def remove_from_daily_list(customer_id: str, prospect_id_list: List[str]) -> Dic
             "customer_id": customer_id if 'customer_id' in locals() else None,
         }
 
-        
+
+
 def get_customer_prospect_criteria(customer_id: str, prospect_profile_id: str) -> Dict:
     """
     Retrieve the criteria_dataset JSON for a particular customer/company
@@ -1282,6 +1419,7 @@ def update_daily_list_prospect_status(customer_id: str, prospect_id: str, status
         }
 
 
+
 def update_has_replied_status(customer_id: str, prospect_id: str, has_replied: bool, activity_history: str="") -> Dict:
     """
     This function will update the "has_replied" and "activity_history" fields of a prospect in the "customer_prospects" table
@@ -1389,11 +1527,36 @@ def update_has_replied_status(customer_id: str, prospect_id: str, has_replied: b
         }
 
 
+
 def get_customer_prospects_list(customer_id: str, prospect_profile_id: str, show_thumbs_down: bool = False) -> Dict:
     """
     Function will return all the prospects for a given customer that are NOT yet in his daily list
     or does not have its thumbs_down flag set to True (unless the 3rd parameter is set to True)
+
+    Inpout parameters:
+    - customer_id: unqiue ID for that customer
+    - prospect_profile_id: unique ID for that prospect profile
+    - show_thumbs_down: should we show the ones that had been thumbs down before
+
+    Returns:
+    -a list of dict where each dict is a prospect with strcut similar as the one below:
+        {
+            "prospect_id",
+            "score",
+            "full_name",
+            "first_name",
+            "last_name",
+            "company_name",
+            "position_title",
+            "department",
+            "management_level",
+            "company_type",
+            "revenue_source_5",
+            "revenue_source_1",
+            "headshot_url"
+        }    
     """ 
+
     try:
         # Validate required parameters
         if not customer_id or customer_id.strip() == "":

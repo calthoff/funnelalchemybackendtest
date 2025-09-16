@@ -50,6 +50,7 @@ class ProspectCriteriaRequest(BaseModel):
     personas_buying_roles: Optional[List[str]] = None
     company_description: str = ""
     company_exclusion_criteria: Optional[List[str]] = None
+    additional_preferences: str = ""
 
 class DailyListRequest(BaseModel):
     customer_id: str
@@ -160,7 +161,8 @@ def update_prospect_criteria(payload: ProspectCriteriaRequest):
             personas_seniority_levels=payload.personas_seniority_levels,
             personas_buying_roles=payload.personas_buying_roles,
             company_description=payload.company_description,
-            company_exclusion_criteria=payload.company_exclusion_criteria
+            company_exclusion_criteria=payload.company_exclusion_criteria,
+            additional_preferences=payload.additional_preferences
         )
         
         if result["status"] == "success":

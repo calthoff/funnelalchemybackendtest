@@ -11,7 +11,8 @@ try:
         remove_from_daily_list,
         update_daily_list_prospect_status,
         get_customer_prospects_list,
-        update_has_replied_status
+        update_has_replied_status,
+        get_daily_list_prospects
     )
     FUNNELPROSPECTS_AVAILABLE = True
 except Exception as e:
@@ -22,6 +23,7 @@ except Exception as e:
     update_daily_list_prospect_status = None
     get_customer_prospects_list = None
     update_has_replied_status = None
+    get_daily_list_prospects = None
 
 router = APIRouter(prefix="/daily-list", tags=["daily-list"])
 
@@ -43,96 +45,47 @@ class HasRepliedRequest(BaseModel):
 
 @router.get("/")
 def get_daily_list_endpoint(customer_id: str, prospect_profile_id: str = "default", limit: int = 100, offset: int = 0):
-    if not FUNNELPROSPECTS_AVAILABLE:
+    if not FUNNELPROSPECTS_AVAILABLE or not get_daily_list_prospects:
         raise HTTPException(
             status_code=503,
             detail="AWS integration not available"
         )
     
     try:
-        from app.funnelprospects import connect_db
-        import json
+        # Use the get_daily_list_prospects function from funnelprospects.py
+        result = get_daily_list_prospects(
+            customer_id=customer_id,
+            prospect_profile_id=prospect_profile_id
+        )
         
-        conn = connect_db()
-        cur = conn.cursor()
-        
-        query = """
-            SELECT 
-                cp.prospect_id,
-                cp.score,
-                p.full_name,
-                p.first_name,
-                p.last_name,
-                LEFT((p.vendordata->'experience'->1->>'company_name'),50) AS company_name,
-                LEFT((p.vendordata->'experience'->1->>'position_title'),50) AS position_title,
-                LEFT((p.vendordata->'experience'->1->>'department'),50) AS department,
-                LEFT((p.vendordata->'experience'->1->>'management_level'),50) AS management_level,
-                LEFT((p.vendordata->'experience'->1->>'company_type'),50) AS company_type,
-                LEFT((p.vendordata->'experience'->1->>'company_annual_revenue_source_5'),50) AS revenue_source_5,
-                LEFT((p.vendordata->'experience'->1->>'company_annual_revenue_source_1'),50) AS revenue_source_1,
-                cp.activity_history,
-                cp.status,
-                cp.reply_content,
-                cp.reply_sentiment,
-                cp.created_at,
-                cp.last_updated
-            FROM customer_prospects cp
-            JOIN prospects p ON cp.prospect_id = p.id
-            WHERE cp.customer_id = %s 
-                AND cp.prospect_profile_id = %s 
-                AND cp.is_inside_daily_list = %s
-            ORDER BY cp.created_at DESC
-            LIMIT %s OFFSET %s
-        """
-        
-        cur.execute(query, (customer_id, prospect_profile_id, True, limit, offset))
-        results = cur.fetchall()
-        
-        count_query = """
-            SELECT COUNT(*) 
-            FROM customer_prospects 
-            WHERE customer_id = %s AND prospect_profile_id = %s AND is_inside_daily_list = %s
-        """
-        cur.execute(count_query, (customer_id, prospect_profile_id, True))
-        total_count = cur.fetchone()[0]
-        
-        cur.close()
-        
-        prospects = []
-        for row in results:
-            prospect_dict = {
-                "prospect_id": row[0],
-                "score": row[1],
-                "full_name": row[2],
-                "first_name": row[3],
-                "last_name": row[4],
-                "company_name": row[5],
-                "position_title": row[6],
-                "department": row[7],
-                "management_level": row[8],
-                "company_type": row[9],
-                "revenue_source_5": row[10],
-                "revenue_source_1": row[11],
-                "activity_history": row[12],
-                "status": row[13],
-                "reply_content": row[14],
-                "reply_sentiment": row[15],
-                "created_at": row[16].isoformat() if row[16] else None,
-                "last_updated": row[17].isoformat() if row[17] else None,
+        if result["status"] == "success":
+            prospects = result["prospect_list"]
+            total_count = result["nb_prospects_returned"]
+            
+            # Apply pagination if needed
+            if limit > 0 or offset > 0:
+                start_idx = offset
+                end_idx = offset + limit if limit > 0 else len(prospects)
+                paginated_prospects = prospects[start_idx:end_idx]
+            else:
+                paginated_prospects = prospects
+            
+            return {
+                "status": "success",
+                "message": f"Retrieved {len(paginated_prospects)} daily list prospects",
+                "data": {
+                    "prospects": paginated_prospects,
+                    "total_count": total_count,
+                    "limit": limit,
+                    "offset": offset,
+                    "has_more": (offset + len(paginated_prospects)) < total_count
+                }
             }
-            prospects.append(prospect_dict)
-        
-        return {
-            "status": "success",
-            "message": f"Retrieved {len(prospects)} daily list prospects",
-            "data": {
-                "prospects": prospects,
-                "total_count": total_count,
-                "limit": limit,
-                "offset": offset,
-                "has_more": (offset + len(prospects)) < total_count
-            }
-        }
+        else:
+            raise HTTPException(
+                status_code=400,
+                detail=result["message"]
+            )
             
     except Exception as e:
         print(f"Error getting daily list: {str(e)}")
