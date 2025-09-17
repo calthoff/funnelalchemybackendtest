@@ -1099,6 +1099,140 @@ def get_daily_list_prospects(customer_id: str, prospect_profile_id: str) -> dict
 
 
 
+def get_contacted_list(customer_id: str, prospect_profile_id: str="default") -> dict:
+    """
+    This function will(for a given customer) return the list of  all the prosepcts that he set 
+    as contacted. So they all have the "contacted" status. 
+
+    Input parameters:
+    - customer_id: the unique id of a customer
+    - prospect_profile_id : the id associated with this prospect_profile (default value is "default")
+
+    Returns:
+    - a list of dict, wgere each dict is a prospect profile with similar structure shown below:
+        {
+            "prospect_id",
+            "score",
+            "score_reason",
+            "full_name",
+            "first_name",
+            "last_name",
+            "company_name",
+            "position_title",
+            "department",
+            "management_level",
+            "company_type",
+            "revenue_source_5",
+            "revenue_source_1",
+            "headshot_url",
+            "linkedin_url",
+            "email_address"            
+        }    
+    """
+
+    try:
+        # Validate required parameters
+        if not customer_id or customer_id.strip() == "":
+            raise RuntimeError("customer_id is required and cannot be empty")
+
+        # Connect to the database
+        conn = connect_db()
+        try:
+            cur = conn.cursor()
+
+            # Build the SQL query with JOIN:
+            # Make sure to specify "is_inside_daily_list" flag 
+            # also make sure the status is empty so it is not "contacted" "not-a-fit" or "later"
+            sql_query = """
+                SELECT 
+                    cp.prospect_id,
+                    cp.score,
+                    p.full_name,
+                    p.first_name,
+                    p.last_name,
+                    LEFT((p.vendordata->'experience'->1->>'company_name'),50) AS company_name,
+                    LEFT((p.vendordata->'experience'->1->>'position_title'),50) AS position_title,
+                    LEFT((p.vendordata->'experience'->1->>'department'),50) AS department,
+                    LEFT((p.vendordata->'experience'->1->>'management_level'),50) AS management_level,
+                    LEFT((p.vendordata->'experience'->1->>'company_type'),50) AS company_type,
+                    LEFT((p.vendordata->'experience'->1->>'company_annual_revenue_source_5'),50) AS revenue_source_5,
+                    LEFT((p.vendordata->'experience'->1->>'company_annual_revenue_source_1'),50) AS revenue_source_1,
+                    p.vendordata->>'picture_url' AS headshot_url,
+                    cp.score_reason,
+                    p.linkedin_url,
+                    p.email_address
+                FROM customer_prospects cp
+                JOIN prospects p ON cp.prospect_id = p.id
+                WHERE cp.customer_id = %s 
+                    AND cp.prospect_profile_id = %s 
+                    AND cp.status='contacted'
+            """
+            params = (customer_id, prospect_profile_id)
+
+            # Execute the query
+            cur.execute(sql_query, params)
+            results = cur.fetchall()
+            cur.close()
+
+            # Convert results to list of dictionaries
+            result_list = []
+            for row in results:
+                prospect_dict = {
+                    "prospect_id": row[0],
+                    "score": row[1],
+                    "full_name": row[2],
+                    "first_name": row[3],
+                    "last_name": row[4],
+                    "company_name": row[5],
+                    "position_title": row[6],
+                    "department": row[7],
+                    "management_level": row[8],
+                    "company_type": row[9],
+                    "revenue_source_5": row[10],
+                    "revenue_source_1": row[11],
+                    "headshot_url": row[12],
+                    "score_reason": row[13],
+                    "linkedin_url": row[14],
+                    "email_address": row[15]
+                }
+                result_list.append(prospect_dict)
+
+            # Return success response with the prospect list
+            return {
+                "status": "success",
+                "message": "Prospect list successfully retrieved",
+                "customer_id": customer_id,
+                "prospect_profile_id": prospect_profile_id,
+                "nb_prospects_returned": len(result_list),
+                "prospect_list": result_list
+            }
+
+        finally:
+            conn.close()
+
+    except RuntimeError as e:
+        return {
+            "status": "error",
+            "error_type": "RuntimeError",
+            "message": "runtimeError :" + str(e),
+            "customer_id": customer_id if 'customer_id' in locals() else None,
+            "prospect_profile_id": prospect_profile_id if 'prospect_profile_id' in locals() else None,
+            "nb_prospects_returned": 0,
+            "prospect_list": []
+        }
+    except Exception as e:
+        return {
+            "status": "error",
+            "error_type": type(e).__name__,
+            "message": "unexpected exception :" + str(e),
+            "customer_id": customer_id if 'customer_id' in locals() else None,
+            "prospect_profile_id": prospect_profile_id if 'prospect_profile_id' in locals() else None,
+            "nb_prospects_returned": 0,
+            "prospect_list": []
+        }
+
+
+
 
 
 

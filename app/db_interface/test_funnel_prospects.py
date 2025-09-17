@@ -13,7 +13,7 @@ import json
 import timeit
 
 import funnelprospects as fp
-import scoring_prospects as sc
+from prospect_scoring_api import score_prospects
 
 #prospects criteria
 company_industries =  ["Technology", "Software", "SaaS"] 
@@ -99,7 +99,7 @@ if __name__ == "__main__":
         #prospect_id_list = fp.find_matching_prospects("CAlthoff-20250911-7008066352", "default")
         print(f"size of prospect list returned = |{len(prospect_id_list)}| and list = |{prospect_id_list}|")
         end_time = timeit.default_timer()
-        print(f"\n\nTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTIME to find prospects = |{(end_time - start_time)*1000} milliseconds|")
+        print(f"\n\nTIME to find prospects = |{(end_time - start_time)*1000} milliseconds|")
 
 
         start_time = timeit.default_timer()
@@ -107,7 +107,7 @@ if __name__ == "__main__":
         #result = fp.findAndUpdateCustomerProspect("CAlthoff-20250911-7008066352", "default", 500)
         print(f" status = |{result['status']}| and message = |{result['message']}|")
         end_time = timeit.default_timer()
-        print(f"\n\nTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTIME to find_and_update = |{(end_time - start_time)*1000} milliseconds|")
+        print(f"\n\nTIME to find_and_update = |{(end_time - start_time)*1000} milliseconds|")
 
 
 
@@ -275,7 +275,25 @@ if __name__ == "__main__":
             print(result['message'])        
 
 
-    test14()
+
+    #####################################################################################
+    #13 test retrieving  the list of contacted 
+    #   lets use : customer_id = ("CAlthoff-20250911-7008066352","default")
+    #
+    def test15_get_contacted():
+        result = fp.get_contacted_list("CAlthoff-20250911-7008066352","default")
+
+        # second, lets display the first one
+        if(result['status'] ==  "success"):
+            prospect_list = result['prospect_list']
+            for p in prospect_list:
+                print(json.dumps(p, indent=4, ensure_ascii=False))
+                break
+        else:
+            print(f"un-successsful: |{result['message']}|")        
+
+
+    test15_get_contacted()
 
     # test getting and updating criteria dataset
     #test2()
