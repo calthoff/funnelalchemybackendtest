@@ -44,11 +44,6 @@ class HasRepliedRequest(BaseModel):
     has_replied: bool
     activity_history: str = ""
 
-class MarkAllContactedRequest(BaseModel):
-    customer_id: str
-    prospect_id_list: List[str]
-    activity_history: str = "Bulk marked as contacted"
-
 @router.get("/")
 def get_daily_list_endpoint(customer_id: str, prospect_profile_id: str = "default", limit: int = 100, offset: int = 0):
     if not FUNNELPROSPECTS_AVAILABLE or not get_daily_list_prospects:
@@ -441,45 +436,4 @@ def update_has_replied_status_endpoint(payload: HasRepliedRequest):
         raise HTTPException(
             status_code=500,
             detail=f"Failed to update reply status: {str(e)}"
-        )
-
-@router.put("/mark-all-contacted")
-def mark_all_as_contacted_endpoint(request: MarkAllContactedRequest):
-    if not FUNNELPROSPECTS_AVAILABLE or not update_daily_list_prospect_status:
-        raise HTTPException(
-            status_code=503,
-            detail="AWS integration not available"
-        )
-    
-    try:
-        # Update each prospect status to 'contacted'
-        results = []
-        for prospect_id in request.prospect_id_list:
-            result = update_daily_list_prospect_status(
-                customer_id=request.customer_id,
-                prospect_id=prospect_id,
-                status="contacted",
-                activity_history=request.activity_history
-            )
-            results.append(result)
-        
-        # Check if all updates were successful
-        successful_updates = [r for r in results if r.get("status") == "success"]
-        
-        return {
-            "status": "success",
-            "message": f"Successfully marked {len(successful_updates)} out of {len(request.prospect_id_list)} prospects as contacted",
-            "data": {
-                "total_requested": len(request.prospect_id_list),
-                "successful_updates": len(successful_updates),
-                "failed_updates": len(request.prospect_id_list) - len(successful_updates),
-                "results": results
-            }
-        }
-            
-    except Exception as e:
-        print(f"Error marking all as contacted: {str(e)}")
-        raise HTTPException(
-            status_code=500,
-            detail=f"Failed to mark all as contacted: {str(e)}"
         )

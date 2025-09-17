@@ -10,6 +10,7 @@ from app.api.users import router as users_router
 from app.api.customers import router as customers_router
 from app.api.prospects import router as prospects_router
 from app.api.dailyList import router as dailyList_router
+from app.api.contacted import router as contacted_router
 import os
 import logging
 from dotenv import load_dotenv
@@ -78,12 +79,13 @@ async def global_exception_handler(request, exc):
 def root():
     return {"message": "Funnel Alchemy API"}
 
-# Include auth, users, customers, prospects, and daily list routers
+# Include auth, users, customers, prospects, daily list, and contacted routers
 app.include_router(auth_router)
 app.include_router(users_router)
 app.include_router(customers_router)
 app.include_router(prospects_router)
 app.include_router(dailyList_router)
+app.include_router(contacted_router)
 
 if __name__ == "__main__":
     import uvicorn
