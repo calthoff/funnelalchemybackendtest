@@ -995,6 +995,7 @@ def get_daily_list_prospects(customer_id: str, prospect_profile_id: str) -> dict
         {
             "prospect_id",
             "score",
+            "score_reason",
             "full_name",
             "first_name",
             "last_name",
@@ -1005,7 +1006,9 @@ def get_daily_list_prospects(customer_id: str, prospect_profile_id: str) -> dict
             "company_type",
             "revenue_source_5",
             "revenue_source_1",
-            "headshot_url"
+            "headshot_url",
+            "linkedin_url",
+            "email_address"            
         }    
     """
 
@@ -1044,7 +1047,10 @@ def get_daily_list_prospects(customer_id: str, prospect_profile_id: str) -> dict
                     LEFT((p.vendordata->'experience'->1->>'company_type'),50) AS company_type,
                     LEFT((p.vendordata->'experience'->1->>'company_annual_revenue_source_5'),50) AS revenue_source_5,
                     LEFT((p.vendordata->'experience'->1->>'company_annual_revenue_source_1'),50) AS revenue_source_1,
-                    p.vendordata->>'picture_url' AS headshot_url
+                    p.vendordata->>'picture_url' AS headshot_url,
+                    cp.score_reason,
+                    p.linkedin_url,
+                    p.email_address
                 FROM customer_prospects cp
                 JOIN prospects p ON cp.prospect_id = p.id
                 WHERE cp.customer_id = %s 
@@ -1076,6 +1082,9 @@ def get_daily_list_prospects(customer_id: str, prospect_profile_id: str) -> dict
                     "revenue_source_5": row[10],
                     "revenue_source_1": row[11],
                     "headshot_url": row[12],
+                    "score_reason": row[13],
+                    "linkedin_url": row[14],
+                    "email_address": row[15]
                 }
                 result_list.append(prospect_dict)
 
@@ -1090,7 +1099,7 @@ def get_daily_list_prospects(customer_id: str, prospect_profile_id: str) -> dict
             }
 
         finally:
-            pass
+            conn.close()
 
     except RuntimeError as e:
         return {
