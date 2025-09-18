@@ -105,7 +105,19 @@ def signup(
     aws_customer_result = None
     if FUNNELPROSPECTS_AVAILABLE and create_customer:
         try:
-            print(f"Creating customer in AWS database for: {payload.user.email}")
+            try:
+                import app.funnelprospects as fp
+                if hasattr(fp, '_aws_connection') and fp._aws_connection:
+                    try:
+                        fp._aws_connection.close()
+                    except:
+                        pass
+                    fp._aws_connection = None
+                    print("🔄 Reset AWS connection")
+            except Exception as reset_error:
+                print(f"⚠️ Could not reset connection: {reset_error}")
+                pass
+            
             aws_customer_result = create_customer(
                 email_address=payload.user.email,
                 first_name=payload.user.first_name,
@@ -113,16 +125,15 @@ def signup(
                 company_name=payload.company.name
             )
             
-            if aws_customer_result["status"] == "success":
-                print(f"✅ AWS customer created successfully: {aws_customer_result['customer_id']}")
-                # Store AWS customer_id in local user record
-                new_user.aws_customer_id = str(aws_customer_result['customer_id'])
+            if aws_customer_result and aws_customer_result.get("status") == "success":
+                new_user.aws_customer_id = str(aws_customer_result.get('customer_id'))
                 db.commit()
             else:
-                print(f"❌ AWS customer creation failed: {aws_customer_result['message']}")
+                print(f"❌ AWS customer creation failed: {aws_customer_result.get('message', 'Unknown error') if aws_customer_result else 'No response'}")
                 
         except Exception as e:
             print(f"❌ Error creating AWS customer: {str(e)}")
+            # Don't fail the signup if AWS customer creation fails
             aws_customer_result = {
                 "status": "error",
                 "message": f"Failed to create AWS customer: {str(e)}"
