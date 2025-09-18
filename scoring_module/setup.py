@@ -1,5 +1,5 @@
 """
-Setup script for Funnel Alchemy Scorer
+Setup script for Prospect Scoring API Module
 """
 from setuptools import setup, find_packages
 import os
@@ -13,14 +13,13 @@ def read_requirements():
         return [line.strip() for line in fh if line.strip() and not line.startswith("#")]
 
 setup(
-    name="funnel-alchemy-scorer",
+    name="prospect-scoring-api",
     version="1.0.0",
-    author="Funnel Alchemy Team",
-    author_email="team@funnelalchemy.com",
+    author="Prospect Scoring API",
     description="Python module for scoring prospects using OpenAI GPT models",
     long_description=read_readme(),
     long_description_content_type="text/markdown",
-    url="https://github.com/funnelalchemy/scorer",
+    url="https://github.com/calthoff/funnelalchemybackendtest/tree/prospect-scoring/scoring_module",
     packages=find_packages(),
     classifiers=[
         "Development Status :: 4 - Beta",

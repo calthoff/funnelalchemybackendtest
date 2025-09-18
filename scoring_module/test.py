@@ -1,11 +1,9 @@
 """
-Simple test for Funnel Alchemy Scorer module
+Simple test for Prospect Scoring API Module
 Request from query_example.json -> Response
 """
 import json
 from scoring_module import score_prospects
-
-# from scorer import score_prospects
 
 # Load request from query_example.json
 with open('query_example.json', 'r', encoding='utf-8') as f:

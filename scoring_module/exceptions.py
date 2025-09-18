@@ -1,5 +1,5 @@
 """
-Exceptions for Funnel Alchemy Scorer
+Exceptions for Prospect Scoring API Module
 """
 
 

@@ -1,5 +1,5 @@
 """
-Funnel Alchemy Scorer - Batch scoring of prospects
+Prospect Scoring API Module - Batch scoring of prospects
 """
 import time
 import uuid
@@ -7,10 +7,10 @@ import logging
 from collections import defaultdict
 from typing import List, Dict, Any, Optional, Union
 
-from models import ScoringResult, ScoringSettings
-from openai_client import OpenAIClient
-from prompt_generator import PromptGenerator
-from exceptions import ScorerError, RateLimitError, APIError, TimeoutError, ValidationError
+from .models import ScoringResult, ScoringSettings
+from .openai_client import OpenAIClient
+from .prompt_generator import PromptGenerator
+from .exceptions import ScorerError, RateLimitError, APIError, TimeoutError, ValidationError
 
 # Default settings
 DEFAULT_CHUNK_SIZE = 20

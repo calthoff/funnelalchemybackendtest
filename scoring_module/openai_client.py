@@ -1,5 +1,5 @@
 """
-OpenAI client for Funnel Alchemy Scorer
+OpenAI client for Prospect Scoring API Module
 """
 import json
 import re
@@ -9,7 +9,7 @@ from typing import Optional, List, Dict, Any, Tuple
 import openai
 from dotenv import load_dotenv, find_dotenv
 
-from exceptions import ScorerError, RateLimitError, APIError, TimeoutError
+from .exceptions import ScorerError, RateLimitError, APIError, TimeoutError
 
 load_dotenv(find_dotenv())
 

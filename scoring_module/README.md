@@ -196,25 +196,9 @@ health_status = scorer.get_health_status()
 readiness_status = scorer.get_readiness_status()
 ```
 
-## CLI Interface
+## Python API Usage
 
-### Install CLI
-
-After installing the module, the `funnel-scorer` command is available:
-
-```bash
-# Score from JSON file
-funnel-scorer score -i input.json -o results.json
-
-# Score with settings from command line
-funnel-scorer score -s '{"industries": ["Technology"]}' -p '[{"prospect_id": "1", "company_industry": "Technology"}]'
-
-# Check service health
-funnel-scorer health
-
-# Check readiness
-funnel-scorer ready
-```
+The module provides a simple Python API for scoring prospects:
 
 ### Input JSON File Format
 
