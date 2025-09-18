@@ -5,7 +5,7 @@ import json
 import re
 import time
 import os
-from typing import Optional, List, Dict, Any, Tuple
+from typing import Optional, List, Dict, Any, Tuple, Union
 import openai
 from dotenv import load_dotenv, find_dotenv
 
@@ -64,7 +64,7 @@ class OpenAIClient:
         t = re.sub(r"\s*```\s*$", "", t)
         return t
 
-    def get_batch_scores_from_model(self, prompt: str, return_meta: bool = False) -> List[Dict[str, Any]] | Tuple[List[Dict[str, Any]], Dict[str, Any]]:
+    def get_batch_scores_from_model(self, prompt: str, return_meta: bool = False) -> Union[List[Dict[str, Any]], Tuple[List[Dict[str, Any]], Dict[str, Any]]]:
         """
         Call model in batch mode with retries.
         
@@ -159,7 +159,7 @@ class OpenAIClient:
         raise ScorerError("api_failure")
 
 
-def get_batch_scores_from_model(prompt: str, return_meta: bool = False) -> List[Dict[str, Any]] | Tuple[List[Dict[str, Any]], Dict[str, Any]]:
+def get_batch_scores_from_model(prompt: str, return_meta: bool = False) -> Union[List[Dict[str, Any]], Tuple[List[Dict[str, Any]], Dict[str, Any]]]:
     """
     Function for backward compatibility.
     
