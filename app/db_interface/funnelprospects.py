@@ -5,7 +5,7 @@ Functions to be used
 
 :Author: Michel Eric Levy _mel_
 :Creation date: September 2nd, 2025
-:Last updated: 9/15/2025 (_mel_)
+:Last updated: 9/19/2025 (_mel_)
 
 """
 # pylint: disable=C0301,W1203, R0914, R0913, R0912, R0915,C0103, C0111, R0903, C0321, C0303
@@ -1344,7 +1344,7 @@ def remove_from_daily_list(customer_id: str, prospect_id_list: List[str]) -> Dic
 
 
 
-def get_customer_prospect_criteria(customer_id: str, prospect_profile_id: str) -> Dict:
+def get_customer_prospect_criteria(customer_id: str, prospect_profile_id: str='default') -> dict:
     """
     Retrieve the criteria_dataset JSON for a particular customer/company
     
@@ -1649,10 +1649,11 @@ def update_has_replied_status(customer_id: str, prospect_id: str, has_replied: b
 
 
 
-def get_customer_prospects_list(customer_id: str, prospect_profile_id: str, show_thumbs_down: bool = False) -> Dict:
+def get_customer_prospects_list(customer_id: str, prospect_profile_id: str="default", show_thumbs_down: bool = False) -> dict:
     """
     Function will return all the prospects for a given customer that are NOT yet in his daily list
     or does not have its thumbs_down flag set to True (unless the 3rd parameter is set to True)
+    AND ALSO, where the status=''
 
     Inpout parameters:
     - customer_id: unqiue ID for that customer
@@ -1722,6 +1723,7 @@ def get_customer_prospects_list(customer_id: str, prospect_profile_id: str, show
                     WHERE cp.customer_id = %s 
                         AND cp.prospect_profile_id = %s 
                         AND cp.is_inside_daily_list = %s
+                        AND (cp.status is null or cp.status = '')
                 """
                 params = (customer_id, prospect_profile_id, False)
             else:
@@ -1747,7 +1749,8 @@ def get_customer_prospects_list(customer_id: str, prospect_profile_id: str, show
                     WHERE cp.customer_id = %s 
                         AND cp.prospect_profile_id = %s 
                         AND cp.is_inside_daily_list = %s
-                        AND (cp.thumbs_down = %s OR cp.thumbs_down IS NULL)
+                        AND (cp.thumbs_down = %s OR cp.thumbs_down IS NULL)  
+                        AND (cp.status is null or cp.status = '')
                 """
                 params = (customer_id, prospect_profile_id, False, False)
 

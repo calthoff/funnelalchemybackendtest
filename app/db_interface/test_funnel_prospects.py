@@ -2,7 +2,7 @@
 testing the funnelprospects library of functions
 :Author: Michel Eric Levy _mel_
 :Creation date: September 2nd, 2025
-:Last updated: 9/11/2025 (_mel_)
+:Last updated: 9/19/2025 (_mel_)
 
 """
 import json

@@ -4,7 +4,7 @@ by the backend to get the scroting of prospects
 
 :Author: Michel Eric Levy _mel_
 :Creation date: September 15, 2025
-:Last updated: 9/15/2025 (_mel_)
+:Last updated: 9/19/2025 (_mel_)
 
 """
 # pylint: disable=C0301,W1203, R0914, R0913, R0912, R0915,C0103, C0111, R0903, C0321, C0303
@@ -21,6 +21,8 @@ import psycopg2
 import boto3
 
 
+from scoring_module import score_prospects
+
 
 # will print debug traces when set to True
 DEBUG = True
@@ -35,7 +37,7 @@ dotenv_path = Path(__file__).parent / '.env'
 
 for i in range(3):
     if dotenv_path.exists():
-        print("Found .env file !")
+        #print("Found .env file !")
         break
     else:
         print(f"WARNING: .env file does not exist at {dotenv_path}, trying parent directory...")
@@ -79,31 +81,43 @@ def connect_db():
     return conn
 
 
-
-def get_scoring_json_prospects(prospect_id: str) -> Dict:
+#################################################################################
+#################################################################################
+def get_scoring_json_prospects(prospect_id_list: list) -> dict:
     """
-    Build a JSON document for a specific prospect that matches the required format
+    Build JSON documents for multiple prospects that match the required format
     for scoring purposes. Uses detailed mapping rules to extract data from the prospects table.
+    All processing is done in a single SQL query for optimal performance.
     
     Args:
-        prospect_id (str): The prospect ID to retrieve data for
+        prospect_id_list (List[str]): List of prospect IDs to retrieve data for
     
     Returns:
-        Dict: JSON formatted prospect data or error response
+        Dict: Response with list of JSON formatted prospect data or error response
     """
     
     try:
         # Validate required parameter
-        if not prospect_id or prospect_id.strip() == "":
-            raise RuntimeError("prospect_id is required and cannot be empty")
+        if not prospect_id_list or len(prospect_id_list) == 0:
+            raise RuntimeError("prospect_id_list is required and cannot be empty")
+        
+        # Validate that prospect_id_list contains valid IDs
+        for prospect_id in prospect_id_list:
+
+            
+
+            if not prospect_id or prospect_id.strip() == "":
+                raise RuntimeError("All prospect_ids in the list must be non-empty")
 
         # Connect to the database
         conn = connect_db()
         try:
             cur = conn.cursor()
 
-            # Build comprehensive SQL query based on mapping rules
-            sql_query = """
+            # Build comprehensive SQL query with IN clause for multiple prospects
+            # Use the vendordata structure as shown in your updated function
+            placeholders = ','.join(['%s'] * len(prospect_id_list))
+            sql_query = f"""
                 SELECT 
                     -- Basic prospect info
                     p.id as prospect_id,
@@ -164,36 +178,16 @@ def get_scoring_json_prospects(prospect_id: str) -> Dict:
                     p.vendordata->'linkedin_url' as linkedin_url
                     
                 FROM prospects p
-                WHERE p.id = %s
+                WHERE p.id IN ({placeholders})
+                ORDER BY p.id
             """
 
-            # Execute the query
-            cur.execute(sql_query, (prospect_id,))
-            result = cur.fetchone()
+            # Execute the query with all prospect IDs
+            cur.execute(sql_query, prospect_id_list)
+            results = cur.fetchall()
             cur.close()
 
-            if not result:
-                return {
-                    "status": "error",
-                    "message": f"No prospect found with ID: {prospect_id}",
-                    "prospect_id": prospect_id
-                }
-
-            # Extract data from query result
-            (
-                prospect_id, full_name, headline, summary, location_country, location_full,
-                inferred_skills, connections_count, followers_count, is_working, active_experience_title,
-                active_experience_description, active_experience_department, active_experience_management_level,
-                is_decision_maker, duration_months, location, active_experience_company_id, company_name,
-                company_industry, company_followers_count, company_size_range, company_employees_count,
-                company_categories_and_keywords, company_hq_country, company_last_funding_round_date,
-                company_last_funding_round_amount_raised, company_employees_count_change_yearly_percentage,
-                company_hq_full_address, company_is_b2b, total_experience_duration_months,
-                total_experience_duration_months_breakdown_department, total_experience_duration_months_breakdown_management_level,
-                education_degrees, languages, awards, certifications, courses, primary_professional_email, linkedin_url
-            ) = result
-
-            # Helper function to convert 1/0 to true/false
+            # Helper functions
             def convert_to_bool(value):
                 if value == 1:
                     return True
@@ -201,315 +195,112 @@ def get_scoring_json_prospects(prospect_id: str) -> Dict:
                     return False
                 return value
 
-            # Helper function to safely convert to int
             def safe_int(value):
                 try:
                     return int(value) if value is not None else None
                 except (ValueError, TypeError):
                     return None
 
-            # Helper function to safely convert to float
             def safe_float(value):
                 try:
                     return float(value) if value is not None else None
                 except (ValueError, TypeError):
                     return None
 
-            # Build the JSON structure according to the required format
-            prospect_json = {
-                "prospect_id": prospect_id,
-                "full_name": full_name,
-                "basic_profile": {
-                    "headline": headline,
-                    "summary": summary,
-                    "location_country": location_country,
-                    "location_full": location_full,
-                    "inferred_skills": inferred_skills if inferred_skills else [],
-                    "connections_count": safe_int(connections_count),
-                    "followers_count": safe_int(followers_count)
-                },
-                "current_job": {
-                    "is_working": convert_to_bool(is_working),
-                    "active_experience_title": active_experience_title,
-                    "active_experience_description": active_experience_description,
-                    "active_experience_department": active_experience_department,
-                    "active_experience_management_level": active_experience_management_level,
-                    "is_decision_maker": convert_to_bool(is_decision_maker)
-                },
-                "current_company": {
-                    "position_title": active_experience_title,
-                    "department": active_experience_department,
-                    "management_level": active_experience_management_level,
-                    "duration_months": safe_int(duration_months),
-                    "location": location,
-                    "company_id": active_experience_company_id,
-                    "company_name": company_name,
-                    "company_industry": company_industry,
-                    "company_followers_count": safe_int(company_followers_count),
-                    "company_size_range": company_size_range,
-                    "company_employees_count": safe_int(company_employees_count),
-                    "company_categories_and_keywords": company_categories_and_keywords if company_categories_and_keywords else [],
-                    "company_hq_country": company_hq_country,
-                    "company_last_funding_round_date": company_last_funding_round_date,
-                    "company_last_funding_round_amount_raised": safe_float(company_last_funding_round_amount_raised),
-                    "company_employees_count_change_yearly_percentage": safe_float(company_employees_count_change_yearly_percentage),
-                    "company_hq_full_address": company_hq_full_address,
-                    "company_is_b2b": convert_to_bool(company_is_b2b)
-                },
-                "total_experience": {
-                    "total_experience_duration_months": safe_int(total_experience_duration_months),
-                    "total_experience_duration_months_breakdown_department": total_experience_duration_months_breakdown_department if total_experience_duration_months_breakdown_department else {},
-                    "total_experience_duration_months_breakdown_management_level": total_experience_duration_months_breakdown_management_level if total_experience_duration_months_breakdown_management_level else {}
-                },
-                "education": {
-                    "education_degrees": education_degrees if education_degrees else []
-                },
-                "languages": languages if languages else [],
-                "additional_info": {
-                    "awards": awards if awards else [],
-                    "certifications": certifications if certifications else [],
-                    "courses": courses if courses else []
-                },
-                "contact_info": {
-                    "email": primary_professional_email,
-                    "linkedin_url": linkedin_url
-                }
-            }
+            # Process all results into JSON format
+            prospects_list = []
+            found_prospect_ids = set()
 
-            # Return success response with the prospect JSON
-            return {
-                "status": "success",
-                "message": "Prospect JSON generated successfully",
-                "prospect_id": prospect_id,
-                "prospect_data": prospect_json
-            }
-
-        finally:
-            conn.close()
-
-    except RuntimeError as e:
-        return {
-            "status": "error",
-            "error_type": "RuntimeError",
-            "message": str(e),
-            "prospect_id": prospect_id if 'prospect_id' in locals() else None
-        }
-    except Exception as e:
-        return {
-            "status": "error",
-            "error_type": type(e).__name__,
-            "message": str(e),
-            "prospect_id": prospect_id if 'prospect_id' in locals() else None
-        }
-    """
-    Function will return all the prospects for a given customer that are NOT yet in his daily list
-    or does not have its thumbs_down flag set to True (unless the 3rd parameter is set to True)
-    """ 
-    try:
-        # Validate required parameters
-        if not customer_id or customer_id.strip() == "":
-            raise RuntimeError("customer_id is required and cannot be empty")
-        if not prospect_profile_id or prospect_profile_id.strip() == "":
-            raise RuntimeError("prospect_profile_id is required and cannot be empty")
-        if show_thumbs_down is None or not isinstance(show_thumbs_down, bool):
-            raise RuntimeError("show_thumbs_down is required and must be a Boolean value (True or False)")
-
-        # Extract company_unique_id from customer_id (format: <...>-<...>-<company_unique_id>)
-        try:
-            company_unique_id = customer_id.split("-")[-1]
-        except IndexError:
-            raise RuntimeError("Invalid customer_id format; expected format: <...>-<...>-<company_unique_id>")
-
-        # Connect to the database
-        conn = connect_db()
-        try:
-            cur = conn.cursor()
-
-            # Build the SQL query with JOIN
-            if show_thumbs_down:
-                # Include prospects with thumbs_down = True
-                sql_query = """
-                    SELECT 
-                        cp.prospect_id,
-                        cp.score,
-                        p.full_name,
-                        p.first_name,
-                        p.last_name,
-                        LEFT((p.vendordata->'experience'->0->>'company_name'),20) AS company_name,
-                        LEFT((p.vendordata->'experience'->0->>'position_title'),20) AS position_title,
-                        LEFT((p.vendordata->'experience'->0->>'department'),20) AS department,
-                        LEFT((p.vendordata->'experience'->0->>'management_level'),20) AS management_level,
-                        LEFT((p.vendordata->'experience'->0->>'company_type'),20) AS company_type,
-                        LEFT((p.vendordata->'experience'->0->>'company_annual_revenue_source_5'),20) AS revenue_source_5,
-                        LEFT((p.vendordata->'experience'->0->>'company_annual_revenue_source_1'),20) AS revenue_source_1
-                    FROM customer_prospects cp
-                    JOIN prospects p ON cp.prospect_id = p.id
-                    WHERE cp.customer_id = %s 
-                        AND cp.prospect_profile_id = %s 
-                        AND cp.is_inside_daily_list = %s
-                """
-                params = (customer_id, prospect_profile_id, False)
-            else:
-                # Exclude prospects with thumbs_down = True
-                sql_query = """
-                    SELECT 
-                        cp.prospect_id,
-                        cp.score,
-                        p.full_name,
-                        p.first_name,
-                        p.last_name,
-                        LEFT((p.vendordata->'experience'->0->>'company_name'),20) AS company_name,
-                        LEFT((p.vendordata->'experience'->0->>'position_title'),20) AS position_title,
-                        LEFT((p.vendordata->'experience'->0->>'department'),20) AS department,
-                        LEFT((p.vendordata->'experience'->0->>'management_level'),20) AS management_level,
-                        LEFT((p.vendordata->'experience'->0->>'company_type'),20) AS company_type,
-                        LEFT((p.vendordata->'experience'->0->>'company_annual_revenue_source_5'),20) AS revenue_source_5,
-                        LEFT((p.vendordata->'experience'->0->>'company_annual_revenue_source_1'),20) AS revenue_source_1
-                    FROM customer_prospects cp
-                    JOIN prospects p ON cp.prospect_id = p.id
-                    WHERE cp.customer_id = %s 
-                        AND cp.prospect_profile_id = %s 
-                        AND cp.is_inside_daily_list = %s
-                        AND (cp.thumbs_down = %s OR cp.thumbs_down IS NULL)
-                """
-                params = (customer_id, prospect_profile_id, False, False)
-
-            # Execute the query
-            cur.execute(sql_query, params)
-            results = cur.fetchall()
-            cur.close()
-
-            # Convert results to list of dictionaries
-            result_list = []
             for row in results:
-                prospect_dict = {
-                    "prospect_id": row[0],
-                    "score": row[1],
-                    "full_name": row[2],
-                    "first_name": row[3],
-                    "last_name": row[4],
-                    "company_name": row[5],
-                    "position_title": row[6],
-                    "department": row[7],
-                    "management_level": row[8],
-                    "company_type": row[9],
-                    "revenue_source_5": row[10],
-                    "revenue_source_1": row[11]
+                (
+                    prospect_id, full_name, headline, summary, location_country, location_full,
+                    inferred_skills, connections_count, followers_count, is_working, active_experience_title,
+                    active_experience_description, active_experience_department, active_experience_management_level,
+                    is_decision_maker, duration_months, location, active_experience_company_id, company_name,
+                    company_industry, company_followers_count, company_size_range, company_employees_count,
+                    company_categories_and_keywords, company_hq_country, company_last_funding_round_date,
+                    company_last_funding_round_amount_raised, company_employees_count_change_yearly_percentage,
+                    company_hq_full_address, company_is_b2b, total_experience_duration_months,
+                    total_experience_duration_months_breakdown_department, total_experience_duration_months_breakdown_management_level,
+                    education_degrees, languages, awards, certifications, courses, primary_professional_email, linkedin_url
+                ) = row
+
+                found_prospect_ids.add(prospect_id)
+
+                # Build the JSON structure according to the required format
+                prospect_json = {
+                    "prospect_id": prospect_id,
+                    "full_name": full_name,
+                    "basic_profile": {
+                        "headline": headline,
+                        "summary": summary,
+                        "location_country": location_country,
+                        "location_full": location_full,
+                        "inferred_skills": inferred_skills if inferred_skills else [],
+                        "connections_count": safe_int(connections_count),
+                        "followers_count": safe_int(followers_count)
+                    },
+                    "current_job": {
+                        "is_working": convert_to_bool(is_working),
+                        "active_experience_title": active_experience_title,
+                        "active_experience_description": active_experience_description,
+                        "active_experience_department": active_experience_department,
+                        "active_experience_management_level": active_experience_management_level,
+                        "is_decision_maker": convert_to_bool(is_decision_maker)
+                    },
+                    "current_company": {
+                        "position_title": active_experience_title,
+                        "department": active_experience_department,
+                        "management_level": active_experience_management_level,
+                        "duration_months": safe_int(duration_months),
+                        "location": location,
+                        "company_id": active_experience_company_id,
+                        "company_name": company_name,
+                        "company_industry": company_industry,
+                        "company_followers_count": safe_int(company_followers_count),
+                        "company_size_range": company_size_range,
+                        "company_employees_count": safe_int(company_employees_count),
+                        "company_categories_and_keywords": company_categories_and_keywords if company_categories_and_keywords else [],
+                        "company_hq_country": company_hq_country,
+                        "company_last_funding_round_date": company_last_funding_round_date,
+                        "company_last_funding_round_amount_raised": safe_float(company_last_funding_round_amount_raised),
+                        "company_employees_count_change_yearly_percentage": safe_float(company_employees_count_change_yearly_percentage),
+                        "company_hq_full_address": company_hq_full_address,
+                        "company_is_b2b": convert_to_bool(company_is_b2b)
+                    },
+                    "total_experience": {
+                        "total_experience_duration_months": safe_int(total_experience_duration_months),
+                        "total_experience_duration_months_breakdown_department": total_experience_duration_months_breakdown_department if total_experience_duration_months_breakdown_department else {},
+                        "total_experience_duration_months_breakdown_management_level": total_experience_duration_months_breakdown_management_level if total_experience_duration_months_breakdown_management_level else {}
+                    },
+                    "education": {
+                        "education_degrees": education_degrees if education_degrees else []
+                    },
+                    "languages": languages if languages else [],
+                    "additional_info": {
+                        "awards": awards if awards else [],
+                        "certifications": certifications if certifications else [],
+                        "courses": courses if courses else []
+                    },
+                    "contact_info": {
+                        "email": primary_professional_email,
+                        "linkedin_url": linkedin_url
+                    }
                 }
-                result_list.append(prospect_dict)
+                
+                prospects_list.append(prospect_json)
 
-            # Return success response with the prospect list
-            return {
-                "status": "success",
-                "message": "Prospect list successfully retrieved",
-                "customer_id": customer_id,
-                "prospect_profile_id": prospect_profile_id,
-                "nb_prospects_returned": len(result_list),
-                "prospect_list": result_list
-            }
-
-        finally:
-            conn.close()
-
-    except RuntimeError as e:
-        return {
-            "status": "error",
-            "error_type": "RuntimeError",
-            "message": str(e),
-            "customer_id": customer_id if 'customer_id' in locals() else None,
-            "prospect_profile_id": prospect_profile_id if 'prospect_profile_id' in locals() else None,
-            "nb_prospects_returned": 0,
-            "prospect_list": []
-        }
-    except Exception as e:
-        return {
-            "status": "error",
-            "error_type": type(e).__name__,
-            "message": str(e),
-            "customer_id": customer_id if 'customer_id' in locals() else None,
-            "prospect_profile_id": prospect_profile_id if 'prospect_profile_id' in locals() else None,
-            "nb_prospects_returned": 0,
-            "prospect_list": []
-        }
-    """
-    This function will update the "status" and "activity_history" fields of a prospect in the "customer_prospects" table
-    
-    Args:
-        customer_id (str): Customer ID
-        prospect_id (str): Prospect ID
-        status (str): New status value (must be 'contacted', 'not-a-fit', or 'later')
-        activity_history (str): Activity history to update (will be converted to JSON)
-    
-    Returns:
-        Dict: Response with status and message and dict with the format below:
-            {
-                "status": "success",
-                "message": "Prospect status updated successfully",
-                "customer_id": customer_id,
-                "prospect_id": prospect_id,
-                "new_status": status
-            }        
-    """
-    
-    try:
-        # Validate required parameters
-        if not customer_id or customer_id.strip() == "":
-            raise RuntimeError("customer_id is required and cannot be empty")
-        if not prospect_id or prospect_id.strip() == "":
-            raise RuntimeError("prospect_id is required and cannot be empty")
-        if not status or status.strip() == "" or status not in ["contacted", "not-a-fit", "later"]:
-            raise RuntimeError("status is required and cannot be empty and has to be either 'contacted', 'not-a-fit' or 'later'")
-
-        # Connect to the database
-        conn = connect_db()
-        try:
-            cur = conn.cursor()
-
-            # Check if the record exists first
-            cur.execute("""
-                SELECT COUNT(*) 
-                FROM customer_prospects 
-                WHERE customer_id = %s AND prospect_id = %s
-            """, (customer_id, prospect_id))
+            # Check for missing prospects
+            missing_prospect_ids = set(prospect_id_list) - found_prospect_ids
             
-            exists = cur.fetchone()[0] > 0
-
-            if not exists:
-                cur.close()
-                return {
-                    "status": "error",
-                    "message": "No prospect found for the provided customer_id and prospect_id",
-                    "customer_id": customer_id,
-                    "prospect_id": prospect_id
-                }
-
-            # Get current timestamp for last_updated
-            current_timestamp = datetime.datetime.now()
-
-            # Convert activity_history to JSON if it's a string
-            if isinstance(activity_history, str):
-                activity_history_json = json.dumps(activity_history)
-            else:
-                activity_history_json = json.dumps(activity_history)
-
-            # Update the status, activity_history, and last_updated timestamp
-            cur.execute("""
-                UPDATE customer_prospects 
-                SET status = %s, activity_history = %s, last_updated = %s
-                WHERE customer_id = %s AND prospect_id = %s
-            """, (status, activity_history_json, current_timestamp, customer_id, prospect_id))
-
-            # Commit the update
-            conn.commit()
-            cur.close()
-
-            # Return success response
+            # Return success response with the prospects list
             return {
                 "status": "success",
-                "message": "Prospect status updated successfully",
-                "customer_id": customer_id,
-                "prospect_id": prospect_id,
-                "new_status": status
+                "message": f"Prospect JSON generated successfully for {len(prospects_list)} prospects",
+                "requested_count": len(prospect_id_list),
+                "found_count": len(prospects_list),
+                "missing_prospect_ids": list(missing_prospect_ids),
+                "prospects_data": prospects_list
             }
 
         finally:
@@ -519,20 +310,16 @@ def get_scoring_json_prospects(prospect_id: str) -> Dict:
         return {
             "status": "error",
             "error_type": "RuntimeError",
-            "message": str(e),
-            "customer_id": customer_id if 'customer_id' in locals() else None,
-            "prospect_id": prospect_id if 'prospect_id' in locals() else None
+            "message": str(e)
         }
     except Exception as e:
         return {
             "status": "error",
             "error_type": type(e).__name__,
-            "message": str(e),
-            "customer_id": customer_id if 'customer_id' in locals() else None,
-            "prospect_id": prospect_id if 'prospect_id' in locals() else None
+            "message": str(e)
         }
-
-
+#################################################################################
+#################################################################################
 
 
 
@@ -652,4 +439,314 @@ def convert_to_scoring_format(criteria_json: dict) -> dict:
             "message": str(e)
         }
 
+
+###################################################################
+#------------------------------------------------------------------
+
+def scoring_results_to_list_of_dicts(results):
+    """
+    Convert list of ScoringResult objects to list of dictionaries
+    The ScorinResult list is the one sent by Bodhan score module
+    """
+    return [
+        {
+            'prospect_id': result.prospect_id,
+            'score': result.score,
+            'justification': result.justification
+        }
+        for result in results
+    ]
+
+
+import asyncio
+from typing import List, Dict, Any
+
+async def process_json_batch_prospects(score_settings: dict, prospects_list: List[dict], batch_size: int = 10) -> list:
+    """
+    Simple batching approach - good for datasets that can complete within timeout
+    """
+    all_scores = []
+    batch_nb =1
+    try:
+        for i in range(0, len(prospects_list), batch_size):
+            batch = prospects_list[i:i + batch_size]
+            print(f"now about to process batch number |{batch_nb}|")
+            batch_nb += 1
+
+            batch_scores = await process_batch_concurrent(score_settings, batch)
+            if(batch_scores['status']=="success"):
+                all_scores.extend(batch_scores['scores'])
+                print(f"first elelement for BATCH_score = |{batch_scores['scores'][0]}|")
+            else:
+                raise RuntimeError("Unexpected isseue with the scoring: " + batch_scores['message'])
+            
+            # Optional: Add delay between batches to respect rate limits
+            await asyncio.sleep(0.1)
+        
+        return {
+                "status": "success",
+                "message": f"Scoring prospects successfull",
+                "scores_list": scoring_results_to_list_of_dicts(all_scores)
+            }
+    except RuntimeError as e:
+        return {
+            "status": "error",
+            "error_type": "RuntimeError",
+            "message": str(e),
+        }
+    except Exception as e:
+        return {
+            "status": "some exception error",
+            "error_type": type(e).__name__,
+            "message": str(e),
+        }
+
+async def process_batch_concurrent(score_settings: dict, batch: List[dict], ) -> list:
+    """
+    This function will process a batch of prospects
+
+    Input parameters:
+    - batch: this is list a of dict, where each dict is JSON-prospect
+
+    Returns:
+    - score: which is a dict and 1 dict item is all the scores returned by the scoring_module API 
+    example formayt can be se seen below:
+    {
+            "status": "success",
+            "message": "Scoring done successfully for all prospects",
+            "scores": scores
+        }       
+    and the scores variable is a list with this format below:    
+    [ScoringResult(prospect_id='12346', score=95, justification='justfication text'), 
+     ScoringResult(prospect_id='12347', score=90, justification='justfication text'), 
+     ScoringResult(prospect_id='12348', score=75, justification="justfication text")]
+
+    """
+
+    try:
+        # Call the external score_prospect function
+        # Note: Assuming score_prospect is async - if it's sync, you may need to wrap it
+        #scores = await score_prospects(score_settings, batch)
+        scores = score_prospects(score_settings, batch)
+        
+        # Handle the case where scores might not be returned as expected
+        if isinstance(scores, list):
+            return {
+                "status": "success",
+                "message": "Scoring done successfully for all prospects",
+                "scores": scores
+            }        
+        else:
+            # Fallback if unexpected return type
+            return {
+                "status": "error",
+                "error_type": "RuntimeError",
+                "message": "Some issues scoring the prospects",
+            }        
+
+    except RuntimeError as e:
+        return {
+            "status": "error",
+            "error_type": "RuntimeError",
+            "message": str(e),
+        }
+    except Exception as e:
+        return {
+            "status": "some exception error",
+            "error_type": type(e).__name__,
+            "message": str(e),
+        }
+
+
+
+
+
+
+
+
+
+# Usage example:
+async def main():
+    # Your JSON items (prospects)
+    prospects_list = [
+        {"name": "prospect1", "data": "..."},
+        {"name": "prospect2", "data": "..."},
+        # ... more prospects
+    ]
+    
+    # Your score settings
+    score_settings = {
+        "model": "gpt-4",
+        "criteria": "lead_quality",
+        "threshold": 0.7
+        # ... other settings
+    }
+    
+    # Process all items
+    all_scores = await process_json_batch_simple(
+        prospects_list=prospects_list,
+        score_settings=score_settings,
+        batch_size=20
+    )
+    
+    return all_scores
+
+#------------------------------------------------------------------
+#------------------------------------------------------------------
+
+def update_score_in_customer_prospects(customer_id: str, scores_list: list[dict], prospect_profile_id: str = "default", min_score: int = 60) -> dict:
+    """
+    Update scores, justifications, and status in the customer_prospects table for multiple prospects.
+    Uses bulk SQL operations for optimal performance.
+    
+    Input parameters:
+        customer_id (str): Customer ID
+        scores_list (List[Dict]): List of dicts with keys: prospect_id, score, justification
+        prospect_profile_id (str): Prospect profile ID (default: "default")
+        min_score (int): Minimum score threshold for status determination (default: 60)
+    
+    Returns:
+        Dict: Response with status, message, and count of updated records
+    """
+    
+    try:
+        # Validate required parameters
+        if not customer_id or customer_id.strip() == "":
+            raise RuntimeError("customer_id is required and cannot be empty")
+        
+        if not scores_list or len(scores_list) == 0:
+            raise RuntimeError("scores_list is required and cannot be empty")
+        
+        if not prospect_profile_id or prospect_profile_id.strip() == "":
+            raise RuntimeError("prospect_profile_id is required and cannot be empty")
+        
+        if not isinstance(min_score, int):
+            raise RuntimeError("min_score must be an integer")
+
+        # Validate each item in scores_list
+        for i, score_item in enumerate(scores_list):
+            if not isinstance(score_item, dict):
+                raise RuntimeError(f"Item {i} in scores_list must be a dictionary")
+            
+            if 'prospect_id' not in score_item or not score_item['prospect_id'] or score_item['prospect_id'].strip() == "":
+                raise RuntimeError(f"Item {i} in scores_list must have a non-empty 'prospect_id'")
+            
+            if 'score' not in score_item or score_item['score'] is None:
+                raise RuntimeError(f"Item {i} in scores_list must have a 'score' value")
+            
+            if 'justification' not in score_item:
+                raise RuntimeError(f"Item {i} in scores_list must have a 'justification' key")
+            
+            # Validate score is a number
+            try:
+                int(score_item['score'])
+            except (ValueError, TypeError):
+                raise RuntimeError(f"Item {i} in scores_list must have a numeric 'score' value")
+
+        # Connect to the database
+        conn = connect_db()
+        try:
+            cur = conn.cursor()
+            
+            # Prepare bulk update data
+            update_data = []
+            for score_item in scores_list:
+                prospect_id = score_item['prospect_id']
+                score = int(score_item['score'])
+                justification = score_item['justification']
+                
+                # Determine status based on score vs min_score
+                status = "" if score >= min_score else "low-score"
+                
+                update_data.append((score, justification, status, customer_id, prospect_id))
+
+            # Get current timestamp for last_updated
+            current_timestamp = datetime.datetime.now()
+            
+            # Use SQL CASE statement for bulk updates - more efficient than individual updates
+            # Build a single SQL statement that updates all records at once
+            when_clauses = []
+            params = []
+            prospect_ids = []
+            
+            for score, justification, status, cust_id, prospect_id in update_data:
+                when_clauses.append("""
+                    WHEN prospect_id = %s THEN %s
+                """)
+                params.extend([prospect_id, score])
+                prospect_ids.append(prospect_id)
+            
+            # Add justification CASE clauses
+            justification_when_clauses = []
+            justification_params = []
+            for score, justification, status, cust_id, prospect_id in update_data:
+                justification_when_clauses.append("""
+                    WHEN prospect_id = %s THEN %s
+                """)
+                justification_params.extend([prospect_id, justification])
+            
+            # Add status CASE clauses  
+            status_when_clauses = []
+            status_params = []
+            for score, justification, status, cust_id, prospect_id in update_data:
+                status_when_clauses.append("""
+                    WHEN prospect_id = %s THEN %s
+                """)
+                status_params.extend([prospect_id, status])
+
+            # Build the bulk update SQL query
+            prospect_id_placeholders = ','.join(['%s'] * len(prospect_ids))
+            
+            bulk_update_sql = f"""
+                UPDATE customer_prospects 
+                SET 
+                    score = CASE 
+                        {''.join(when_clauses)}
+                    END,
+                    score_reason = CASE 
+                        {''.join(justification_when_clauses)}
+                    END,
+                    status = CASE 
+                        {''.join(status_when_clauses)}
+                    END,
+                    last_updated = %s
+                WHERE customer_id = %s 
+                    AND prospect_profile_id = %s
+                    AND prospect_id IN ({prospect_id_placeholders})
+            """
+            
+            # Combine all parameters
+            all_params = (params + justification_params + status_params + 
+                         [current_timestamp.date(), customer_id, prospect_profile_id] + prospect_ids)
+            
+            # Execute the bulk update
+            cur.execute(bulk_update_sql, all_params)
+            
+            # Get the number of updated rows
+            updated_count = cur.rowcount
+            
+            # Commit the transaction
+            conn.commit()
+            cur.close()
+
+            # Return success response
+            return {
+                "status": "success",
+                "message": "All updates went ok",
+                "nb_saved": updated_count
+            }
+
+        finally:
+            conn.close()
+
+    except RuntimeError as e:
+        return {
+            "status": "error",
+            "message": f"Validation error: {str(e)}"
+        }
+    except Exception as e:
+        return {
+            "status": "error", 
+            "message": "Unexpected error and could not complete these updates"
+        }
 
