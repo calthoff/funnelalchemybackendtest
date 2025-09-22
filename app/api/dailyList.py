@@ -44,6 +44,10 @@ class HasRepliedRequest(BaseModel):
     has_replied: bool
     activity_history: str = ""
 
+class MarkAllContactedRequest(BaseModel):
+    customer_id: str
+    prospect_ids: List[str]
+
 @router.get("/")
 def get_daily_list_endpoint(customer_id: str, prospect_profile_id: str = "default", limit: int = 100, offset: int = 0):
     if not FUNNELPROSPECTS_AVAILABLE or not get_daily_list_prospects:
@@ -436,4 +440,56 @@ def update_has_replied_status_endpoint(payload: HasRepliedRequest):
         raise HTTPException(
             status_code=500,
             detail=f"Failed to update reply status: {str(e)}"
+        )
+
+@router.put("/mark-all-contacted")
+def mark_all_prospects_as_contacted_endpoint(payload: MarkAllContactedRequest):
+    if not FUNNELPROSPECTS_AVAILABLE or not update_daily_list_prospect_status:
+        raise HTTPException(
+            status_code=503,
+            detail="AWS integration not available"
+        )
+    
+    try:
+        updated_count = 0
+        failed_updates = []
+        
+        # Update each prospect status to 'contacted'
+        for prospect_id in payload.prospect_ids:
+            try:
+                result = update_daily_list_prospect_status(
+                    customer_id=payload.customer_id,
+                    prospect_id=prospect_id,
+                    status="contacted",
+                    activity_history="Marked as contacted when getting new prospects"
+                )
+                
+                if result["status"] == "success":
+                    updated_count += 1
+                else:
+                    failed_updates.append({
+                        "prospect_id": prospect_id,
+                        "error": result["message"]
+                    })
+            except Exception as e:
+                failed_updates.append({
+                    "prospect_id": prospect_id,
+                    "error": str(e)
+                })
+        
+        return {
+            "status": "success",
+            "message": f"Updated {updated_count} prospects as contacted",
+            "data": {
+                "updated_count": updated_count,
+                "failed_updates": failed_updates,
+                "total_requested": len(payload.prospect_ids)
+            }
+        }
+            
+    except Exception as e:
+        print(f"Error marking all prospects as contacted: {str(e)}")
+        raise HTTPException(
+            status_code=500,
+            detail=f"Failed to mark prospects as contacted: {str(e)}"
         )
