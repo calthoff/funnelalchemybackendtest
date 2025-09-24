@@ -4,7 +4,7 @@ by the backend to get the scroting of prospects
 
 :Author: Michel Eric Levy _mel_
 :Creation date: September 15, 2025
-:Last updated: 9/19/2025 (_mel_)
+:Last updated: 9/23/2025 (_mel_)
 
 """
 # pylint: disable=C0301,W1203, R0914, R0913, R0912, R0915,C0103, C0111, R0903, C0321, C0303
@@ -20,16 +20,23 @@ from pathlib import Path
 import psycopg2
 import boto3
 
+import asyncio
+from typing import List, Dict, Set, Any
 
 from scoring_module import score_prospects
+import funnelprospects as fp
 
 
 # will print debug traces when set to True
-DEBUG = True
+#DEBUG = True
+DEBUG = False
 # Configure logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
+
+#to remove the botocore "credentials:Found credentials in sh"  info messages printe don the output
+logging.getLogger("botocore.credentials").setLevel(logging.WARNING)
 
 
 
@@ -458,8 +465,6 @@ def scoring_results_to_list_of_dicts(results):
     ]
 
 
-import asyncio
-from typing import List, Dict, Any
 
 async def process_json_batch_prospects(score_settings: dict, prospects_list: List[dict], batch_size: int = 10) -> list:
     """
@@ -476,7 +481,7 @@ async def process_json_batch_prospects(score_settings: dict, prospects_list: Lis
             batch_scores = await process_batch_concurrent(score_settings, batch)
             if(batch_scores['status']=="success"):
                 all_scores.extend(batch_scores['scores'])
-                print(f"first elelement for BATCH_score = |{batch_scores['scores'][0]}|")
+                if(DEBUG): print(f"first elelement for BATCH_score = |{batch_scores['scores'][0]}|")
             else:
                 raise RuntimeError("Unexpected isseue with the scoring: " + batch_scores['message'])
             
@@ -603,7 +608,8 @@ def update_score_in_customer_prospects(customer_id: str, scores_list: list[dict]
         customer_id (str): Customer ID
         scores_list (List[Dict]): List of dicts with keys: prospect_id, score, justification
         prospect_profile_id (str): Prospect profile ID (default: "default")
-        min_score (int): Minimum score threshold for status determination (default: 60)
+        min_score (int): Minimum score threshold for status determination (default: 60), 
+                         if less than mini_score, then we set status='low_score'
     
     Returns:
         Dict: Response with status, message, and count of updated records
@@ -717,7 +723,7 @@ def update_score_in_customer_prospects(customer_id: str, scores_list: list[dict]
             
             # Combine all parameters
             all_params = (params + justification_params + status_params + 
-                         [current_timestamp.date(), customer_id, prospect_profile_id] + prospect_ids)
+                         [current_timestamp, customer_id, prospect_profile_id] + prospect_ids)
             
             # Execute the bulk update
             cur.execute(bulk_update_sql, all_params)
@@ -749,4 +755,289 @@ def update_score_in_customer_prospects(customer_id: str, scores_list: list[dict]
             "status": "error", 
             "message": "Unexpected error and could not complete these updates"
         }
+
+
+##########################################################################################
+##########################################################################################
+
+import threading
+import asyncio
+from typing import Dict, Set
+import logging
+
+# Set up logging instead of print statements to avoid stdout issues
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
+
+# Global dictionary to track running scoring tasks by customer_id
+_running_scoring_tasks: Dict[str, threading.Thread] = {}
+
+
+
+#-----$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+#-----$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+import psycopg2
+from psycopg2.extras import RealDictCursor
+
+def acquire_lock(lock_key, owner="app"):
+    conn = connect_db()
+    with conn.cursor() as cur:
+        cur.execute("""
+            INSERT INTO process_locks (lock_key, locked_by)
+            VALUES (%s, %s)
+            ON CONFLICT (lock_key) DO NOTHING
+            RETURNING lock_key;
+        """, (lock_key, owner))
+        row = cur.fetchone()
+        conn.commit()
+        conn.close()    
+        return row is not None  # True if acquired, False if already held
+
+def release_lock(lock_key):
+    logger.info(f"About to release lock_key for |{lock_key}|")
+    conn = connect_db()
+    with conn.cursor() as cur:
+        cur.execute("DELETE FROM process_locks WHERE lock_key = %s", (lock_key,))
+        conn.commit()
+    conn.close()    
+#-----$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+#-----$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+
+
+###########################################################################
+def start_scoring_customer_prospects(customer_id: str) -> dict:
+    """
+    Starts the scoring process in a separate thread and returns immediately.
+    Uses PostgreSQL advisory locks to prevent duplicate scoring tasks.
+
+    Input parameters:
+    - customer_id: unique id of that customer
+    """
+
+    try:
+        if not customer_id or customer_id.strip() == "":
+            raise RuntimeError("customer_id is required and cannot be empty")
+
+        lock_key = f"{customer_id}_scoring"
+        
+        logger.info(f"Attempting to acquire lock for key: |{lock_key}|")
+
+        try:
+            if acquire_lock(lock_key, owner="scoring-service"):
+                logger.info(f"Lock ACQUIRED successfully for {customer_id} (lock_key: {lock_key})")
+            else:
+                logger.info(f"Lock NOT acquired - already held for {customer_id} (lock_key: {lock_key})")
+                return {
+                    "status": "error",
+                    "message": "Could not start since already running for this customer",
+                    "customer_id": customer_id,
+                    "lock_key": lock_key,
+                }
+            
+        except Exception as e:
+            raise e
+
+
+        # Lock acquired successfully, start the scoring process
+        def run_scoring():
+            loop = None
+            try:
+                # Create new event loop for this thread
+                loop = asyncio.new_event_loop()
+                asyncio.set_event_loop(loop)
+                
+                # Run the async function
+                #result = loop.run_until_complete(scoring_customer_prospects_async(customer_id, lock_id))
+                result = loop.run_until_complete(scoring_customer_prospects_async(customer_id))
+                logger.info(f"Scoring completed for {customer_id}: {result}")
+                
+            except Exception as e:
+                logger.error(f"Scoring failed for {customer_id}: {e}")
+            finally:
+                # Clean shutdown of event loop
+                if loop and not loop.is_closed():
+                    loop.close()
+                
+                # Release the advisory lock
+                # will be done in the finally of the function "scoring_customer_prospects_async"
+
+        # Start the thread (daemon=False to avoid shutdown issues)
+        thread = threading.Thread(target=run_scoring, daemon=False)
+        thread.start()
+        
+        return {
+            "status": "success",
+            "message": "Scoring process started in background",
+            "customer_id": customer_id,
+            "thread_id": thread.ident
+        }
+
+    except Exception as e:
+        logger.error(f"Failed to start scoring process: {e}")
+        return {
+            "status": "error",
+            "message": f"Failed to start scoring process: {str(e)}",
+            "customer_id": customer_id
+        }
+###########################################################################
+
+
+async def scoring_customer_prospects_async(customer_id: str) -> dict:
+    """
+    The actual async scoring function that runs in the background.
+    It will find/generate the scores and then update them in the 'cutomer_prospects' table.
+
+    Input parameters:
+    - customer_id: unique customer id
+
+    Returns:
+    """
+    try:
+        print(f"Starting scoring for customer: {customer_id}")
+        
+        #-----------------------------------------------------------------------
+        # First: get the scoring criteria dataset for that user
+        scoring_customer = fp.get_customer_prospect_criteria(customer_id, "default")  # Assuming default profile
+        if scoring_customer['status'] != 'success':
+            return {
+                "status": "error",
+                "message": f"Failed to get customer criteria: {scoring_customer['message']}",
+                "customer_id": customer_id
+            }
+
+        #-----------------------------------------------------------------------
+        # Second: convert that criteria-dataset to the scoring format
+        scoring_settings = convert_to_scoring_format(scoring_customer['criteria_dataset'])
+        
+        if scoring_settings['status'] != 'success':
+            return {
+                "status": "error", 
+                "message": f"Failed to convert scoring format: {scoring_settings['message']}",
+                "customer_id": customer_id
+            }
+
+        #-----------------------------------------------------------------------
+        # Third: get all prospects from that user that need scoring
+        prospect_list_dict = fp.get_customer_prospects_list(customer_id, "default")
+        
+        if prospect_list_dict['status'] != 'success':
+            return {
+                "status": "error",
+                "message": f"Failed to get prospects list: {prospect_list_dict['message']}",
+                "customer_id": customer_id
+            }
+
+        #-----------------------------------------------------------------------
+        # Fourth: extract prospect_ids
+        all_prospect_list = [p["prospect_id"] for p in prospect_list_dict['prospect_list']]
+        
+        if not all_prospect_list:
+            return {
+                "status": "success",
+                "message": "No prospects found to score",
+                "customer_id": customer_id,
+                "nb_prospects_scored": 0
+            }
+
+        #-----------------------------------------------------------------------
+        # Fifth step : Get formatted prospects data
+        # we need to do becuase the "scoring-API" uses a differnt format and we
+        # just need to extract the right fields and format them accordingly
+        prospects_formatted = get_scoring_json_prospects(all_prospect_list)
+        
+        if prospects_formatted['status'] != 'success':
+            return {
+                "status": "error",
+                "message": f"Failed to format prospects: {prospects_formatted['message']}",
+                "customer_id": customer_id
+            }
+
+        logger.info(f"Size of all_prospect_list = {len(all_prospect_list)}")
+        
+        #-----------------------------------------------------------------------
+        # sixth step : submit the prepared and formated data to the scoring API
+        # This is where the long-running await happens
+        #
+        all_scores = await process_json_batch_prospects(
+            scoring_settings['scoring_data'], 
+            prospects_formatted['prospects_data']
+        )
+
+        # For now, simulate the long operation
+        #print(f"Starting long scoring operation for {len(all_prospect_list)} prospects...")
+        #await asyncio.sleep(2)  # Simulate long operation - replace with your actual await call
+        
+        if(all_scores['status']== "success"):
+            logger.info(f"message returned = |{all_scores['message']}|")
+            if(DEBUG): print(f"first elelement for all _score = |{all_scores['scores_list'][0]}|")
+            if(DEBUG): print(f"first element porspwect_id=|{all_scores['scores_list'][0]['prospect_id']}|")
+            if(DEBUG): print(f"first element score=|{all_scores['scores_list'][0]['score']}|")
+            if(DEBUG): print(f"first element justification=|{all_scores['scores_list'][0]['justification']}|")
+            if(DEBUG):
+                for pitem in all_scores['scores_list']:
+                    print(f"prospect element porspwect_id=|{pitem['prospect_id']}|")
+                    print(f"prospect element score=|{pitem['score']}|")
+                    print(f"prospect element justification=|{pitem['justification']}|\n\n")
+        else:
+            raise RuntimeError(f"The scoring was not successfull and reason given is: |{all_scores['message']}|")
+
+
+
+        #-----------------------------------------------------------------------
+        # seventh step: save all the generated scores in the customer_prospects for that given customer
+        print("UPDATING all obtained scores in the customer_prospects table")
+        result_save = update_score_in_customer_prospects(customer_id, all_scores['scores_list'], "default", min_score=60)
+        #update_result = update_score_in_customer_prospects(customer_id, all_scores)
+        if result_save['status'] != 'success':
+            return {
+                "status": "error",
+                "message": f"Failed to get save the prospects scocres: {result_save['message']}",
+                "customer_id": customer_id
+            }
+
+
+        #-----------------------------------------------------------------------
+        # eigth and last step: send notification to user that scoring is completed
+        # (really inserting a r4ecord in the notificaitons table)
+        # 
+        notification_message = f"The scoring of your |{len(all_scores['scores_list'])}| prospects is now complete"
+        result_notification = fp.send_notification_to_user(customer_id, notification_message)
+        if result_notification['status'] != 'success':
+            return {
+                "status": "error",
+                "message": f"Failed to send notificaiton to that user: {result_notification['message']}",
+                "customer_id": customer_id
+            }
+
+        
+        return {
+            "status": "success",
+            "message": "All Prospects successfully scored",
+            "customer_id": customer_id,
+            "nb_prospects_scored": len(all_prospect_list)
+        }
+
+    except RuntimeError as e:
+        return {
+            "status": "error",
+            "message": str(e),
+            "customer_id": customer_id if 'customer_id' in locals() else None
+        }
+
+    except Exception as e:
+        print(f"Error in scoring_customer_prospects_async: {e}")
+        return {
+            "status": "error",
+            "message": f"Scoring failed: {str(e)}",
+            "customer_id": customer_id
+        }
+
+    finally:
+        #Release the scoring lock
+        print("FFFFFFFFFFFFF finally of the fn scoring_customer_prospects_async ")
+        try:
+            lock_key = f"{customer_id}_scoring"
+            release_lock(lock_key)
+        except Exception as lock_error:
+            logger.error(f"Failed to release lock for {customer_id}: {lock_error}")            
 

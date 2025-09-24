@@ -13,7 +13,7 @@ import json
 import timeit
 
 import funnelprospects as fp
-from prospect_scoring_api import score_prospects
+#from prospect_scoring_api import score_prospects
 
 #prospects criteria
 company_industries =  ["Technology", "Software", "SaaS"] 
@@ -52,8 +52,8 @@ if __name__ == "__main__":
     #####################################################################################
     #2. testing the customer_propsects update criteria list functions
     def test2():
-        result = fp.updateCustomerProspectCriteria("mlevy-20250905-5730756828", 
-                                                "prospectid_001",
+        result = fp.updateCustomerProspectCriteria("MLevy-20250922-5440373832", 
+                                                "default",
                                                 company_industries,
                                                 company_employee_size_range,
                                                 company_revenue_range,
@@ -293,9 +293,13 @@ if __name__ == "__main__":
             print(f"un-successsful: |{result['message']}|")        
 
 
-    test15_get_contacted()
+    #test15_get_contacted()
 
-    # test getting and updating criteria dataset
-    #test2()
+
+
+
+    # test getting and updating criteria dataset & scoring too
+    test2()
+
     #test8()
     #test13()
