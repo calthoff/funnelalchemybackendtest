@@ -5,7 +5,7 @@ Functions to be used
 
 :Author: Michel Eric Levy _mel_
 :Creation date: September 2nd, 2025
-:Last updated: 9/19/2025 (_mel_)
+:Last updated: 9/23/2025 (_mel_)
 
 """
 # pylint: disable=C0301,W1203, R0914, R0913, R0912, R0915,C0103, C0111, R0903, C0321, C0303
@@ -21,10 +21,14 @@ from pathlib import Path
 import psycopg2
 import boto3
 
+import scoring_prospects as sp
+
+#import asyncio
 
 
 # will print debug traces when set to True
-DEBUG = True
+#DEBUG = True
+DEBUG = False
 # Configure logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger()
@@ -36,7 +40,7 @@ dotenv_path = Path(__file__).parent / '.env'
 
 for i in range(3):
     if dotenv_path.exists():
-        print("Found .env file !")
+        if(DEBUG): print("Found .env file !")
         break
     else:
         print(f"WARNING: .env file does not exist at {dotenv_path}, trying parent directory...")
@@ -199,8 +203,9 @@ def create_customer(email_address: str,
 
 
 
+
 # Fetch an existing customer
-def get_customer(customer_id: int) -> Dict:
+def get_customer(customer_id: int) -> dict:
     """
     This funciton will return basic information about a customer profile so it can be used
     to display it in the settings page.
@@ -282,6 +287,71 @@ def get_customer(customer_id: int) -> Dict:
         }
 
 
+
+def remove_existing_prospects(customer_id: str) -> dict:
+    """
+    Delete all records in customer_prospects table for a given customer_id 
+    where status is not equal to 'contacted'.
+    
+    Input parameters:
+        customer_id (str): Customer ID
+    
+    Returns:
+        Dict: Response with status and message including PostgreSQL response
+    """
+    
+    try:
+        # Validate required parameter
+        if not customer_id or customer_id.strip() == "":
+            raise RuntimeError("customer_id is required and cannot be empty")
+
+        # Connect to the database
+        conn = connect_db()
+        try:
+            cur = conn.cursor()
+            
+            # Execute DELETE query
+            delete_sql = """
+                DELETE FROM customer_prospects 
+                WHERE customer_id = %s 
+                    AND (status != 'contacted' OR status IS NULL)
+            """
+            
+            cur.execute(delete_sql, (customer_id,))
+            
+            # Get the number of deleted rows
+            deleted_count = cur.rowcount
+            
+            # Commit the transaction
+            conn.commit()
+            cur.close()
+
+            # Return success response with PostgreSQL response info
+            postgres_response = f"{deleted_count} rows were deleted from customer_prospects table"
+            
+            return {
+                "status": "success",
+                "message": f"Removal was successful and {postgres_response}",
+                "deleted_count": deleted_count
+            }
+
+        finally:
+            conn.close()
+
+    except RuntimeError as e:
+        return {
+            "status": "error",
+            "message": f"Validation error: {str(e)}"
+        }
+    except Exception as e:
+        return {
+            "status": "error",
+            "message": f"Database error occurred: {str(e)}"
+        }
+
+
+
+
 # Insert or update the list of criteria for a particular customer/company
 def updateCustomerProspectCriteria(customer_id: str,
                                    prospect_profile_id: str,
@@ -296,7 +366,7 @@ def updateCustomerProspectCriteria(customer_id: str,
                                    company_description: str = "",
                                    company_exclusion_criteria: str="",
                                    additional_preferences: str = " "
-                                ) -> Dict:
+                                ) -> dict:
     """
     This function creates a JSON from the provided 'criteria' parameters and updates or inserts it into the
     'customer_prospects_profiles' table. 
@@ -304,6 +374,7 @@ def updateCustomerProspectCriteria(customer_id: str,
     it updates the criteria_dataset; 
 
     Input parameters:
+    - customer_id: unique id of that customer
     - company_industries: list of preferred industries (e.g., ["Technology", "Software", "SaaS"])
     - company_employee_size_range: list of preferred employee size ranges (e.g., ["10-50", "51-200", "201-500"])
     - company_revenue_range: list of preferred revenue ranges (e.g., ["1M-10M", "10M-50M", "50M-100M"])
@@ -382,18 +453,19 @@ def updateCustomerProspectCriteria(customer_id: str,
         conn = connect_db()
         try:
             cur = conn.cursor()
-
-            # Check if record exists
-            check_sql = """
-                SELECT 1 FROM customer_prospects_profiles
-                WHERE company_unique_id = %s AND prospect_profile_id = %s
-            """
-            cur.execute(check_sql, (company_unique_id, prospect_profile_id))
-            record_exists = cur.fetchone() is not None
-
+#
+#            # Check if record exists
+#            check_sql = """
+#                SELECT 1 FROM customer_prospects_profiles
+#                WHERE company_unique_id = %s AND prospect_profile_id = %s
+#            """
+#            cur.execute(check_sql, (company_unique_id, prospect_profile_id))
+#            record_exists = cur.fetchone() is not None
+#
             current_timestamp = datetime.datetime.now()
 
-            if record_exists:
+            if(False):
+            #if record_exists:
                 # Update existing record
                 update_sql = """
                     UPDATE customer_prospects_profiles
@@ -402,22 +474,44 @@ def updateCustomerProspectCriteria(customer_id: str,
                     WHERE company_unique_id = %s AND prospect_profile_id = %s
                 """
                 cur.execute(update_sql, (criteria_dset, current_timestamp, company_unique_id , prospect_profile_id))
-            else:
-                # Insert new record
-                insert_sql = """
-                    INSERT INTO customer_prospects_profiles
-                    (company_unique_id, prospect_profile_id, criteria_dataset, created_at, last_updated)
-                    VALUES (%s, %s, %s, %s, %s)
-                """
-                cur.execute(insert_sql, (company_unique_id, prospect_profile_id, criteria_dset, current_timestamp, current_timestamp))
+#            else:
+#                # Insert new record
+#                insert_sql = """
+#                    INSERT INTO customer_prospects_profiles
+#                    (company_unique_id, prospect_profile_id, criteria_dataset, created_at, last_updated)
+#                    VALUES (%s, %s, %s, %s, %s)
+#                """
+#                cur.execute(insert_sql, (company_unique_id, prospect_profile_id, criteria_dset, current_timestamp, current_timestamp))
 
-            conn.commit()
+            #conn.commit()
             cur.close()
 
+
+            #UPDATE 9/22/25 - delete all prospects and launch re-scoring
+            #1. delete all prospects that do not have "contacted" status
+            res_delete = remove_existing_prospects(customer_id)
+
+            #2. find and assign new prospects
+            if(res_delete['status']=='success'):
+                res_find = findAndUpdateCustomerProspect(customer_id, prospect_profile_id)
+            else:
+                raise RuntimeError("unsuccessful removal of prospects: " + res_delete['message'])
+
+            #3. launch new scoring of those newly assigned prospects
+            if(res_find['status']=='success' and res_find['total_prospects_found'] > 0):
+                res_scoring = sp.start_scoring_customer_prospects(customer_id)
+            else:
+                raise RuntimeError("unsuccessful finding of prospects: " + res_find['message'])
+
+            #if(res_scoring['status']=='success'):
+            #    res_scoring = sp.start_scoring_customer_prospects(customer_id)
+            #else:
+            #    raise RuntimeError("unsuccessful launching of the scoring : " + res_scoring['message'])
+            
             # Return success response
             return {
                 "status": "success",
-                "message": "Prospect Profile inserted/updated successfully",
+                "message": "New prospects successfully found and " + res_scoring['message'],
                 "customer_id": customer_id,
                 "profile_id": prospect_profile_id
             }
@@ -449,7 +543,7 @@ def find_matching_prospects(customer_id: str, prospect_profile_id: str, limit:in
     Input parameters:
         customer_id (str): Customer ID in format AAAA-99999-9999999999
         prospect_profile_id: the string-ID of the particular profile
-        limit: is used if we wnat to limit the # of prospects being returned
+        limit: is used if we want to limit the # of prospects being returned
     
     Returns:
         List[Dict]: List of matching prospects with their IDs
@@ -602,6 +696,7 @@ def findAndUpdateCustomerProspect(customer_id: str, prospect_profile_id: str, li
             "message": "No prospects found so no insert/update to the 'customer_prospects' table",
             "customer_id": customer_id,
             "company_unique_id": company_unique_id,
+            "total_prospects_found": 0,
             "prospect_profile_id": prospect_profile_id
         }
 
@@ -959,7 +1054,7 @@ def add_to_daily_list(customer_id: str, prospect_id_list: List[str]) -> Dict:
 
 def get_daily_list_prospects(customer_id: str, prospect_profile_id: str) -> dict:
     """
-    This function will return the dialy list prospects for a given customer.
+    This function will return the daily list prospects for a given customer.
 
     Input parameters:
     - customer_id: the unique id of a customer
@@ -1812,6 +1907,82 @@ def get_customer_prospects_list(customer_id: str, prospect_profile_id: str="defa
             "prospect_profile_id": prospect_profile_id if 'prospect_profile_id' in locals() else None,
             "nb_prospects_returned": 0,
             "prospect_list": []
+        }
+
+
+
+
+
+def send_notification_to_user(customer_id: str, message_notification: str) -> dict:
+    """
+    Insert a notification message into the notifications table for a specific customer.
+    
+    Input parameters:
+        customer_id (str): Customer ID in format <...>-<...>-<company_unique_id>
+        message_notification (str): The notification message to insert
+    
+    Returns:
+        Dict: Response with status and message
+    """
+    
+    try:
+        # Validate required parameters
+        if not customer_id or customer_id.strip() == "":
+            raise RuntimeError("customer_id is required and cannot be empty")
+        
+        if not message_notification or message_notification.strip() == "":
+            raise RuntimeError("message_notification is required and cannot be empty")
+
+        # Extract company_unique_id from customer_id (format: <...>-<...>-<company_unique_id>)
+        try:
+            company_unique_id = customer_id.split("-")[-1]
+        except IndexError:
+            raise RuntimeError("Invalid customer_id format; expected format: <...>-<...>-<company_unique_id>")
+
+        # Connect to the database
+        conn = connect_db()
+        try:
+            cur = conn.cursor()
+            
+            # Get current timestamp for created_at
+            current_timestamp = datetime.datetime.now()
+
+            # Insert the notification
+            insert_sql = """
+                INSERT INTO notifications (company_unique_id, message, status, created_at)
+                VALUES (%s, %s, %s, %s)
+            """
+            
+            cur.execute(insert_sql, (company_unique_id, message_notification, "new", current_timestamp))
+            
+            # Commit the transaction
+            conn.commit()
+            cur.close()
+
+            # Return success response
+            return {
+                "status": "success",
+                "message": "Notification sent successfully",
+                "customer_id": customer_id,
+                "company_unique_id": company_unique_id
+            }
+
+        finally:
+            conn.close()
+
+    except RuntimeError as e:
+        return {
+            "status": "error",
+            "error_type": "RuntimeError",
+            "message": str(e),
+            "customer_id": customer_id if 'customer_id' in locals() else None
+        }
+    except Exception as e:
+        return {
+            "status": "error",
+            "error_type": type(e).__name__,
+            "message": f"Database error occurred: {str(e)}",
+            "customer_id": customer_id if 'customer_id' in locals() else None
         }
 
 

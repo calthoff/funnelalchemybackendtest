@@ -36,7 +36,13 @@ POSTGRES_PWD = os.getenv("POSTGRES_PWD", "postgres")
 POSTGRES_DB = os.getenv("POSTGRES_DB", "postgres")
 db_url = f'postgresql+psycopg2://{POSTGRES_USER}:{POSTGRES_PWD}@{POSTGRES_HOST}:{POSTGRES_PORT}/{POSTGRES_DB}'
 
+Parameters = {}
+Parameters['min_employee_size']=0
+Parameters['max_employee_size']=0
 
+####################################################################################
+####################################################################################
+####################################################################################
 class CoreSignalService:
     def __init__(self):
         self.api_key = 'oxBN1X7gc2ThK3jNSSHCON0oILDZ4wp5'
@@ -46,7 +52,25 @@ class CoreSignalService:
             "Content-Type": "application/json"
         }
     
-    def build_search_query(self, company_profiles: List[Dict], personas: List[Dict], company_description: Dict) -> Dict[str, Any]:
+    def _is_city(self, location: str) -> bool:
+        """
+        Determine if a location is a city (contains comma) or a country
+        """
+        return ',' in location or 'Metro Area' in location
+    
+    def _expand_industry_keywords(self, industry: str) -> str:
+        """
+        Expand industry terms with common variations
+        """
+        expansions = {
+            'Cybersecurity': '"cybersecurity" OR "cyber security"',
+            'Information Technology & Services': '"Information Technology & Services" OR "IT Services" OR "Information Technology"'
+        }
+        return expansions.get(industry, f'"{industry}"')
+    
+    def build_search_query(self, company_profiles: List[Dict], personas: List[Dict], company_description: Dict={}) -> Dict[str, Any]:
+
+
         query = {
             "query": {
                 "bool": {
@@ -60,6 +84,22 @@ class CoreSignalService:
                                             {
                                                 "term": {
                                                     "experience.active_experience": 1
+                                                }
+                                            },
+                                            {
+                                                "exists": {
+                                                    "field": "experience.location"
+                                                }
+                                            },
+                                            {
+                                                "bool": {
+                                                    "must_not": [
+                                                        {
+                                                            "term": {
+                                                                "experience.location": ""
+                                                            }
+                                                        }
+                                                    ]
                                                 }
                                             }
                                         ]
@@ -75,33 +115,52 @@ class CoreSignalService:
         nested_must = query["query"]["bool"]["must"][0]["nested"]["query"]["bool"]["must"]
         
         icp = company_profiles[0] if company_profiles and len(company_profiles) > 0 else {}
+
+
         persona = personas[0] if personas and len(personas) > 0 else {}
         
+        # Handle position titles
         if persona.get('position_title'):
-            titles = persona['position_title'] if isinstance(persona['position_title'], list) else []
+            titles = persona['position_title'] if isinstance(persona['position_title'], list) else [persona['position_title']]  # Handle single string or list
             if titles:
                 if len(titles) == 1:
-                    query["query"]["bool"]["must"].insert(0, {
+                    nested_must.append({
                         "match_phrase": {
-                            "active_experience_title": titles[0]
+                            "experience.position_title": titles[0]
                         }
                     })
                 else:
                     nested_must.append({
                         "bool": {
                             "should": [
-                                {
-                                    "match_phrase": {
-                                        "experience.position_title": title
-                                    }
-                                } for title in titles
+                                {"match_phrase": {"experience.position_title": title}} for title in titles
                             ],
                             "minimum_should_match": 1
                         }
                     })
-        
+
+
+        # Position titles
+        if persona.get('title_keywords'):
+            titles = persona['title_keywords'] if isinstance(persona['title_keywords'], list) else [persona['title_keywords']]
+
+            Parameters['personas']= titles
+
+            if titles:
+                nested_must.append({
+                    "bool": {
+                        "should": [
+                            {"match_phrase": {"experience.position_title": title}} for title in titles
+                        ],
+                        "minimum_should_match": 1
+                    }
+                })
+
+
+
+        # Handle seniority levels
         if persona.get('seniority_levels'):
-            seniority_levels = persona['seniority_levels'] if isinstance(persona['seniority_levels'], list) else []
+            seniority_levels = persona['seniority_levels'] if isinstance(persona['seniority_levels'], list) else [persona['seniority_levels']]
             if seniority_levels:
                 if len(seniority_levels) == 1:
                     nested_must.append({
@@ -111,21 +170,27 @@ class CoreSignalService:
                     })
                 else:
                     nested_must.append({
-                        "terms": {
-                            "experience.management_level.exact": seniority_levels
+                        "bool": {
+                            "should": [
+                                {"match_phrase": {"experience.management_level": level}} for level in seniority_levels
+                            ],
+                            "minimum_should_match": 1
                         }
                     })
+
+
+        # Handle company description
+#        if company_description and company_description.get('description'):
+#            description = company_description['description']
+#            nested_must.append({
+#                "query_string": {
+#                    "query": description,
+#                    "default_field": "experience.company_categories_and_keywords",
+#                    "default_operator": "AND"
+#                }
+#            })
         
-        if company_description and company_description.get('description'):
-            description = company_description['description']
-            nested_must.append({
-                "query_string": {
-                    "query": description,
-                    "default_field": "experience.company_categories_and_keywords",
-                    "default_operator": "AND"
-                }
-            })
-        
+        # Handle industries
         if icp.get('industries'):
             industries = icp['industries'] if isinstance(icp['industries'], list) else []
             if industries:
@@ -164,30 +229,61 @@ class CoreSignalService:
                             "minimum_should_match": 1
                         }
                     })
-        
+
+
+        # Handle locations - Using experience.location with potential partial matches
         if icp.get('location'):
-            locations = icp['location'] if isinstance(icp['location'], list) else []
+            locations = icp['location'] if isinstance(icp['location'], list) else [icp['location']]
             if locations:
-                location = locations[0]
-                if self._is_city(location):
-                    nested_must.append({
-                        "match": {
-                            "experience.company_hq_city": location
+                location_should = []
+                for location in locations:
+                    location_should.append({
+                        "match_phrase": {
+                            "experience.location": location
                         }
                     })
-                else:
+                if location_should:
                     nested_must.append({
-                        "term": {
-                            "experience.company_hq_country": location
+                        "bool": {
+                            "should": location_should,
+                            "minimum_should_match": 1  # OR logic for multiple locations
                         }
                     })
-        
+
+
+        # Handle technologies - search keywords inside long text fields
+        if icp.get('technologies'):
+            technologies = icp['technologies'] if isinstance(icp['technologies'], list) else [icp['technologies']]
+            if technologies:
+                tech_should = []
+                for technology in technologies:
+                    tech_should.append({
+                        "multi_match": {
+                            "query": technology,
+                            "fields": ["summary", "active_experience_description"],
+                            "operator": "or"
+                        }
+                    })
+                if tech_should:
+                    # top-level must (not nested)
+                    query["query"]["bool"]["must"].append({
+                        "bool": {
+                            "should": tech_should,
+                            "minimum_should_match": 1
+                        }
+                    })
+
+
+
+
+        # Employee size range
+        min_size = 0
+        max_size = 0
         if icp.get('employee_size_range'):
-            size_ranges = icp['employee_size_range'] if isinstance(icp['employee_size_range'], list) else []
+            size_ranges = icp['employee_size_range'] if isinstance(icp['employee_size_range'], list) else [icp['employee_size_range']]
             if size_ranges:
                 min_size = float('inf')
                 max_size = 0
-                
                 for size_range in size_ranges:
                     if "-" in str(size_range):
                         parts = str(size_range).split("-")
@@ -198,15 +294,17 @@ class CoreSignalService:
                                 min_size = min(min_size, range_min)
                                 max_size = max(max_size, range_max)
                             except ValueError:
+                                print(f"Invalid size range format: {size_range}")
                                 continue
                     elif str(size_range).endswith("+"):
                         try:
                             min_size = min(min_size, int(str(size_range).replace("+", "")))
                             max_size = float('inf')
                         except ValueError:
+                            print(f"Invalid size range format: {size_range}")
                             continue
-                
                 if min_size != float('inf'):
+                    Parameters['min_employee_size']=min_size
                     range_filter = {
                         "range": {
                             "experience.company_employees_count": {
@@ -215,10 +313,16 @@ class CoreSignalService:
                         }
                     }
                     if max_size != float('inf'):
+                        Parameters['max_employee_size']=max_size
                         range_filter["range"]["experience.company_employees_count"]["lte"] = max_size
-                    
                     nested_must.append(range_filter)
+                else:
+                    print("No valid employee size ranges provided; skipping range filter")
 
+        print(f"\n\nVVVVVVVVVVVVVVVVVVVVVV val of min size = |{min_size}| amd max size =|{max_size}|")    
+
+
+        # Handle revenue range
         if icp.get('revenue_range'):
             revenue_ranges = icp['revenue_range'] if isinstance(icp['revenue_range'], list) else []
             if revenue_ranges:
@@ -274,6 +378,9 @@ class CoreSignalService:
                     nested_must.append(range_filter)
         
         return query
+####################################################################################
+####################################################################################
+####################################################################################
     
     def _expand_industry_keywords(self, industry: str) -> str:
         industry_lower = industry.lower().strip()
@@ -337,9 +444,11 @@ class CoreSignalService:
         }
         return location not in countries
     
-    async def search_prospects(self, company_profiles: List[Dict], personas: List[Dict], company_description: Dict, limit: int) -> List[Dict]:
+    #async def search_prospects(self, company_profiles: List[Dict], personas: List[Dict], company_description: Dict={}, limit: int) -> List[Dict]:
+    async def search_prospects(self, company_profiles: List[Dict], personas: List[Dict],  limit: int) -> List[Dict]:
         try:
-            query = self.build_search_query(company_profiles, personas, company_description)
+            #query = self.build_search_query(company_profiles, personas, company_description)
+            query = self.build_search_query(company_profiles, personas)
             
             print(f"CoreSignal Search Query: {query}")
             print(f"CoreSignal Headers: {self.headers}")
@@ -358,19 +467,19 @@ class CoreSignalService:
             data = response.json()
             prospect_ids = data if isinstance(data, list) else []
             print(f"Found {len(prospect_ids)} prospect IDs from CoreSignal API")
-            print(f"Prospect IDs: {prospect_ids}")
+            #print(f"Prospect IDs: {prospect_ids}")
             if len(prospect_ids) > limit:
                 selected_prospect_ids = random.sample(prospect_ids, limit)
             else:
                 selected_prospect_ids = prospect_ids
             
             transformed_prospects = []
-			prospects_list = []
+            prospects_list = []
             for prospect_id in selected_prospect_ids:
                 try:
                     prospect_data = await self.get_prospect_details(prospect_id)
-					prospects_list.append(prospect_data)
-					with open('test_data2.json', 'a') as file:
+                    prospects_list.append(prospect_data)
+                    with open('test_data2.json', 'a') as file:
                         json.dump(prospect_data, file, indent=4)
                     #if prospect_data:
                         #transformed_prospect = self.transform_prospect_data(prospect_data)
@@ -379,9 +488,9 @@ class CoreSignalService:
                     print(f"Failed to get details for prospect {prospect_id}: {str(e)}")
                     continue
             
-            print(f"Successfully transformed {len(propects_list)} prospects from CoreSignal")
+            print(f"Successfully transformed {len(prospects_list)} prospects from CoreSignal")
             #return transformed_prospects
-			return data, prospects_list
+            return data, prospects_list
             
         except Exception as e:
             print(f"Error searching CoreSignal prospects: {str(e)}")
@@ -467,8 +576,8 @@ def get_full_prospects_list(vendorname):
         if connection:
             connection.close()
 
-
-
+######################################################################
+######################################################################
 def insert_or_update_prospects(vendorname, prospects_list, existing_ids):
     """
     Inserts or updates prospect records in the prospects table based on vendorid.
@@ -482,6 +591,12 @@ def insert_or_update_prospects(vendorname, prospects_list, existing_ids):
         dict: Summary of operations performed, e.g., {'inserted': count, 'updated': count, 'errors': count}.
     """
     summary = {'inserted': 0, 'updated': 0, 'errors': 0}
+
+    print(f"\n\ntype of parameters = |{type(Parameters)}|")
+    print(f"keys of parameters = |{Parameters.keys()}|")
+    print(f"value of pam MAX SIZE = |{Parameters['max_employee_size']}|")
+    print(f"value of pam MIN SIZE = |{Parameters['min_employee_size']}|")
+    print(f"value of list titole keywords = |{Parameters['personas']}|\n\n")
     
     try:
         # Connect to the database
@@ -496,15 +611,15 @@ def insert_or_update_prospects(vendorname, prospects_list, existing_ids):
 
         for prospect_data in prospects_list:
             try:
-                # Use the dictionary directly (no json.loads needed)
-                vendorid = str(prospect_data.get('id'))  # Assuming 'id' in dict maps to vendorid
+                # Extract fields
+                vendorid = str(prospect_data.get('id'))  # Assuming 'id' maps to vendorid
                 full_name = prospect_data.get('full_name')
                 first_name = prospect_data.get('first_name')
                 last_name = prospect_data.get('last_name')
                 linkedin_url = prospect_data.get('linkedin_url')
                 is_deleted = prospect_data.get('is_deleted')
                 
-                # Handle date fields with proper parsing
+                # Handle date fields
                 def parse_timestamp(timestamp_str):
                     if timestamp_str:
                         try:
@@ -518,12 +633,36 @@ def insert_or_update_prospects(vendorname, prospects_list, existing_ids):
                 checked_at = parse_timestamp(prospect_data.get('checked_at'))
                 changed_at = parse_timestamp(prospect_data.get('changed_at'))
                 
-                # Phone number and email (not in Coresignal example, so set to None if missing)
                 phone_number = prospect_data.get('phone_number')
                 email_address = prospect_data.get('primary_professional_email')
-
-                # Convert the dictionary to a JSON string for vendordata
                 vendordata = json.dumps(prospect_data)
+
+                print(f"\n\nPPPPPPPPPPPPPFULL Name = |{full_name}|")
+                print(f"type of vendordata = |{type(vendordata)}|")
+                print(f"value of positin title = |{prospect_data.get('experience', [])[0].get('position_title', '').lower()}|")
+                print(f"value of emp count = |{prospect_data.get('experience', [])[0].get('company_employees_count', 0)}|\n\n")
+
+                #test if title has at least one teh defined keyword, otherwise "continue"
+                # same for employee count
+                if(Parameters['max_employee_size'] !=0):
+                    emp_count = (prospect_data.get('experience', [])[0].get('company_employees_count', 0))
+
+                    print(f"CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC EP CUNT = |{emp_count}|")
+
+                    if( (emp_count < Parameters['min_employee_size']) or (emp_count > Parameters['max_employee_size']) ):
+                        continue
+                emp_position_title = prospect_data.get('experience', [])[0].get('position_title', '').lower()
+                list_titles = Parameters['personas']
+                       
+                # Check if any title keyword is in emp_position_title
+                is_valid_title = any(keyword.lower() in emp_position_title for keyword in list_titles)
+
+                # Output result
+                if not (is_valid_title):
+                    continue
+                    
+                #print(f"AAAAAAAAAAAA  CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC EP CUNT = |{emp_count}|")
+                
 
                 # Common fields for both insert and update
                 params = (
@@ -541,20 +680,20 @@ def insert_or_update_prospects(vendorname, prospects_list, existing_ids):
                     phone_number,
                     email_address,
                     vendordata,
-                    updated_at,  # Map updated_at to vendor_last_updated
-                    'active'     # Default status
+                    updated_at,  # vendor_last_updated
+                    'active'     # status
                 )
 
                 if vendorid in existing_ids:
-                    # Update existing record (exclude created_at, increment nb_duplicate_received)
+                    # Update existing record
                     cursor.execute("""
                         SELECT nb_duplicate_received FROM prospects
                         WHERE vendorname = %s AND vendorid = %s
                     """, (vendorname, vendorid))
-                    current_count = cursor.fetchone()[0] or 0  # Get current count, default to 0 if NULL
+                    current_count = cursor.fetchone()[0] or 0
                     new_count = current_count + 1
 
-                    query = """
+                    update_query = """
                         UPDATE prospects
                         SET is_deleted = %s,
                             updated_at = %s,
@@ -572,20 +711,40 @@ def insert_or_update_prospects(vendorname, prospects_list, existing_ids):
                             nb_duplicate_received = %s
                         WHERE vendorname = %s AND vendorid = %s
                     """
-                    cursor.execute(query, params[2:] + (new_count,) + (vendorname, vendorid))  # Skip created_at, add new_count
+                    update_params = (
+                        is_deleted,
+                        updated_at,
+                        checked_at,
+                        changed_at,
+                        linkedin_url,
+                        full_name,
+                        first_name,
+                        last_name,
+                        phone_number,
+                        email_address,
+                        vendordata,
+                        updated_at,
+                        'active',
+                        new_count,
+                        vendorname,
+                        vendorid
+                    )
+                    cursor.execute(update_query, update_params)
                     summary['updated'] += 1
                 else:
-                    # Insert new record with inserted_at and nb_duplicate_received
-                    query = """
+                    # Insert new record
+                    print(f"inserting new record |{full_name}|")
+                    insert_query = """
                         INSERT INTO prospects (
-                            vendorname, vendorid, is_deleted, inserted_at, created_at, updated_at,
+                            vendorname, vendorid, is_deleted, created_at, updated_at,
                             checked_at, changed_at, linkedin_url, full_name, first_name,
                             last_name, phone_number, email_address, vendordata,
                             vendor_last_updated, status, nb_duplicate_received
                         )
-                        VALUES (%s, %s, %s, DEFAULT, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, 0)
+                        VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
                     """
-                    cursor.execute(query, params)
+                    insert_params = params + (0,)  # Append nb_duplicate_received
+                    cursor.execute(insert_query, insert_params)
                     summary['inserted'] += 1
 
             except Exception as e:
@@ -608,6 +767,8 @@ def insert_or_update_prospects(vendorname, prospects_list, existing_ids):
         if connection:
             connection.close()
 
+######################################################################
+######################################################################
 
 
 
@@ -620,8 +781,150 @@ def main():
 ####################################################################
 # company profiles (Washington Software / AI ICP)
 
+
+
     company_profiles = [{
-        'industries': ['Computer Software'],
+        "industries": [
+           "Information Technology & Services",
+            "Financial Services",
+            "Insurance",
+            "Hospital & Health Care",
+            "Biotechnology",
+            "Computer Software",
+            "Information Services",
+            "Defense & Space",
+            "Government Administration",
+            "Utilities",
+            "Oil & Energy",
+            "Higher Education",
+            "Education Management",
+            "Electrical & Electronic Manufacturing",
+            "Retail",
+            "Legal Services",            
+            "Accounting"
+        ],
+
+#        'technologies': [
+#            "Microsoft E5 Security",
+#            "Microsoft E5",
+#            "Microsoft 365 E5",
+#            "Microsoft 365"
+#        ],
+        #'employee_size_range': ['100-200000'], #within ['1-10 ', '11-50 ', '51-200', 201-500, 501-1000, 1001-5000, 5001-10,000, '10,001+ ']
+        #'revenue_range': ['1M-10M', '2M-20M'],
+
+        'location': ['United States'],
+         
+    }]
+
+    # personas
+    personas = [{
+        'title_keywords': [
+            "VP of Security",
+            "Director of Security",
+            "Head of Security"
+            "CISO",
+            "Chief Information Security Officer"
+            ],
+
+        #'seniority_levels': ["cxo", "vp", "director"]
+        #'buying_roles': ['Decision Maker', 'Influencer']
+    }]
+
+
+#        'title_keywords': [
+#            "VP of Security",
+#            "Director of Security",
+#            "Head of Security"
+#            "CISO",
+#            "Chief Information Security Officer"
+#            ],
+
+
+
+
+
+#    company_description = {
+#        'description': ''
+#    }
+
+
+
+    #personas = [{
+    #    'title_keywords': [
+    #        "CISO",
+    #        "Chief Information Security Officer",
+    #        "CIO",
+    #        "CTO",
+    #        "VP of IT",
+    #        "VP of Security",
+    #        "Director of IT",
+    #        "Director of Security",
+    #        "Head of Security"
+    #        ],
+
+
+
+    """
+    company_profiles = [{
+        'industries': [
+            "Professional Services",
+            "Construction",
+            "Retail",
+            "Hospitality",
+            "Healthcare",
+            "Manufacturing",
+            "Logistics"
+        ],
+        'employee_size_range': ['11-50', '51-200', '201-500'], #within ['1-10 ', '11-50 ', '51-200', 201-500, 501-1000, 1001-5000, 5001-10,000, '10,001+ ']
+        #'revenue_range': ['1M-10M', '2M-20M'],
+
+        'location': ['Los Angeles'],
+         
+    }]
+
+    # personas
+    personas = [{
+        'title_keywords': [
+            "Owner",
+            "President",
+            "Founder",
+            "CEO",
+            "COO",
+            "IT Manager",
+            "Head of IT",
+            "Director of IT"            
+            ],
+        'seniority_levels': ["owner", "cxo", "vp", "director", "manager"],
+        'buying_roles': ['Decision Maker', 'Influencer']
+    }]
+
+    company_description = {
+        'description': ''
+    }
+    """
+
+
+
+
+
+        #'description': 'local services OR retail OR construction OR hospitality OR healthcare OR professional services OR manufacturing OR logistics'
+
+
+    """
+    company_description = {
+        'description': ''
+    }
+
+    company_profiles = [{
+        'industries': [
+            'Computer Software',
+            'Information Technology & Services',
+            'Computer Software',
+            'Artificial Intelligence',
+            'Cybersecurity'
+        ],
+
 
         'location': [
             'Washington D.C. Metro Area',
@@ -638,15 +941,28 @@ def main():
     }]
 
     personas = [{
-        'title_keywords': ['Software Engineer']
-
+        'position_title': ['Software Engineer']
     }]
 
-            #'Software Engineer'
+#    personas = [{
+#        'title_keywords': [
+#            'Software Engineer'
+#            'Software Developer',
+#            'AI Engineer',
+#            'Director of Engineering',
+#            'Project Manager',
+#            'Chief Talent Officer',
+#            'Hiring Manager',
+#            'Director of HR',
+#            'L&D Lead',
+#            'CIO',
+#            'CTO'
+#        ]
 
-    company_description = {
-        'description': ''
-    }
+
+            #'Software Engineer'
+    """
+
 
 
 
@@ -654,9 +970,14 @@ def main():
 ####################################################################
 
     # search limit
-    #limit = 3
+    #limit = 2
+    #limit = 5
+    #limit = 50
+    #limit = 100
+    limit = 1000
+    #limit = 10000
     #limit = 2500
-    limit = 5
+    #limit = 200
 
 ####################################################################
 
@@ -674,7 +995,8 @@ def main():
     # Section 3: Build the Elasticsearch DSL query
     print("Building Search Query")
     try:
-        query = coresignal_service.build_search_query(company_profiles=company_profiles, personas=personas, company_description=company_description)
+        #query = coresignal_service.build_search_query(company_profiles=company_profiles, personas=personas, company_description=company_description)
+        query = coresignal_service.build_search_query(company_profiles=company_profiles, personas=personas )
         print("Query built successfully")
         print(f"Query preview: {json.dumps(query, indent=2)[:300]}...")
     except Exception as e:
@@ -689,10 +1011,10 @@ def main():
             return await coresignal_service.search_prospects(
                 company_profiles=company_profiles,
                 personas=personas,
-                company_description=company_description,
                 limit=limit
             )
         
+        #company_description=company_description,
         idlist, prospects_json_list = asyncio.run(search_prospects())
         
         print(f"API call successful!")
@@ -708,14 +1030,14 @@ def main():
 
 
         ## Display results
-        print("\nResults")
-        for i, prospect in enumerate(prospects_json_list, 1):
-            print(f"\nProspect {i}:")
-            print(f"  Name: {prospect.get('first_name', '')} {prospect.get('last_name', '')}")
-            print(f"  Title: {prospect.get('job_title', '')}")
-            print(f"  Company: {prospect.get('company_name', '')}")
-            print(f"  Email: {prospect.get('email', '')}")
-            print(f"  LinkedIn: {prospect.get('linkedin_url', '')}")
+        #print("\nResults")
+        #for i, prospect in enumerate(prospects_json_list, 1):
+        #    print(f"\nProspect {i}:")
+        #    print(f"  Name: {prospect.get('first_name', '')} {prospect.get('last_name', '')}")
+        #    print(f"  Title: {prospect.get('job_title', '')}")
+        #    print(f"  Company: {prospect.get('company_name', '')}")
+        #    print(f"  Email: {prospect.get('email', '')}")
+        #    print(f"  LinkedIn: {prospect.get('linkedin_url', '')}")
         
         ## Save to JSON file
         #with open("coresignal_results.json", 'w') as f:
