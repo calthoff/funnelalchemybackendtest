@@ -5,7 +5,7 @@ Functions to be used
 
 :Author: Michel Eric Levy _mel_
 :Creation date: September 2nd, 2025
-:Last updated: 9/23/2025 (_mel_)
+:Last updated: 10/01/2025 (_mel_)
 
 """
 # pylint: disable=C0301,W1203, R0914, R0913, R0912, R0915,C0103, C0111, R0903, C0321, C0303
@@ -1812,7 +1812,9 @@ def get_customer_prospects_list(customer_id: str, prospect_profile_id: str="defa
                         LEFT((p.vendordata->'experience'->1->>'company_annual_revenue_source_5'),50) AS revenue_source_5,
                         LEFT((p.vendordata->'experience'->1->>'company_annual_revenue_source_1'),50) AS revenue_source_1,
                         p.vendordata->>'picture_url' AS headshot_url,
-                        cp.activity_history
+                        cp.activity_history,
+                        cp.status,
+                        cp.not_a_fit
                     FROM customer_prospects cp
                     JOIN prospects p ON cp.prospect_id = p.id
                     WHERE cp.customer_id = %s 
@@ -1838,7 +1840,9 @@ def get_customer_prospects_list(customer_id: str, prospect_profile_id: str="defa
                         LEFT((p.vendordata->'experience'->1->>'company_annual_revenue_source_5'),50) AS revenue_source_5,
                         LEFT((p.vendordata->'experience'->1->>'company_annual_revenue_source_1'),50) AS revenue_source_1,
                         p.vendordata->>'picture_url' AS headshot_url,
-                        cp.activity_history
+                        cp.activity_history,
+                        cp.status,
+                        cp.not_a_fit
                     FROM customer_prospects cp
                     JOIN prospects p ON cp.prospect_id = p.id
                     WHERE cp.customer_id = %s 
@@ -1872,6 +1876,8 @@ def get_customer_prospects_list(customer_id: str, prospect_profile_id: str="defa
                     "revenue_source_1": row[11],
                     "headshot_url": row[12],
                     "activity_history": row[13],
+                    "status": row[14],
+                    "not-a-fit": row[15],
                 }
                 result_list.append(prospect_dict)
 
