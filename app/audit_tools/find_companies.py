@@ -6,26 +6,18 @@ Find companies/organizations with public Fortinet/FortiGate hosts using the Shod
 and print a short text summary for each.
 
 Requires:
-    pip install shodan
-    export SHODAN_API_KEY="your_key_here"
+    pip install shodan python-dotenv
+    .env file with: SHODAN_API_KEY=your_key_here
 """
 
+from dotenv import load_dotenv
 import os
 import sys
 from shodan import Shodan, APIError
 
-API_KEY = os.environ.get("SHODAN_API_KEY")
-if not API_KEY:
-    print("ERROR: set SHODAN_API_KEY environment variable (export SHODAN_API_KEY=...)")
-    sys.exit(1)
+# Load .env automatically (in current directory or parent chain)
+load_dotenv()
 
-api = Shodan(API_KEY)
-
-# Query: FortiGate devices. You can adjust to product:"FortiGate" or product:Fortinet depending on results.
-QUERY = 'product:"FortiGate"'
-
-MAX_UNIQUE_ORGS = 5
-MAX_MATCHES_TO_SCAN = 200  # scan up to this many hits from Shodan to find unique orgs
 
 def short_record(match):
     """Return short tuple for printing from a Shodan match"""
@@ -46,10 +38,16 @@ def short_record(match):
         'timestamp': ts
     }
 
-def main():
+
+def find_companies(query, max_unique_orgs, max_matches_to_scan):
+    api_key = os.environ.get("SHODAN_API_KEY")
+    if not api_key:
+        print("ERROR: SHODAN_API_KEY not set. Put it in your .env as SHODAN_API_KEY=xxxx")
+        sys.exit(1)
+
+    api = Shodan(api_key)
     try:
-        # Use search() to get initial results. We'll iterate matches and collect unique orgs.
-        res = api.search(QUERY, limit=MAX_MATCHES_TO_SCAN)
+        res = api.search(query, limit=max_matches_to_scan)
     except APIError as e:
         print("Shodan API error:", e)
         sys.exit(1)
@@ -60,30 +58,27 @@ def main():
         info = short_record(m)
         org_key = info['org'].strip()
         if org_key.lower() == 'unknown org' or org_key == '':
-            # try hostname/ASN fallback to cluster by host
             org_key = (m.get('ip_str') or m.get('hostnames', [''])[0] or 'unknown').strip()
 
-        # Keep first representative host we encounter for that org
         if org_key not in unique_orgs:
             unique_orgs[org_key] = info
-        if len(unique_orgs) >= MAX_UNIQUE_ORGS:
+        if len(unique_orgs) >= max_unique_orgs:
             break
 
     if not unique_orgs:
-        print("No results found for query:", QUERY)
+        print("No results found for query:", query)
         return
 
-    # Print clean text output
     print(f"Top {len(unique_orgs)} unique organizations running Fortinet/FortiGate (from Shodan):\n")
-    i = 1
-    for org, info in unique_orgs.items():
+    for i, (org, info) in enumerate(unique_orgs.items(), start=1):
         print(f"{i}. Organization: {org}")
         print(f"   IP: {info['ip']}  Port: {info['port']}")
         print(f"   Hostnames: {info['hostnames']}")
         print(f"   Product: {info['product']}  Version: {info['version']}")
         print(f"   Last seen: {info['timestamp']}")
         print()
-        i += 1
+
 
 if __name__ == "__main__":
-    main()
+    # Direct call, like your original
+    find_companies('product:"FortiGate"', 7, 200)
