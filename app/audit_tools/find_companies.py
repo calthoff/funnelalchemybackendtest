@@ -1,21 +1,8 @@
-#!/usr/bin/env python3
-"""
-shodan_fortinet_find.py
-
-Find companies/organizations with public Fortinet/FortiGate hosts using the Shodan API
-and print a short text summary for each.
-
-Requires:
-    pip install shodan python-dotenv
-    .env file with: SHODAN_API_KEY=your_key_here
-"""
-
 from dotenv import load_dotenv
 import os
 import sys
 from shodan import Shodan, APIError
 
-# Load .env automatically (in current directory or parent chain)
 load_dotenv()
 
 
@@ -40,6 +27,9 @@ def short_record(match):
 
 
 def find_companies(query, max_unique_orgs, max_matches_to_scan):
+    """Find companies/organizations with public Fortinet/FortiGate hosts using the Shodan API
+    and print a short text summary for each."""
+
     api_key = os.environ.get("SHODAN_API_KEY")
     if not api_key:
         print("ERROR: SHODAN_API_KEY not set. Put it in your .env as SHODAN_API_KEY=xxxx")
@@ -80,5 +70,4 @@ def find_companies(query, max_unique_orgs, max_matches_to_scan):
 
 
 if __name__ == "__main__":
-    # Direct call, like your original
     find_companies('product:"FortiGate"', 7, 200)
