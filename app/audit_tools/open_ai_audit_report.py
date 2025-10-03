@@ -1,82 +1,104 @@
 #!/usr/bin/env python3
 """
-analyze_security_openai.py
-Updated for openai>=1.0.0
+open_ai_audit_report.py
 
-- No command-line handling.
-- Loads .env if present.
-- Imports run_audit_for_domain, runs it, then analyzes with OpenAI.
+Deterministic audit reporting.
+Does not use GPT; only facts from audit.py.
 """
 
 import json
-import os
-from dotenv import load_dotenv
-from openai import OpenAI
+from typing import Dict, Any, List
+from audit import run_audit_for_domain  # assumes audit.py is in same package
 
-# Load .env (if present)
-load_dotenv()
 
-MODEL = "gpt-4"
-TEMPERATURE = 0
+def _bool(v): return bool(v) if v is not None else False
 
-PROMPT_TEMPLATE = """
-You are a security analyst. A JSON object from a passive audit is provided.
-Analyze the company's security posture, summarize key risks, and provide
-structured recommendations in JSON. Use these fields in your output:
+def build_evidence_driven_report(audit: Dict[str, Any]) -> Dict[str, Any]:
+    dns = audit.get("dns", {}) or {}
+    per_ip = audit.get("per_ip", {}) or {}
+    whois_status = audit.get("whois_status")
 
-{{
-  "summary": "Short plain-text summary of overall security situation",
-  "critical_issues": ["List of critical security issues"],
-  "moderate_issues": ["List of moderate issues"],
-  "minor_issues": ["List of minor issues"],
-  "recommendations": ["Actionable recommendations, prioritized"]
-}}
+    has_spf = _bool(dns.get("spf"))
+    has_dmarc = _bool(dns.get("dmarc"))
+    mx = dns.get("mx") or []
 
-Do not include extra commentary, only return valid JSON.
+    critical: List[str] = []
+    moderate: List[str] = []
+    notes: List[str] = []
 
-Input JSON:
-{input_json}
-"""
+    if has_spf and not has_dmarc:
+        moderate.append("SPF present but no DMARC published")
+    elif not has_spf and not has_dmarc and mx:
+        moderate.append("No SPF or DMARC records found despite MX being present")
 
-def _get_openai_client() -> OpenAI:
-    """Return an OpenAI client using OPENAI_API_KEY from the environment."""
-    api_key = os.environ.get("OPENAI_API_KEY")
-    if not api_key:
-        raise RuntimeError("OPENAI_API_KEY environment variable not set")
-    return OpenAI(api_key=api_key)
+    def _mgmt_on_any_port() -> bool:
+        for ip_entry in per_ip.values():
+            for portdata in (ip_entry.get("per_port") or {}).values():
+                assess = portdata.get("assessment") or {}
+                for reason in assess.get("reasons") or []:
+                    if "Management interface appears publicly reachable" in reason:
+                        return True
+        return False
 
-def analyze_security(audit_json: dict) -> dict:
-    """Analyze a passive audit JSON with OpenAI and return structured JSON."""
-    input_json_str = json.dumps(audit_json, separators=(",", ":"), sort_keys=True)
-    prompt = PROMPT_TEMPLATE.replace("{input_json}", input_json_str)
+    if _mgmt_on_any_port():
+        critical.append("Management interface publicly reachable (fingerprint match)")
 
-    client = _get_openai_client()
+    for ip, ip_entry in per_ip.items():
+        for port, portdata in (ip_entry.get("per_port") or {}).items():
+            pre = portdata.get("precheck") or {}
+            if pre and pre.get("reachable") is False:
+                notes.append(f"Port {port} on {ip} unreachable/filtered")
+            for k in ("http", "http_snippet", "tls"):
+                v = portdata.get(k) or {}
+                if v.get("timeout"):
+                    notes.append(f"{k.upper()} timeout on {ip}:{port}")
 
-    try:
-        response = client.chat.completions.create(
-            model=MODEL,
-            messages=[{"role": "user", "content": prompt}],
-            temperature=TEMPERATURE
-        )
-        content = response.choices[0].message.content.strip()
-        return json.loads(content)
-    except json.JSONDecodeError:
-        return {"error": "Failed to parse OpenAI response as JSON", "raw": content}
-    except Exception as e:
-        return {"error": "OpenAI API request failed", "details": str(e)}
+    resolved_ipv6 = (audit.get("resolved_ips") or {}).get("AAAA") or []
+    if resolved_ipv6 and not any(":" in x for x in per_ip.keys()):
+        notes.append("IPv6 addresses resolved but no per-port IPv6 results recorded")
 
-# --- Run the exact pattern you used ------------------------------------------
+    if whois_status and whois_status != "ok":
+        notes.append(f"WHOIS status: {whois_status}")
+
+    recs: List[str] = []
+    if "Management interface publicly reachable (fingerprint match)" in critical:
+        recs.append("Restrict management interfaces (firewall/VPN/IP allowlist).")
+    if "SPF present but no DMARC published" in moderate:
+        recs.append("Publish DMARC (v=DMARC1) with p=none/quarantine/reject and align with SPF/DKIM.")
+    if "No SPF or DMARC records found despite MX being present" in moderate:
+        recs.append("Publish SPF and DMARC for your domain to reduce spoofing risk.")
+    if not recs and notes:
+        recs.append("No actionable security issues detected; review informational notes.")
+
+    if critical:
+        level = "elevated risk"
+    elif moderate:
+        level = "moderate risk"
+    else:
+        level = "low risk"
+    summary_bits = []
+    if has_spf: summary_bits.append("SPF present")
+    if has_dmarc: summary_bits.append("DMARC present")
+    if mx: summary_bits.append("MX configured")
+    summary = f"Evidence-based assessment: {level}. " + (", ".join(summary_bits) if summary_bits else "No email DNS evidence found.")
+
+    return {
+        "summary": summary,
+        "critical_issues": critical,
+        "moderate_issues": moderate,
+        "minor_issues": [],
+        "notes": notes,
+        "recommendations": recs,
+        "evidence": {
+            "spf_records": dns.get("spf", []),
+            "dmarc_records": dns.get("dmarc", []),
+            "mx_records": mx
+        }
+    }
+
+
 if __name__ == "__main__":
-    # This mirrors your usage:
-    # from audit import run_audit_for_domain
-    # res = run_audit_for_domain("example.com")
-    # print(json.dumps(res, indent=2))
-
-    from audit import run_audit_for_domain  # make sure your module is named 'audit.py' or a package 'audit'
-
-    # CHANGE THIS to the company domain you found
-    domain = "example.com"
-
-    audit = run_audit_for_domain(domain)
-    result = analyze_security(audit)
-    print(json.dumps(result, indent=2))
+    # Set your target domain here
+    audit = run_audit_for_domain("delivercarerx.com")
+    report = build_evidence_driven_report(audit)
+    print(json.dumps(report, indent=2))

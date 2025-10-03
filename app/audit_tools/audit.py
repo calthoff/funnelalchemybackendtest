@@ -1,60 +1,38 @@
 #!/usr/bin/env python3
-"""
-passive_audit_by_domain.py
-
-Stall-safe passive audit by company domain with no CLI and no globals.
-
-Import and call:
-    run_audit_for_domain(
-        domain,
-        ports=None,                 # e.g. [443, 8443, 4443, 80]
-        org=None,
-        overall_timeout_s=30.0,     # hard cap for entire audit
-        timeouts=None               # {'dns':5,'http':5,'tls':5,'whois':8,'shodan':6}
-    )
-
-Features
---------
-- Resolves A/AAAA for a domain.
-- Collects DNS MX/SPF/DMARC.
-- WHOIS via python-whois or system 'whois' with timeouts.
-- HTTP HEAD probe and TLS cert fetch per IP/port.
-- Shodan host lookup per IP (if SHODAN_API_KEY is set).
-- Overall watchdog and per-operation timeouts so it cannot stall.
-
-Optional dependencies (auto-detected)
--------------------------------------
-- python-dotenv  : loads .env (e.g., SHODAN_API_KEY)
-- dnspython      : accurate DNS queries
-- requests       : HTTP HEAD
-- python-whois   : parsed WHOIS (else system 'whois' fallback)
-- shodan         : Shodan host details
-
-This module is import-only (no CLI) and contains no global configuration.
-"""
-
 from __future__ import annotations
 
 import json
 import os
+import re
 import socket
 import ssl
 import subprocess
 import threading
 import time
-from typing import Any, Callable, Dict, Iterable, Optional, Tuple
+from typing import Any, Callable, Dict, Iterable, Optional, Tuple, List
+from concurrent.futures import ThreadPoolExecutor, as_completed
 
-# --- Optional: auto-load .env (if python-dotenv is installed) -----------------
+# Optional helpers (if available)
+try:
+    import idna  # type: ignore
+except Exception:
+    idna = None
+
+try:
+    import tldextract  # type: ignore
+except Exception:
+    tldextract = None
+
+# Optional: auto-load .env (if python-dotenv is installed)
 try:
     from dotenv import load_dotenv, find_dotenv  # type: ignore
-
     _ENV_PATH = find_dotenv()
     if _ENV_PATH:
         load_dotenv(_ENV_PATH)
 except Exception:
     pass
 
-# --- Optional dependencies ----------------------------------------------------
+# Optional dependencies
 try:
     import dns.resolver as dns_resolver  # type: ignore
 except ImportError:
@@ -77,28 +55,13 @@ except Exception:
 
 
 # =============================================================================
-# Utilities
+# Utilities / timing
 # =============================================================================
 def now_ts() -> str:
-    """Return the current UTC timestamp in ISO 8601 (seconds) format.
-
-    Returns:
-        str: Timestamp like '2025-10-02T03:04:05Z'.
-    """
     return time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime())
 
 
 def safe(value: Any) -> Any:
-    """Return a JSON-serializable version of `value`.
-
-    Attempts json.dumps; if it fails, falls back to str(value) or None.
-
-    Args:
-        value: Arbitrary Python object.
-
-    Returns:
-        Any: JSON-serializable value.
-    """
     try:
         json.dumps(value)
         return value
@@ -107,54 +70,20 @@ def safe(value: Any) -> Any:
 
 
 def _remaining_budget(deadline: float) -> float:
-    """Compute remaining time in seconds until a monotonic deadline.
-
-    Args:
-        deadline: Absolute deadline (time.monotonic reference).
-
-    Returns:
-        float: Remaining seconds (clamped at 0.0).
-    """
     return max(0.0, deadline - time.monotonic())
 
 
-def _bounded_timeout(requested: float, deadline: float) -> float:
-    """Clamp a per-operation timeout to the remaining overall budget.
-
-    Ensures each step cannot exceed the total remaining time.
-
-    Args:
-        requested: Desired timeout in seconds.
-        deadline: Absolute deadline (time.monotonic reference).
-
-    Returns:
-        float: Effective timeout >= 0.1 and <= remaining budget.
-    """
-    return max(0.1, min(requested, _remaining_budget(deadline)))
+def _bounded_timeout(requested: float, deadline: float, floor: float = 0.1) -> float:
+    return max(floor, min(requested, _remaining_budget(deadline)))
 
 
-def _with_timeout(
-    func: Callable, timeout_s: float, *args: Any, **kwargs: Any
-) -> Tuple[bool, Any]:
-    """Run a callable with a hard timeout using a thread join.
-
-    Args:
-        func: Callable to execute.
-        timeout_s: Timeout in seconds.
-        *args: Positional args for the callable.
-        **kwargs: Keyword args for the callable.
-
-    Returns:
-        Tuple[bool, Any]: (completed, result)
-            - completed == False if timed out (result will be None).
-            - if completed and func raised, the exception is propagated.
-    """
+def _with_timeout(func: Callable, timeout_s: float, *args: Any, **kwargs: Any) -> Tuple[bool, Any]:
     box: Dict[str, Any] = {"res": None, "exc": None}
 
     def runner() -> None:
         try:
             box["res"] = func(*args, **kwargs)
-        except BaseException as exc:  # propagate after join
+        except BaseException as exc:
             box["exc"] = exc
 
     thread = threading.Thread(target=runner, daemon=True)
@@ -169,23 +98,35 @@ def _with_timeout(
 
 
 # =============================================================================
+# Domain normalization
+# =============================================================================
+def _normalize_domain(raw: str) -> str:
+    d = (raw or "").strip().rstrip(".").lower()
+    if not d:
+        return d
+    if idna:
+        try:
+            d = idna.encode(d).decode("ascii")
+        except Exception:
+            pass
+    if tldextract:
+        try:
+            ext = tldextract.extract(d)
+            if ext.domain and ext.suffix:
+                return f"{ext.domain}.{ext.suffix}"
+        except Exception:
+            pass
+    parts = d.split(".")
+    if len(parts) >= 2:
+        return ".".join(parts[-2:])
+    return d
+
+
+# =============================================================================
 # DNS
 # =============================================================================
 def resolve_domain(domain: str, timeout_s: float) -> Dict[str, Any]:
-    """Resolve A and AAAA records for a domain.
-
-    Uses dnspython if available, otherwise falls back to socket.getaddrinfo.
-    Adds an "error" field if resolution fails or yields no addresses.
-
-    Args:
-        domain: Domain name (e.g., "example.com").
-        timeout_s: Per-operation timeout in seconds.
-
-    Returns:
-        Dict[str, Any]: {"A":[...], "AAAA":[...], "error":optional str}
-    """
     out: Dict[str, Any] = {"A": [], "AAAA": []}
-
     if dns_resolver is None:
         try:
             infos = socket.getaddrinfo(domain, None, proto=socket.IPPROTO_TCP)
@@ -195,7 +136,6 @@ def resolve_domain(domain: str, timeout_s: float) -> Dict[str, Any]:
                     out["AAAA"].append(ip)
                 else:
                     out["A"].append(ip)
-            # Deduplicate while preserving order
             out["A"] = list(dict.fromkeys(out["A"]))
             out["AAAA"] = list(dict.fromkeys(out["AAAA"]))
         except Exception as exc:
@@ -225,17 +165,10 @@ def resolve_domain(domain: str, timeout_s: float) -> Dict[str, Any]:
     return out
 
 
-def dns_mx_spf_dmarc(domain: str, timeout_s: float) -> Dict[str, Any]:
-    """Fetch MX, SPF, and DMARC records for a domain.
-
-    Args:
-        domain: Domain name (e.g., "example.com").
-        timeout_s: Per-operation timeout in seconds.
-
-    Returns:
-        Dict[str, Any]: {"mx":[...], "spf":[...], "dmarc":[...]} or error.
-    """
+def dns_mx_spf_dmarc(domain: str, timeout_s: float, skip_if_no_a: bool = False) -> Dict[str, Any]:
     out = {"mx": [], "spf": [], "dmarc": []}
+    if skip_if_no_a and dns_resolver is None:
+        return {"note": "skipped because dns.resolver not installed and skip_if_no_a=True"}
 
     if dns_resolver is None:
         return {"error": "dns.resolver not installed"}
@@ -246,9 +179,7 @@ def dns_mx_spf_dmarc(domain: str, timeout_s: float) -> Dict[str, Any]:
 
     try:
         for r in resolver.resolve(domain, "MX"):
-            out["mx"].append(
-                {"pref": int(r.preference), "ex": str(r.exchange).rstrip(".")}
-            )
+            out["mx"].append({"pref": int(r.preference), "ex": str(r.exchange).rstrip(".")})
     except Exception:
         pass
 
@@ -256,10 +187,7 @@ def dns_mx_spf_dmarc(domain: str, timeout_s: float) -> Dict[str, Any]:
         for r in resolver.resolve(domain, "TXT"):
             parts = getattr(r, "strings", None)
             if parts:
-                txt = "".join(
-                    s.decode(errors="ignore") if isinstance(s, bytes) else str(s)
-                    for s in parts
-                )
+                txt = "".join(s.decode(errors="ignore") if isinstance(s, bytes) else str(s) for s in parts)
             else:
                 txt = r.to_text().strip('"')
             if "v=spf1" in txt.lower():
@@ -271,10 +199,7 @@ def dns_mx_spf_dmarc(domain: str, timeout_s: float) -> Dict[str, Any]:
         for r in resolver.resolve(f"_dmarc.{domain}", "TXT"):
             parts = getattr(r, "strings", None)
             if parts:
-                txt = "".join(
-                    s.decode(errors="ignore") if isinstance(s, bytes) else str(s)
-                    for s in parts
-                )
+                txt = "".join(s.decode(errors="ignore") if isinstance(s, bytes) else str(s) for s in parts)
             else:
                 txt = r.to_text().strip('"')
             out["dmarc"].append(txt)
@@ -288,109 +213,179 @@ def dns_mx_spf_dmarc(domain: str, timeout_s: float) -> Dict[str, Any]:
 # WHOIS
 # =============================================================================
 def fetch_whois(domain: str, timeout_s: float) -> Dict[str, Any]:
-    """Fetch WHOIS information using python-whois or system 'whois'.
+    d = _normalize_domain(domain)
+    if not d:
+        return {"error": "empty domain"}
 
-    The python-whois path is wrapped with a join timeout. If that fails,
-    falls back to the 'whois' subprocess with its own timeout.
-
-    Args:
-        domain: Domain name.
-        timeout_s: Per-operation timeout in seconds.
-
-    Returns:
-        Dict[str, Any]: Parsed fields or raw WHOIS text, with error on timeout.
-    """
     if whois_module:
         try:
-            ok, res = _with_timeout(whois_module.whois, timeout_s, domain)
-            if not ok:
-                return {"error": "whois timeout", "timeout": True}
-            w = res
-            out: Dict[str, Any] = {}
-            for key in ("registrar", "creation_date", "expiration_date", "name_servers"):
-                val = getattr(w, key, w.get(key, None)) if w else None  # type: ignore
-                if val:
-                    out[key] = safe(val)
-            return out or {"note": "whois returned no structured fields"}
+            ok, res = _with_timeout(whois_module.whois, timeout_s, d)
+            if ok and res:
+                out: Dict[str, Any] = {}
+                for key in ("domain_name", "registrar", "creation_date", "expiration_date", "name_servers", "status"):
+                    try:
+                        val = res.get(key) if isinstance(res, dict) else getattr(res, key, None)
+                    except Exception:
+                        val = None
+                    if val:
+                        out[key] = safe(val)
+                if out:
+                    out["source"] = "python-whois"
+                    return out
         except Exception:
-            # fall back to system 'whois'
             pass
 
+    tld_server = {
+        "com": "whois.verisign-grs.com",
+        "net": "whois.verisign-grs.com",
+        "org": "whois.pir.org",
+        "io": "whois.nic.io",
+        "ai": "whois.nic.ai",
+        "co": "whois.nic.co",
+        "app": "whois.nic.google",
+        "dev": "whois.nic.google",
+        "uk": "whois.nic.uk",
+        "de": "whois.denic.de",
+        "fr": "whois.afnic.fr",
+        "in": "whois.registry.in",
+        "us": "whois.nic.us",
+        "info": "whois.afilias.net",
+    }
+    tld = d.rsplit(".", 1)[-1] if "." in d else ""
+    server = tld_server.get(tld, "")
+
+    cmd = ["whois", d] if not server else ["whois", "-h", server, d]
     try:
-        proc = subprocess.run(
-            ["whois", domain],
-            capture_output=True,
-            text=True,
-            timeout=timeout_s,
-        )
-        txt = (proc.stdout or proc.stderr or "")[:2000]
-        return {"raw": safe(txt)}
+        proc = subprocess.run(cmd, capture_output=True, text=True, timeout=timeout_s)
+        txt = (proc.stdout or proc.stderr or "").strip()
+        if not txt:
+            return {"error": "empty whois"}
+        suspicious = ("invalid query", "no match for", "not found", "no data found")
+        if any(s in txt.lower() for s in suspicious):
+            return {"raw": safe(txt[:2000]), "note": "not_found_or_invalid_query", "source": "whois-cli"}
+        return {"raw": safe(txt[:2000]), "source": "whois-cli"}
     except subprocess.TimeoutExpired:
         return {"error": "whois timeout", "timeout": True}
+    except FileNotFoundError:
+        return {"error": "whois binary not found"}
+    except Exception as exc:
+        return {"error": safe(str(exc))}
+
+
+# =============================================================================
+# Fast socket pre-check (prevents wasting time on closed/filtered ports)
+# =============================================================================
+def fast_tcp_connect(ip: str, port: int, timeout_s: float) -> bool:
+    try:
+        with socket.create_connection((ip, port), timeout=timeout_s):
+            return True
     except Exception:
-        return {"error": "whois not available"}
+        return False
 
 
 # =============================================================================
-# HTTP / TLS
+# HTTP / TLS (short connect/read timeouts + 1 retry on timeout)
 # =============================================================================
+def _scheme_for_port(port: int) -> str:
+    return "https" if port in (443, 8443, 4443) else "http"
+
+
+def _requests_timeouts(connect_s: float, read_s: float):
+    # returns (connect, read) tuple supported by requests
+    return (connect_s, read_s)
+
+
 def fetch_http(host_header: str, port: int, timeout_s: float) -> Dict[str, Any]:
-    """Send an HTTP HEAD to host:port with a proper Host header.
-
-    Args:
-        host_header: Domain to use in the URL/Host header.
-        port: TCP port (80, 443, 8443, etc.).
-        timeout_s: Per-operation timeout in seconds.
-
-    Returns:
-        Dict[str, Any]: {"status": int, "headers": {...}} or error dict.
-    """
     if requests is None:
         return {"error": "requests not installed"}
-
-    scheme = "https" if port in (443, 8443, 4443) else "http"
+    scheme = _scheme_for_port(port)
     url = f"{scheme}://{host_header}" + (f":{port}" if port not in (80, 443) else "")
 
+    # Split timeout budget: small connect timeout, bounded read
+    connect_to = min(1.5, max(0.2, timeout_s * 0.25))
+    read_to = max(0.5, timeout_s - connect_to)
+
+    def _try():
+        return requests.head(
+            url,
+            timeout=_requests_timeouts(connect_to, read_to),
+            allow_redirects=True,
+            headers={"User-Agent": "FAudit/1.0"}
+        )
+
     try:
-        resp = requests.head(url, timeout=timeout_s, allow_redirects=True)
-        headers = {
-            k: v
-            for k, v in resp.headers.items()
-            if k.lower()
-            in (
-                "server",
-                "strict-transport-security",
-                "content-security-policy",
-                "x-frame-options",
+        resp = _try()
+    except requests.Timeout:
+        # one quick retry with smaller read timeout
+        try:
+            resp = requests.head(
+                url,
+                timeout=_requests_timeouts(connect_to, max(0.3, read_to * 0.5)),
+                allow_redirects=True,
+                headers={"User-Agent": "FAudit/1.0"}
             )
-        }
-        return {"status": resp.status_code, "headers": headers}
+        except requests.Timeout:
+            return {"error": "http timeout", "timeout": True}
+        except Exception as exc:
+            return {"error": safe(str(exc))}
+    except Exception as exc:
+        return {"error": safe(str(exc))}
+
+    headers = {
+        k: v
+        for k, v in resp.headers.items()
+        if k.lower() in ("server", "strict-transport-security", "content-security-policy", "x-frame-options")
+    }
+    return {"status": resp.status_code, "headers": headers}
+
+
+def fetch_http_snippet(host_header: str, port: int, timeout_s: float, max_bytes: int = 2048) -> Dict[str, Any]:
+    if requests is None or port not in (443, 8443, 4443):
+        return {"skipped": True}
+
+    scheme = "https"
+    url = f"{scheme}://{host_header}" + (f":{port}" if port != 443 else "")
+
+    connect_to = min(1.5, max(0.2, timeout_s * 0.25))
+    read_to = max(0.5, timeout_s - connect_to)
+
+    try:
+        resp = requests.get(
+            url,
+            timeout=_requests_timeouts(connect_to, read_to),
+            allow_redirects=True,
+            stream=True,
+            headers={"User-Agent": "FAudit/1.0"}
+        )
+        chunk = next(resp.iter_content(chunk_size=max_bytes), b"")
+        body = chunk.decode("utf-8", errors="ignore")
+        title_match = re.search(r"<title>(.*?)</title>", body, flags=re.I | re.S)
+        title = title_match.group(1).strip() if title_match else ""
+        has_login = bool(re.search(r"<form[^>]*>(?:(?!</form>).)*password", body, flags=re.I | re.S))
+        return {"status": resp.status_code, "title": title[:200], "has_login_form": has_login, "sample": body[:max_bytes]}
     except requests.Timeout:
         return {"error": "http timeout", "timeout": True}
     except Exception as exc:
         return {"error": safe(str(exc))}
 
 
-def fetch_tls(
-    ip: str, port: int, server_name: Optional[str], timeout_s: float
-) -> Dict[str, Any]:
-    """Fetch peer TLS cert (no verification) from ip:port with optional SNI.
+def fetch_tls(ip: str, port: int, server_name: Optional[str], timeout_s: float) -> Dict[str, Any]:
+    if port == 80:
+        return {"skipped": True, "reason": "non-TLS port"}
 
-    Args:
-        ip: Target IP address.
-        port: TCP port (e.g., 443).
-        server_name: SNI to present (usually the domain) or None.
-        timeout_s: Per-operation timeout in seconds.
+    # Short connect; bounded handshake
+    connect_to = min(1.5, max(0.2, timeout_s * 0.4))
+    handshake_to = max(0.5, timeout_s - connect_to)
 
-    Returns:
-        Dict[str, Any]: {"retrieved": bool, "subject": ..., "issuer": ...} or error.
-    """
     try:
         ctx = ssl.create_default_context()
         ctx.check_hostname = False
         ctx.verify_mode = ssl.CERT_NONE
 
-        with socket.create_connection((ip, port), timeout=timeout_s) as sock:
+        # Connect phase
+        sock = socket.create_connection((ip, port), timeout=connect_to)
+        sock.settimeout(handshake_to)
+        try:
             with ctx.wrap_socket(sock, server_hostname=(server_name or ip)) as ssock:
                 cert = ssock.getpeercert()
                 return {
@@ -398,6 +393,11 @@ def fetch_tls(
                     "subject": safe(cert.get("subject")),
                     "issuer": safe(cert.get("issuer")),
                 }
+        finally:
+            try:
+                sock.close()
+            except Exception:
+                pass
     except socket.timeout:
         return {"retrieved": False, "error": "tls timeout", "timeout": True}
     except Exception as exc:
@@ -405,74 +405,78 @@ def fetch_tls(
 
 
 # =============================================================================
+# Mgmt fingerprinting
+# =============================================================================
+_MGMT_TITLE_RE = re.compile(
+    r"(admin|administrator|login|sign\s*in|management|dashboard|fortigate|palo\s*alto|unifi|sonicwall|meraki)",
+    re.I,
+)
+_MGMT_PATH_HINTS = ("/admin", "/administrator", "/manage", "/mgmt", "/dashboard", "/remote/login", "/ui/login")
+_MGMT_SERVER_HEADER_RE = re.compile(
+    r"(fortigate|fortios|palo-?alto|sonicwall|juniper|mikrotik|meraki|opnsense|pfsense)",
+    re.I,
+)
+
+
+def is_management_ui(headers: Dict[str, str], snippet: Dict[str, Any]) -> bool:
+    server = ""
+    for k, v in (headers or {}).items():
+        if k.lower() == "server":
+            server = v or ""
+            break
+    if server and _MGMT_SERVER_HEADER_RE.search(server):
+        return True
+
+    title = (snippet or {}).get("title", "") or ""
+    if title and _MGMT_TITLE_RE.search(title):
+        return True
+
+    body = (snippet or {}).get("sample", "") or ""
+    has_login_form = bool((snippet or {}).get("has_login_form"))
+    if has_login_form and (_MGMT_TITLE_RE.search(body) or any(h in body.lower() for h in _MGMT_PATH_HINTS)):
+        return True
+
+    return False
+
+
+# =============================================================================
 # Shodan
 # =============================================================================
 def fetch_shodan(ip: str, timeout_s: float) -> Dict[str, Any]:
-    """Fetch Shodan host info for an IP with a hard timeout.
-
-    Requires SHODAN_API_KEY in the environment and the 'shodan' package.
-
-    Args:
-        ip: Target IP address.
-        timeout_s: Per-operation timeout in seconds.
-
-    Returns:
-        Dict[str, Any]: Shodan fields or {"skipped": True} / error on failure.
-    """
     key = os.environ.get("SHODAN_API_KEY")
     if not key or not Shodan:
         return {"skipped": True}
-
     try:
         api = Shodan(key)
         ok, res = _with_timeout(api.host, timeout_s, ip)
         if not ok:
             return {"error": "shodan timeout", "timeout": True}
-
         host = res
-        return {
-            "ip": host.get("ip_str"),
-            "org": host.get("org"),
-            "ports": host.get("ports"),
-        }
+        return {"ip": host.get("ip_str"), "org": host.get("org"), "ports": host.get("ports")}
     except Exception as exc:
         return {"error": safe(str(exc))}
 
 
 # =============================================================================
-# Assessment
+# Assessment (fingerprint-driven; timeouts are not issues)
 # =============================================================================
 def assess(record: Dict[str, Any]) -> Dict[str, Any]:
-    """Produce a compact risk assessment for a single (ip, port) probe.
-
-    Heuristics:
-    - High if management interface appears publicly reachable on TLS/HTTPS.
-    - Medium if SPF is present but DMARC is missing.
-    - Low otherwise.
-
-    Args:
-        record: Per-port record containing http/tls/dns context.
-
-    Returns:
-        Dict[str, Any]: {"tier": str, "reasons": [...], "recommended_services": [...]}
-    """
-    reasons: list[str] = []
-    recs: list[str] = []
+    reasons: List[str] = []
+    recs: List[str] = []
     severity = 3  # 1=High, 2=Medium, 3=Low
 
-    port = record.get("port")
-    tls = record.get("tls", {})
-    http = record.get("http", {})
-    dns_data = record.get("dns", {})
+    headers = (record.get("http") or {}).get("headers") or {}
+    snippet = record.get("http_snippet") or {}
+    dns_data = record.get("dns", {}) or {}
 
-    if tls.get("retrieved") or (http.get("status") and port in (443, 8443, 4443)):
-        reasons.append("Management interface publicly reachable.")
-        recs.append("Restrict management interface (firewall/VPN/IP allowlist).")
+    if is_management_ui(headers, snippet):
+        reasons.append("Management interface appears publicly reachable (fingerprint match).")
+        recs.append("Restrict management interface via firewall/VPN/IP allowlist.")
         severity = 1
 
     if dns_data.get("spf") and not dns_data.get("dmarc"):
         reasons.append("SPF present but DMARC missing.")
-        recs.append("Add DMARC; verify SPF/DKIM.")
+        recs.append("Add DMARC policy and verify SPF/DKIM alignment.")
         severity = min(severity, 2)
 
     tier_map = {1: "Tier 1 (High)", 2: "Tier 2 (Medium)", 3: "Tier 3 (Low)"}
@@ -480,108 +484,140 @@ def assess(record: Dict[str, Any]) -> Dict[str, Any]:
 
 
 # =============================================================================
-# Orchestrator (stall-safe)
+# Orchestrator with bounded concurrency + deadline-aware skipping
 # =============================================================================
 def run_audit_for_domain(
     domain: str,
     ports: Optional[Iterable[int]] = None,
     org: Optional[str] = None,
-    overall_timeout_s: float = 30.0,
+    overall_timeout_s: float = 20.0,
     timeouts: Optional[Dict[str, float]] = None,
+    max_concurrency: int = 8,
+    tcp_precheck_s: float = 0.7,
 ) -> Dict[str, Any]:
-    """Run a stall-safe passive audit for a company domain.
-
-    Applies both a global deadline and per-operation timeouts so the audit
-    cannot hang indefinitely. If the time budget is exhausted mid-run,
-    the function returns partial results and sets an 'aborted' reason.
-
-    Args:
-        domain: Company domain to audit (e.g., "example.com").
-        ports: Iterable of TCP ports to probe; if None uses (443, 8443, 4443, 80).
-        org: Optional organization label to include in the result.
-        overall_timeout_s: Hard cap for the entire run in seconds.
-        timeouts: Per-op caps; keys: 'dns', 'http', 'tls', 'whois', 'shodan'.
-
-    Returns:
-        Dict[str, Any]: Compact, JSON-serializable audit result.
+    """
+    Deadline-aware, concurrent probes. Will skip gracefully instead of aborting mid-run.
+    - overall_timeout_s: hard wall for entire run
+    - max_concurrency: threads for per-port work
+    - tcp_precheck_s: quick socket connect timeout before doing HTTP/TLS/GET
     """
     start = time.monotonic()
     deadline = start + max(1.0, float(overall_timeout_s))
 
-    # Per-operation defaults (no globals).
+    # Per-op defaults (short and realistic)
     t: Dict[str, float] = {
-        "dns": 5.0,
-        "http": 5.0,
-        "tls": 5.0,
-        "whois": 8.0,
-        "shodan": 6.0,
+        "dns": 4.0,
+        "http": 3.0,
+        "http_snippet": 3.0,
+        "tls": 3.5,
+        "whois": 6.0,
+        "shodan": 4.0,
     }
     if timeouts:
         for key, val in timeouts.items():
             if key in t:
                 t[key] = float(val)
 
-    ports_tuple: Tuple[int, ...] = (
-        tuple(int(p) for p in ports) if ports is not None else (443, 8443, 4443, 80)
-    )
+    ports_tuple = tuple(int(p) for p in ports) if ports is not None else (443, 8443, 4443, 80)
+
+    norm_domain = _normalize_domain(domain)
 
     result: Dict[str, Any] = {
-        "domain": domain,
+        "input_domain": domain,
+        "domain": norm_domain,
         "org": org,
         "timestamp": now_ts(),
         "resolved_ips": {"A": [], "AAAA": []},
         "dns": {},
+        "dns_checks_skipped": False,
         "whois": {},
         "per_ip": {},
+        "aborted": False,  # will remain False; we skip instead of aborting
     }
 
     if _remaining_budget(deadline) <= 0:
-        result["aborted"] = {"reason": "overall timeout before start"}
+        result["aborted"] = True
         result["timing"] = {"overall_seconds": 0.0, "overall_timeout_s": overall_timeout_s}
         return result
 
-    # Resolution, DNS, WHOIS (each respects remaining budget).
-    result["resolved_ips"] = resolve_domain(
-        domain, _bounded_timeout(t["dns"], deadline)
-    )
-    result["dns"] = dns_mx_spf_dmarc(domain, _bounded_timeout(t["dns"], deadline))
-    result["whois"] = fetch_whois(domain, _bounded_timeout(t["whois"], deadline))
+    # DNS
+    result["resolved_ips"] = resolve_domain(norm_domain, _bounded_timeout(t["dns"], deadline))
+    no_ips = not (result["resolved_ips"].get("A") or result["resolved_ips"].get("AAAA"))
+    result["dns"] = dns_mx_spf_dmarc(norm_domain, _bounded_timeout(t["dns"], deadline), skip_if_no_a=no_ips)
+    if no_ips:
+        result["dns_checks_skipped"] = True
 
-    ips = (result["resolved_ips"].get("A") or []) + (
-        result["resolved_ips"].get("AAAA") or []
+    # WHOIS signal
+    result["whois"] = fetch_whois(norm_domain, _bounded_timeout(t["whois"], deadline))
+    result["whois_status"] = (
+        "ok"
+        if (result["whois"].get("registrar") or result["whois"].get("raw") or result["whois"].get("domain_name"))
+        else ("timeout" if result["whois"].get("timeout") else "empty_or_redacted")
     )
 
+    ips: List[str] = (result["resolved_ips"].get("A") or []) + (result["resolved_ips"].get("AAAA") or [])
     for ip in ips:
-        if _remaining_budget(deadline) <= 0:
-            result["aborted"] = {"reason": "overall timeout mid-run"}
+        if _remaining_budget(deadline) <= 0.3:  # not enough time for meaningful work, skip rest gracefully
             break
 
         ip_entry: Dict[str, Any] = {"per_port": {}}
-        ip_entry["shodan"] = fetch_shodan(ip, _bounded_timeout(t["shodan"], deadline))
+        # Shodan is nice-to-have; do it only if we have time
+        if _remaining_budget(deadline) >= 1.0:
+            ip_entry["shodan"] = fetch_shodan(ip, _bounded_timeout(t["shodan"], deadline))
+        else:
+            ip_entry["shodan"] = {"skipped": True, "reason": "low time budget"}
 
-        for port in ports_tuple:
-            if _remaining_budget(deadline) <= 0:
-                result["aborted"] = {"reason": "overall timeout mid-run"}
-                break
+        # Build tasks per port with a **fast TCP pre-check** to avoid wasting time
+        def _port_task(p: int) -> Tuple[int, Dict[str, Any]]:
+            per: Dict[str, Any] = {"ip": ip, "port": p, "domain": norm_domain}
 
-            per: Dict[str, Any] = {"ip": ip, "port": port, "domain": domain}
-            per["http"] = fetch_http(domain, port, _bounded_timeout(t["http"], deadline))
-            sni = domain if port in (443, 8443, 4443) else None
-            per["tls"] = fetch_tls(
-                ip, port, sni, _bounded_timeout(t["tls"], deadline)
-            )
+            # If we're out of time, short-circuit
+            if _remaining_budget(deadline) <= 0.25:
+                per["skipped"] = True
+                per["reason"] = "low time budget"
+                return p, per
+
+            # Fast pre-connect to see if port is even reachable
+            if not fast_tcp_connect(ip, p, min(tcp_precheck_s, _bounded_timeout(tcp_precheck_s, deadline))):
+                per["precheck"] = {"reachable": False}
+                per["dns"] = result["dns"]
+                per["assessment"] = assess(per)
+                return p, per
+
+            per["precheck"] = {"reachable": True}
+
+            # HTTP HEAD
+            per["http"] = fetch_http(norm_domain, p, _bounded_timeout(t["http"], deadline))
+
+            # Tiny GET snippet for HTTPS-like ports (fingerprinting)
+            per["http_snippet"] = fetch_http_snippet(norm_domain, p, _bounded_timeout(t["http_snippet"], deadline))
+
+            # TLS only on TLS-ish ports
+            sni = norm_domain if p in (443, 8443, 4443) else None
+            per["tls"] = fetch_tls(ip, p, sni, _bounded_timeout(t["tls"], deadline))
+
             per["dns"] = result["dns"]
             per["assessment"] = assess(per)
-            ip_entry["per_port"][str(port)] = per
+            return p, per
 
+        # Concurrency with deadline awareness
+        per_port: Dict[str, Any] = {}
+        with ThreadPoolExecutor(max_workers=max_concurrency) as ex:
+            futures = [ex.submit(_port_task, p) for p in ports_tuple]
+            for fut in as_completed(futures, timeout=_remaining_budget(deadline) or 0.1):
+                try:
+                    p, per = fut.result()
+                    per_port[str(p)] = per
+                except Exception as exc:
+                    # If a worker blew up, record it and continue
+                    per_port["error"] = safe(str(exc))
+
+        ip_entry["per_port"] = per_port
         result["per_ip"][ip] = ip_entry
-
-    if not ips and "error" not in result["resolved_ips"]:
-        result["per_ip_error"] = "No IPs to scan"
 
     result["timing"] = {
         "overall_seconds": round(time.monotonic() - start, 3),
         "overall_timeout_s": overall_timeout_s,
-        "aborted": bool(result.get("aborted")),
+        "aborted": False,  # never true; we skip instead of abort
     }
     return result
