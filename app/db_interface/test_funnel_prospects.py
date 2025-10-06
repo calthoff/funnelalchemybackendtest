@@ -2,7 +2,7 @@
 testing the funnelprospects library of functions
 :Author: Michel Eric Levy _mel_
 :Creation date: September 2nd, 2025
-:Last updated: 9/19/2025 (_mel_)
+:Last updated: 10/05/2025 (_mel_)
 
 """
 import json
@@ -184,7 +184,7 @@ if __name__ == "__main__":
     #####################################################################################
     #9 test changing the status of a customer prospects to "connected" 
     #  lets use : customer_id = "mlevy-20250905-5730756828", prospect_id = "coresignal267051946"
-    #  
+    # if(DEBUG):  
     def test9():
         activity_history = json.dumps({
         "date": "2025-09-10",
@@ -277,7 +277,7 @@ if __name__ == "__main__":
 
 
     #####################################################################################
-    #13 test retrieving  the list of contacted 
+    #15 test retrieving  the list of contacted 
     #   lets use : customer_id = ("CAlthoff-20250911-7008066352","default")
     #
     def test15_get_contacted():
@@ -293,13 +293,32 @@ if __name__ == "__main__":
             print(f"un-successsful: |{result['message']}|")        
 
 
-    #test15_get_contacted()
 
+    #####################################################################################
+    #16 test updating the companies table with a new shodan company info
+    #   
+    #
+    def test16_test_adding_company_name(company_name, company_domain, shodan_details):
+        result = fp.update_companies_with_shodan_data(company_name, company_domain,shodan_details)
+
+        # second, lets display the first one
+        if(result['status'] ==  "success"):
+            print(f"successsful: |{result['message']}|")        
+            print(f"company_existed = |{result['company_already_existed_in_db']}|")        
+        else:
+            print(f"un-successsful: |{result['message']}|")        
 
 
 
     # test getting and updating criteria dataset & scoring too
-    test2()
-
-    #test8()
-    #test13()
+    shodan_scan = """
+    [FORTINET]
+    Company: robisontaxlaw.com
+    Provider: Fuse Internet Access
+    Hostnames: mail.robisontaxlaw.com, mail.spe1031.com
+    IP: 216.196.241.154  Port: 8443  ASN: AS6181  Country: US
+    Product/title: Fortinet FortiWiFi-60E
+    Last seen: 2025-10-04T22:55:49.840898
+    """
+    shodan_data = fp.conv_shodan_company_to_json(shodan_scan)
+    test16_test_adding_company_name(shodan_data["company_name"], shodan_data["company_domain"], shodan_scan )

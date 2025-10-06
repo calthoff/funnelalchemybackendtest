@@ -5,7 +5,7 @@ Functions to be used
 
 :Author: Michel Eric Levy _mel_
 :Creation date: September 2nd, 2025
-:Last updated: 10/01/2025 (_mel_)
+:Last updated: 10/05/2025 (_mel_)
 
 """
 # pylint: disable=C0301,W1203, R0914, R0913, R0912, R0915,C0103, C0111, R0903, C0321, C0303
@@ -16,6 +16,7 @@ import logging
 import os
 import datetime
 import json
+import re
 from dotenv import load_dotenv
 from pathlib import Path
 import psycopg2
@@ -1992,3 +1993,145 @@ def send_notification_to_user(customer_id: str, message_notification: str) -> di
         }
 
 
+def conv_shodan_company_to_json(raw_shodan: str):
+    """
+    This function will convert a shodan details company scan/result such as the one below into a JSON string
+            -----
+                [FORTINET]
+                Company: robisontaxlaw.com
+                Provider: Fuse Internet Access
+                Hostnames: mail.robisontaxlaw.com, mail.spe1031.com
+                IP: 216.196.241.154  Port: 8443  ASN: AS6181  Country: US
+                Product/title: Fortinet FortiWiFi-60E
+                Last seen: 2025-10-04T22:55:49.840898
+            -----
+    Input Parameter:
+    - raw_shodan: copany string obtained from the shodan scan
+
+    Returns:
+    - the input variable raw_shodan comveretd into a JSON string
+    """
+    data = {
+        "vendor": re.search(r"\[(.*?)\]", raw_shodan).group(1),
+        "company_name": re.search(r"Company:\s*(.*)", raw_shodan).group(1),
+        "company_domain": re.search(r"Company:\s*(.*)", raw_shodan).group(1),
+        "provider": re.search(r"Provider:\s*(.*)", raw_shodan).group(1),
+        "hostnames": [h.strip() for h in re.search(r"Hostnames:\s*(.*)", raw_shodan).group(1).split(",")],
+        "ip": re.search(r"IP:\s*([\d\.]+)", raw_shodan).group(1),
+        "port": int(re.search(r"Port:\s*(\d+)", raw_shodan).group(1)),
+        "asn": re.search(r"ASN:\s*(\S+)", raw_shodan).group(1),
+        "country": re.search(r"Country:\s*(\S+)", raw_shodan).group(1),
+        "product_title": re.search(r"Product/title:\s*(.*)", raw_shodan).group(1),
+        "last_seen": re.search(r"Last seen:\s*(.*)", raw_shodan).group(1)
+    }
+    return data
+
+
+
+def update_companies_with_shodan_data(
+    company_name: str, 
+    company_domain: str, 
+    shodan_details: str, 
+    company_type: str="security") -> dict:
+    """
+    This function will update the "companies" table and add or update the data found when running the shodan scan/script
+    
+    Input parameters:
+        company_name (str): Name of the company (could also be the domain name)
+        company_domain (str): Domain name of the company as it shows in the shodan response
+        shodan_details (str) : That actually is the full result sent back by the shodan script
+        company_type (str) : this is the company type under which it will saved
+    
+    Returns:
+        Dict: Response with status and message and dict with the format below:
+            {
+                "status": "success",
+                "message": "Company saved/updated successfully",
+                "company_name": company_name,
+                "company_domain": company_domain,
+                "company_already_existed_in_db": company_already_existed_in_db
+            }        
+    """
+    
+    try:
+        # Validate required parameters
+        if not company_name or company_name.strip() == "":
+            raise RuntimeError("comany name is required and cannot be empty")
+        if not company_domain or company_domain.strip() == "":
+            raise RuntimeError("company_domain is required and cannot be empty")
+        if not shodan_details:
+            raise RuntimeError("shodan_details is required and cannot be empty")
+
+        #convert sring shodan_details into a json
+        shodan_details = conv_shodan_company_to_json(shodan_details)
+
+        # Connect to the database
+        conn = connect_db()
+        company_already_existed_in_db = False
+
+        try:
+            cur = conn.cursor()
+
+            # Check if the company exists by company_domain (primary key)
+            cur.execute("""
+                SELECT COUNT(*) 
+                FROM companies 
+                WHERE company_domain = %s
+            """, (company_domain,))
+            
+            exists = cur.fetchone()[0] > 0
+            company_already_existed_in_db = exists
+
+            # Get current timestamp for date_last_updated
+            current_timestamp = datetime.datetime.now()
+
+            if exists:
+                # Update existing company record
+                cur.execute("""
+                    UPDATE companies 
+                    SET company_name = %s, 
+                        shodan_details = %s, 
+                        date_last_updated = %s
+                    WHERE company_domain = %s
+                """, (company_name, json.dumps(shodan_details), current_timestamp, company_domain))
+            else:
+                # Insert new company record
+                cur.execute("""
+                    INSERT INTO companies 
+                    (company_domain, company_name, shodan_details, date_last_updated)
+                    VALUES (%s, %s, %s, %s)
+                """, (company_domain, company_name, json.dumps(shodan_details), current_timestamp))
+
+            # Commit the changes
+            conn.commit()
+            cur.close()
+
+            # Return success response
+            return {
+                "status": "success",
+                "message": "Shodan Company inserted/updated successfully",
+                "company_name": company_name,
+                "company_domain": company_domain, 
+                "last_updated": current_timestamp,
+                "company_already_existed_in_db": company_already_existed_in_db
+            }
+
+        finally:
+            conn.close()
+
+    except RuntimeError as e:
+        return {
+            "status": "error",
+            "error_type": "RuntimeError",
+            "message": "Unexpected runtime error = " + str(e),
+            "company_name": company_name if 'company_name' in locals() else None,
+            "company_domain": company_domain if 'company_domain' in locals() else None
+        }
+    except Exception as e:
+        return {
+            "status": "error",
+            "error_type": type(e).__name__,
+            "message": "Unexpected exception = " + str(e),
+            "company_name": company_name if 'company_name' in locals() else None,
+            "company_domain": company_domain if 'company_domain' in locals() else None
+        }
