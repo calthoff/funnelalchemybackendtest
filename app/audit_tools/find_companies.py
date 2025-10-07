@@ -9,8 +9,6 @@ from typing import Dict, Iterable, List, Tuple, Any, Optional
 from dotenv import load_dotenv
 from shodan import Shodan
 
-# IMPORTANT: this is the DB updater you asked to use
-from funnelprospects import update_companies_with_shodan_data
 
 
 # ----------------------------- Config -----------------------------
