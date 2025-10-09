@@ -10,7 +10,6 @@ from dotenv import load_dotenv
 from shodan import Shodan
 
 
-
 # ----------------------------- Config -----------------------------
 def build_config() -> Dict[str, Any]:
     return {
@@ -21,7 +20,7 @@ def build_config() -> Dict[str, Any]:
             "fastly.net", "meraki.com",
         },
         "drop_public_sector_suffixes": (".gov", ".mil", ".edu"),
-        "per_query_limit": 200,        # keep moderate while testing
+        "per_query_limit": 200,        # keep moderate while testing (not used for CLI per-user override)
         "rate_sleep_sec": 0.2,         # polite pacing across queries
     }
 
@@ -42,17 +41,20 @@ def registrable_domain(hostname: str) -> str:
     parts = h.split(".")
     return ".".join(parts[-2:])
 
+
 def is_cloud_vendor_host(hostname: str, cfg: Dict[str, Any]) -> bool:
     h = (hostname or "").lower()
     if not h:
         return False
     return any(h.endswith(sfx) for sfx in cfg["cloud_vendor_suffixes"])
 
+
 def is_public_sector_domain(domain: str, cfg: Dict[str, Any]) -> bool:
     if not domain:
         return False
     d = domain.lower()
     return any(d.endswith(suf) for suf in cfg["drop_public_sector_suffixes"])
+
 
 def first_company_hostname(hostnames: Iterable[str], cfg: Dict[str, Any]) -> str:
     """Pick a hostname that looks customer-owned (not pure cloud)."""
@@ -61,6 +63,7 @@ def first_company_hostname(hostnames: Iterable[str], cfg: Dict[str, Any]) -> str
         if hs and not is_cloud_vendor_host(hs, cfg):
             return hs
     return (hostnames or [None])[0] or ""
+
 
 def derive_company_identity(match: Dict[str, Any], cfg: Dict[str, Any]) -> Tuple[str, str]:
     """
@@ -108,22 +111,23 @@ def run_queries(
 
 
 # ------------------------ DB Update Flow --------------------------
+# NOTE: kept for minimal changes but not used in this simplified script.
 def push_matches_to_db(matches: List[Dict[str, Any]], cfg: Dict[str, Any]) -> None:
     """
     For each Shodan match, compute company identity and store the FULL raw JSON in shodan_details.
     This preserves keys like 'http', 'tags', 'cpe', 'cpe23' when present.
+
+    This function is intentionally left in place (minimal change requested) but this script
+    does NOT call it — per request we will only print Shodan results.
     """
     ok = fail = 0
     for m in matches:
         company_name, company_domain = derive_company_identity(m, cfg)
 
-        # Skip public sector if you don't sell into it
         if is_public_sector_domain(company_domain, cfg):
             continue
 
         if not company_domain:
-            # You can choose to keep these too, but update_companies_with_shodan_data
-            # uses domain as its primary key in your DB, so skipping avoids dup/noise.
             continue
 
         try:
@@ -155,38 +159,45 @@ def main() -> None:
 
     cfg = build_config()
 
-    # Fortinet
-    fortinet_queries = [
-        ('product:"Fortinet" "FortiGate"', "fortinet"),
-        ('http.title:"FortiGate"', "fortinet"),
-        ('http.title:"SSL VPN"', "fortinet"),
-        ('product:Fortinet port:10443', "fortinet"),
-        ('product:Fortinet port:8443', "fortinet"),
-        ('http.html:"Fortinet"', "fortinet"),
+    # ----------------- ONLY CISCO (queries kept similar to original) -----------------
+    cisco_queries = [
+        (
+            'product:"Cisco ASA" OR http.title:"ASDM" OR http.html:"/admin/public/index.html" OR http.cookie:"webvpn" OR http.html:"webvpn"',
+            "cisco_asa",
+        ),
+        ('product:"Cisco ASA" port:443', "cisco_asa"),
+        ('product:"Cisco ASA" port:8443', "cisco_asa"),
+        ('product:"Cisco ASA" port:10443', "cisco_asa"),
+        ('http.title:"AnyConnect" OR http.html:"AnyConnect" OR http.html:"/anyconnect/" OR product:"AnyConnect"', "cisco_anyconnect"),
+        ('product:"Cisco IOS" OR http.title:"Cisco IOS" OR http.html:"cisco ios"', "cisco_ios"),
+        ('cisco -site:"cisco.com" -site:"meraki.com"', "cisco_generic"),
+        ('http.title:"Cisco Secure ACS" OR http.title:"Cisco ISE" OR http.html:"/admin" http.html:"/ise/"', "cisco_ise"),
+        ('product:"Cisco Firepower" OR product:"FTD" OR http.title:"Firepower" OR http.html:"/api/"', "cisco_firepower"),
+        ('ssl.cert.subject:"ASA Temporary Self Signed" OR ssl.cert.issuer:"ASA Temporary Self Signed"', "cisco_asa_cert"),
     ]
 
-    # Microsoft / IIS / Edge properties
-    microsoft_queries = [
-        ('http.title:"AD FS" OR http.html:"/adfs/ls"', "microsoft"),
-        ('http.title:"Remote Desktop Web Access" OR http.title:"RD Web Access" OR product:"Remote Desktop Gateway"', "microsoft"),
-        ('http.html:"/owa/auth" OR http.title:"Outlook Web App" OR http.html:"/ecp" OR http.title:"Exchange Admin Center"', "microsoft"),
-        ('http.html:"/autodiscover/autodiscover.xml"', "microsoft"),
-        ('http.title:"Azure Application Gateway" OR http.title:"Azure Front Door"', "microsoft"),
-        ('product:"Microsoft IIS" http.title:"Sign in" -site:"microsoft.com"', "microsoft"),
-    ]
-
-    per_limit = int(cfg["per_query_limit"])
     # US only for now; set to None to go global
     country = "US"
 
-    matches_forti = run_queries(api_key, fortinet_queries, per_limit, country)
-    matches_ms = run_queries(api_key, microsoft_queries, per_limit, country)
+    # ----------------- VERY OBVIOUS QUERY LIMIT SET HERE -----------------
+    # Change this number if you want to alter how many results Shodan returns per query.
+    # This is intentionally placed at the BOTTOM and made very visible per your request.
+    QUERY_LIMIT = 500
 
-    # Combine and push straight to DB with FULL raw JSON
-    all_matches = matches_forti + matches_ms
-    push_matches_to_db(all_matches, cfg)
+    # Run the Cisco queries and PRINT results (no CSV, no DB write)
+    matches = run_queries(api_key, cisco_queries, QUERY_LIMIT, country)
 
-    print(f"Processed {len(all_matches)} Shodan matches.")
+    print(f"Processed {len(matches)} Shodan matches.\n")
+
+    # Print full raw JSON for each match (preserves all fields Shodan returned)
+    for idx, m in enumerate(matches, start=1):
+        print(f"--- MATCH {idx} (bucket={m.get('_bucket')}) ---")
+        try:
+            print(json.dumps(m, default=str, indent=2))
+        except Exception:
+            # fallback for weird objects
+            print(str(m))
+        print("\n")
 
 
 if __name__ == "__main__":
