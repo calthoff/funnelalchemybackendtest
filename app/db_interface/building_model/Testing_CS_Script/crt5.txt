@@ -1,0 +1,15 @@
+Type of response = |<class 'list'>|
+
+|2025-06-16T16:27:05.877| || |NB: 2025-06-16T00:00:00| || |sys0vpn.ssa.gov| --- |accelerate.ssa.gov || accelerate-test.ssa.gov || sys0vpn.ssa.gov|
+|2025-06-11T18:26:29.078| || |NB: 2025-06-11T00:00:00| || |ssavpn.ssa.gov| --- |accelerate.ssa.gov || accelerate-test.ssa.gov || ssavpn.ssa.gov|
+|2025-06-11T15:17:42.208| || |NB: 2025-06-11T00:00:00| || |ssavpn.ssa.gov| --- |accelerate.ssa.gov || accelerate-test.ssa.gov || ssavpn.ssa.gov|
+|2025-06-09T13:21:49.433| || |NB: 2025-06-09T00:00:00| || |sys0vpn.ssa.gov| --- |accelerate.ssa.gov || accelerate-test.ssa.gov || sys0vpn.ssa.gov|
+|2025-06-09T13:17:03.084| || |NB: 2025-06-09T00:00:00| || |ssavpn.ssa.gov| --- |accelerate.ssa.gov || accelerate-test.ssa.gov || ssavpn.ssa.gov|
+|2025-04-25T19:17:41.152| || |NB: 2024-07-08T00:00:00| || |ssavpn.ssa.gov| --- |accelerate.ssa.gov || accelerate-test.ssa.gov || ssavpn.ssa.gov|
+|2024-08-07T14:13:21.853| || |NB: 2024-08-07T00:00:00| || |sys0vpn.ssa.gov| --- |pip.0.numonix-prd-bot.ssa.gov || pip.1.numonix-prd-bot.ssa.gov || pip.2.numonix-prd-bot.ssa.gov || pip.3.numonix-prd-bot.ssa.gov || pip.4.numonix-prd-bot.ssa.gov || sys0vpn.ssa.gov|
+|2024-07-08T20:27:44.88| || |NB: 2024-07-08T00:00:00| || |sys0vpn.ssa.gov| --- |accelerate.ssa.gov || accelerate-test.ssa.gov || sys0vpn.ssa.gov|
+|2024-07-08T20:19:13.393| || |NB: 2024-07-08T00:00:00| || |ssavpn.ssa.gov| --- |accelerate.ssa.gov || accelerate-test.ssa.gov || ssavpn.ssa.gov|
+|2024-04-29T18:33:20.838| || |NB: 2024-04-29T00:00:00| || |vpn2.oignfin.ssa.gov| --- |vpn2.oignfin.ssa.gov || www.vpn2.oignfin.ssa.gov|
+|2024-03-21T18:27:04.891| || |NB: 2024-03-21T00:00:00| || |vpn.oignfin.ssa.gov| --- |vpn.oignfin.ssa.gov || www.vpn.oignfin.ssa.gov|
+|2017-12-05T03:39:52.834| || |NB: 2016-07-06T00:00:00| || |mdmsegdev.ssa.gov| --- |mdmmagdev.ssa.gov || mdmmagvpn.ssa.gov || mdmseg2.ssa.gov || mdmsegdev.ssa.gov|
+|2017-12-05T00:38:26.53| || |NB: 2016-08-12T00:00:00| || |mdmsegdev.ssa.gov| --- |mdmmagdev.ssa.gov || mdmmagvpn.ssa.gov || mdmseg2.ssa.gov || mdmsegdev.ssa.gov|

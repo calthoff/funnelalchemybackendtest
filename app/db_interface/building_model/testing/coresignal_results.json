@@ -1,0 +1,4083 @@
+[
+  {
+    "id": 200485978,
+    "parent_id": 200485978,
+    "created_at": "2016-08-14T12:57:10.000Z",
+    "updated_at": "2025-08-17T07:10:17.710763Z",
+    "checked_at": "2025-08-17T07:10:17.710763Z",
+    "changed_at": "2025-07-27T04:42:22.572758Z",
+    "experience_change_last_identified_at": null,
+    "is_deleted": 0,
+    "is_parent": 1,
+    "public_profile_id": 166332373,
+    "linkedin_url": "https://www.linkedin.com/in/solviloga",
+    "linkedin_shorthand_names": [
+      "solviloga"
+    ],
+    "historical_ids": [
+      200485978
+    ],
+    "full_name": "Solvi Logason",
+    "first_name": "Solvi",
+    "first_name_initial": "S",
+    "middle_name": null,
+    "middle_name_initial": null,
+    "last_name": "Logason",
+    "last_name_initial": "L",
+    "headline": "CTO & Co-Founder @ Avo (YC W19) \u2013 Guarantee event data quality, upstream",
+    "summary": null,
+    "picture_url": "https://media.licdn.com/dms/image/v2/C5603AQGVl7AEXcGG6A/profile-displayphoto-shrink_200_200/profile-displayphoto-shrink_200_200/0/1591229354172?e=2147483647&v=beta&t=vuDf10B5h31be-_c1oclf50J5Q-kW_P0SwD5JQnbF1s",
+    "location_country": "Iceland",
+    "location_country_iso2": "IS",
+    "location_country_iso3": "ISL",
+    "location_full": "Reykjav\u00edk, Capital Region, Iceland",
+    "location_regions": [
+      "Europe",
+      "Northern Europe",
+      "EMEA"
+    ],
+    "interests": [],
+    "inferred_skills": [],
+    "historical_skills": [],
+    "connections_count": 500,
+    "followers_count": 808,
+    "services": null,
+    "primary_professional_email": "solvi@avo.app",
+    "primary_professional_email_status": "matched_email",
+    "professional_emails_collection": [
+      {
+        "professional_email": "solvi@avo.app",
+        "professional_email_status": "matched_email",
+        "order_of_priority": 1
+      }
+    ],
+    "is_working": 1,
+    "active_experience_company_id": 12018389,
+    "active_experience_title": "Co-Founder, CTO",
+    "active_experience_description": null,
+    "active_experience_department": "C-Suite",
+    "active_experience_management_level": "Founder",
+    "is_decision_maker": 1,
+    "total_experience_duration_months": 157,
+    "total_experience_duration_months_breakdown_department": [
+      {
+        "department": "Engineering and Technical",
+        "total_experience_duration_months": 31
+      },
+      {
+        "department": "C-Suite",
+        "total_experience_duration_months": 134
+      }
+    ],
+    "total_experience_duration_months_breakdown_management_level": [
+      {
+        "management_level": "Specialist",
+        "total_experience_duration_months": 31
+      },
+      {
+        "management_level": "Founder",
+        "total_experience_duration_months": 134
+      }
+    ],
+    "experience": [
+      {
+        "active_experience": 1,
+        "position_title": "Co-Founder, CTO",
+        "department": "C-Suite",
+        "management_level": "Founder",
+        "location": "San Francisco Bay Area",
+        "description": null,
+        "date_from": "January 2018",
+        "date_from_year": 2018,
+        "date_from_month": 1,
+        "date_to": null,
+        "date_to_year": null,
+        "date_to_month": null,
+        "duration_months": 91,
+        "company_id": 12018389,
+        "company_name": "Avo",
+        "company_type": "Privately Held",
+        "company_founded_year": 2018,
+        "company_followers_count": 1770,
+        "company_website": "https://www.avo.app",
+        "company_facebook_url": [
+          "https://www.facebook.com/avohq"
+        ],
+        "company_twitter_url": [
+          "https://www.twitter.com/avohq"
+        ],
+        "company_linkedin_url": "https://www.linkedin.com/company/avohq",
+        "company_size_range": "11-50 employees",
+        "company_employees_count": 37,
+        "company_industry": "Software Development",
+        "company_categories_and_keywords": [
+          "data quality solutions",
+          "computers electronics and technology > graphics multimedia and web design (in united states)",
+          "tracking plan management",
+          "user experiences",
+          "data quality",
+          "upstream",
+          "analytics implementation",
+          "technology",
+          "enterprise-software",
+          "monitoring",
+          "platform",
+          "analytics",
+          "big data",
+          "business intelligence",
+          "data storage",
+          "database",
+          "developer apis",
+          "developer tools",
+          "enterprise software",
+          "events",
+          "saas"
+        ],
+        "company_annual_revenue_source_5": null,
+        "company_annual_revenue_currency_source_5": null,
+        "company_annual_revenue_source_1": null,
+        "company_annual_revenue_currency_source_1": null,
+        "company_employees_count_change_yearly_percentage": -7.5,
+        "company_last_funding_round_date": "2021-01-01",
+        "company_last_funding_round_amount_raised": null,
+        "company_hq_full_address": "340 S Lemon Ave; Walnut, California 91789, US",
+        "company_hq_country": "United States",
+        "company_hq_regions": [
+          "Americas",
+          "Northern America",
+          "AMER"
+        ],
+        "company_hq_country_iso2": "US",
+        "company_hq_country_iso3": "USA",
+        "company_hq_city": "Walnut",
+        "company_hq_state": "California",
+        "company_hq_street": "340 S Lemon Ave",
+        "company_hq_zipcode": "91789",
+        "company_last_updated_at": "2025-08-02",
+        "company_stock_ticker": [],
+        "company_is_b2b": 1,
+        "order_in_profile": 1
+      },
+      {
+        "active_experience": 0,
+        "position_title": "Developer",
+        "department": "Engineering and Technical",
+        "management_level": "Specialist",
+        "location": null,
+        "description": null,
+        "date_from": "May 2017",
+        "date_from_year": 2017,
+        "date_from_month": 5,
+        "date_to": "January 2018",
+        "date_to_year": 2018,
+        "date_to_month": 1,
+        "duration_months": 8,
+        "company_id": 11161117,
+        "company_name": "Viska",
+        "company_type": "Privately Held",
+        "company_founded_year": 2017,
+        "company_followers_count": 0,
+        "company_website": "https://www.viska.com",
+        "company_facebook_url": [
+          "https://www.facebook.com/viskahq"
+        ],
+        "company_twitter_url": [
+          "https://www.twitter.com/viskahq"
+        ],
+        "company_linkedin_url": "https://www.linkedin.com/company/viskalearning",
+        "company_size_range": null,
+        "company_employees_count": 4,
+        "company_industry": "E-learning",
+        "company_categories_and_keywords": [
+          "n/a",
+          "artificial intelligence (ai)",
+          "corporate training",
+          "e-learning",
+          "mobile",
+          "software"
+        ],
+        "company_annual_revenue_source_5": 1000000,
+        "company_annual_revenue_currency_source_5": "USD",
+        "company_annual_revenue_source_1": null,
+        "company_annual_revenue_currency_source_1": null,
+        "company_employees_count_change_yearly_percentage": 0.0,
+        "company_last_funding_round_date": null,
+        "company_last_funding_round_amount_raised": null,
+        "company_hq_full_address": "-; Gullbringusysla, 101, Iceland",
+        "company_hq_country": "Iceland",
+        "company_hq_regions": [
+          "Europe",
+          "Northern Europe",
+          "EMEA"
+        ],
+        "company_hq_country_iso2": "IS",
+        "company_hq_country_iso3": "ISL",
+        "company_hq_city": "Gullbringusysla",
+        "company_hq_state": null,
+        "company_hq_street": "-",
+        "company_hq_zipcode": "101",
+        "company_last_updated_at": "2025-08-01",
+        "company_stock_ticker": [],
+        "company_is_b2b": null,
+        "order_in_profile": 2
+      },
+      {
+        "active_experience": 0,
+        "position_title": "Web Developer",
+        "department": "Engineering and Technical",
+        "management_level": "Specialist",
+        "location": "Iceland",
+        "description": null,
+        "date_from": "October 2016",
+        "date_from_year": 2016,
+        "date_from_month": 10,
+        "date_to": "April 2017",
+        "date_to_year": 2017,
+        "date_to_month": 4,
+        "duration_months": 6,
+        "company_id": 5862209,
+        "company_name": "WOW air",
+        "company_type": "Privately Held",
+        "company_founded_year": 2020,
+        "company_followers_count": 0,
+        "company_website": "https://www.wowair.com",
+        "company_facebook_url": [
+          "https://www.facebook.com/wowiceland"
+        ],
+        "company_twitter_url": [
+          "https://www.twitter.com/wow_air"
+        ],
+        "company_linkedin_url": "https://www.linkedin.com/company/wow-air",
+        "company_size_range": "11-50 employees",
+        "company_employees_count": 93,
+        "company_industry": "Airlines and Aviation",
+        "company_categories_and_keywords": [
+          "transportation",
+          "travel and tourism > air travel (in canada)",
+          "icelandic low-cost airline",
+          "honest fares",
+          "global guests",
+          "network",
+          "cargo service",
+          "aerospace",
+          "air transportation",
+          "hospitality"
+        ],
+        "company_annual_revenue_source_5": 484000000,
+        "company_annual_revenue_currency_source_5": "USD",
+        "company_annual_revenue_source_1": null,
+        "company_annual_revenue_currency_source_1": null,
+        "company_employees_count_change_yearly_percentage": -6.0606060606060606,
+        "company_last_funding_round_date": null,
+        "company_last_funding_round_amount_raised": null,
+        "company_hq_full_address": "Washington - Reykjav\u00edk - Rome, IS",
+        "company_hq_country": "United States",
+        "company_hq_regions": [
+          "Americas",
+          "Northern America",
+          "AMER"
+        ],
+        "company_hq_country_iso2": "US",
+        "company_hq_country_iso3": "USA",
+        "company_hq_city": null,
+        "company_hq_state": null,
+        "company_hq_street": null,
+        "company_hq_zipcode": null,
+        "company_last_updated_at": "2025-08-04",
+        "company_stock_ticker": [],
+        "company_is_b2b": 0,
+        "order_in_profile": 3
+      },
+      {
+        "active_experience": 0,
+        "position_title": "Web Developer",
+        "department": "Engineering and Technical",
+        "management_level": "Specialist",
+        "location": null,
+        "description": "Development of QuizUp.com",
+        "date_from": "May 2015",
+        "date_from_year": 2015,
+        "date_from_month": 5,
+        "date_to": "October 2016",
+        "date_to_year": 2016,
+        "date_to_month": 10,
+        "duration_months": 17,
+        "company_id": 3155784,
+        "company_name": "QuizUp",
+        "company_type": "Public Company",
+        "company_founded_year": 2010,
+        "company_followers_count": 1155,
+        "company_website": "https://www.quizup.com",
+        "company_facebook_url": [
+          "https://www.facebook.com/quizup"
+        ],
+        "company_twitter_url": [
+          "https://www.twitter.com/quizup"
+        ],
+        "company_linkedin_url": "https://www.linkedin.com/company/quizup",
+        "company_size_range": "501-1000 employees",
+        "company_employees_count": 6,
+        "company_industry": "Computer Games",
+        "company_categories_and_keywords": [
+          "technology",
+          "games",
+          "social-networks",
+          "apps",
+          "gaming",
+          "video games"
+        ],
+        "company_annual_revenue_source_5": 5800000,
+        "company_annual_revenue_currency_source_5": "USD",
+        "company_annual_revenue_source_1": null,
+        "company_annual_revenue_currency_source_1": null,
+        "company_employees_count_change_yearly_percentage": 50.0,
+        "company_last_funding_round_date": "2016-01-21",
+        "company_last_funding_round_amount_raised": 7500000,
+        "company_hq_full_address": "500 Howard St; San Francisco, CA 94105, US",
+        "company_hq_country": "United States",
+        "company_hq_regions": [
+          "Americas",
+          "Northern America",
+          "AMER"
+        ],
+        "company_hq_country_iso2": "US",
+        "company_hq_country_iso3": "USA",
+        "company_hq_city": "San Francisco",
+        "company_hq_state": "California",
+        "company_hq_street": "500 Howard St",
+        "company_hq_zipcode": "94105",
+        "company_last_updated_at": "2025-08-03",
+        "company_stock_ticker": [],
+        "company_is_b2b": null,
+        "order_in_profile": 4
+      },
+      {
+        "active_experience": 0,
+        "position_title": "Co-Founder",
+        "department": "C-Suite",
+        "management_level": "Founder",
+        "location": null,
+        "description": null,
+        "date_from": "July 2012",
+        "date_from_year": 2012,
+        "date_from_month": 7,
+        "date_to": "2016",
+        "date_to_year": 2016,
+        "date_to_month": null,
+        "duration_months": 42,
+        "company_id": 6008892,
+        "company_name": "Optimus Margmi\u00f0lun",
+        "company_type": "Privately Held",
+        "company_founded_year": 2012,
+        "company_followers_count": 0,
+        "company_website": "https://www.optimus.is",
+        "company_facebook_url": [],
+        "company_twitter_url": [],
+        "company_linkedin_url": "https://www.linkedin.com/company/optimus-margmi-lun",
+        "company_size_range": "1-10 employees",
+        "company_employees_count": null,
+        "company_industry": "Advertising Services",
+        "company_categories_and_keywords": [
+          "industry: n/a",
+          "software development",
+          "graphics design",
+          "branding",
+          "social media",
+          "motion graphics",
+          "video production"
+        ],
+        "company_annual_revenue_source_5": null,
+        "company_annual_revenue_currency_source_5": null,
+        "company_annual_revenue_source_1": null,
+        "company_annual_revenue_currency_source_1": null,
+        "company_employees_count_change_yearly_percentage": null,
+        "company_last_funding_round_date": null,
+        "company_last_funding_round_amount_raised": null,
+        "company_hq_full_address": null,
+        "company_hq_country": null,
+        "company_hq_regions": [],
+        "company_hq_country_iso2": null,
+        "company_hq_country_iso3": null,
+        "company_hq_city": null,
+        "company_hq_state": null,
+        "company_hq_street": null,
+        "company_hq_zipcode": null,
+        "company_last_updated_at": "2025-07-18",
+        "company_stock_ticker": [],
+        "company_is_b2b": null,
+        "order_in_profile": 5
+      }
+    ],
+    "projected_base_salary_p25": null,
+    "projected_base_salary_median": null,
+    "projected_base_salary_p75": null,
+    "projected_base_salary_period": null,
+    "projected_base_salary_currency": null,
+    "projected_base_salary_updated_at": null,
+    "projected_additional_salary": [],
+    "projected_additional_salary_period": null,
+    "projected_additional_salary_currency": null,
+    "projected_additional_salary_updated_at": null,
+    "projected_total_salary_p25": null,
+    "projected_total_salary_median": null,
+    "projected_total_salary_p75": null,
+    "projected_total_salary_period": null,
+    "projected_total_salary_currency": null,
+    "projected_total_salary_updated_at": null,
+    "last_graduation_date": 2015,
+    "education_degrees": [
+      "Bachelor of Science (BS), Software engineering"
+    ],
+    "education": [
+      {
+        "degree": "Bachelor of Science (BS), Software engineering",
+        "description": null,
+        "institution_url": "https://www.linkedin.com/school/h\u00e1sk\u00f3li-\u00edslands",
+        "institution_name": "H\u00e1sk\u00f3li \u00cdslands / University of Iceland",
+        "institution_full_address": "S\u00e6mundarg\u00f6tu 2, Reykjav\u00edk; Reykjav\u00edk, 102, IS",
+        "institution_country_iso2": "IS",
+        "institution_country_iso3": "ISL",
+        "institution_regions": [
+          "Europe",
+          "Northern Europe",
+          "EMEA"
+        ],
+        "institution_city": null,
+        "institution_state": null,
+        "institution_street": null,
+        "institution_zipcode": null,
+        "date_from_year": 2012,
+        "date_to_year": 2015,
+        "activities_and_societies": null,
+        "order_in_profile": 1
+      }
+    ],
+    "recommendations_count": null,
+    "recommendations": [],
+    "activity": [
+      {
+        "activity_url": "https://www.linkedin.com/posts/solviloga_datamesh-dataengineering-productanalytics-activity-7343010607593402368-6b2x",
+        "title": "\u201cWho owns this event?\u201d\n\nYou\u2019ve heard it before\u2014usually *after* something breaks.\n\nA product team ships tracking -> Data engineers adjust pipelines ->\u2026",
+        "action": "Shared by",
+        "order_in_profile": 1
+      },
+      {
+        "activity_url": "https://www.linkedin.com/posts/frzkhn7_couldnt-agree-more-thomas-int-veld-activity-7328103443221372929-SDge",
+        "title": "Couldn't agree more Thomas in't Veld",
+        "action": "Liked by",
+        "order_in_profile": 2
+      }
+    ],
+    "awards": [],
+    "courses": [],
+    "certifications": [],
+    "languages": [],
+    "patents_count": null,
+    "patents_topics": [],
+    "patents": [],
+    "publications_count": null,
+    "publications_topics": [],
+    "publications": [],
+    "projects_count": null,
+    "projects_topics": [],
+    "projects": [],
+    "organizations": [],
+    "github_url": null,
+    "github_username": null,
+    "github_mapping_confidence": null,
+    "github_contributions_count": null,
+    "github_repos_summary": [],
+    "profile_root_field_changes_summary": [
+      {
+        "field_name": "country",
+        "change_type": "updated",
+        "last_changed_at": "2025-02-26 04:44:08.891095"
+      },
+      {
+        "field_name": "location",
+        "change_type": "updated",
+        "last_changed_at": "2025-02-26 04:44:08.891095"
+      },
+      {
+        "field_name": "follower_count",
+        "change_type": "updated",
+        "last_changed_at": "2025-07-27 04:42:22.572758"
+      },
+      {
+        "field_name": "profile_photo_url",
+        "change_type": "new",
+        "last_changed_at": "2025-02-26 04:44:08.891095"
+      }
+    ],
+    "profile_collection_field_changes_summary": [
+      {
+        "field_name": "websites",
+        "last_changed_at": "2025-03-20 14:20:46.473726"
+      },
+      {
+        "field_name": "education",
+        "last_changed_at": "2025-03-20 14:20:46.473726"
+      },
+      {
+        "field_name": "activity",
+        "last_changed_at": "2025-07-27 04:42:22.572758"
+      },
+      {
+        "field_name": "experience",
+        "last_changed_at": "2024-03-13 23:34:21.441591"
+      }
+    ],
+    "experience_recently_started": [],
+    "experience_recently_closed": []
+  },
+  {
+    "id": 171114060,
+    "parent_id": 171114060,
+    "created_at": "2016-08-11T20:19:10.000Z",
+    "updated_at": "2025-08-16T05:39:46.821584Z",
+    "checked_at": "2025-08-16T05:39:46.821584Z",
+    "changed_at": "2025-08-16T05:39:46.821584Z",
+    "experience_change_last_identified_at": null,
+    "is_deleted": 0,
+    "is_parent": 1,
+    "public_profile_id": 7996409,
+    "linkedin_url": "https://www.linkedin.com/in/gopinathrebala",
+    "linkedin_shorthand_names": [
+      "gopinath-rebala-6758172",
+      "gopinathrebala"
+    ],
+    "historical_ids": [
+      171114060
+    ],
+    "full_name": "Gopinath Rebala",
+    "first_name": "Gopinath",
+    "first_name_initial": "G",
+    "middle_name": null,
+    "middle_name_initial": null,
+    "last_name": "Rebala",
+    "last_name_initial": "R",
+    "headline": "Building AppSec & ASPM Platform",
+    "summary": "Management and Leadership roles with expertise in team building, strategy, influencing product direction and managing offshore teams. Successful execution of scalable, highly available, secure and high performance applications for real time streaming, big data, data center operations, IoT in SaaS deployments. Specialties: * Software Architectures * Machine Learning * Project management across functional teams * Product Life Cycle Management",
+    "picture_url": "https://media.licdn.com/dms/image/v2/D5603AQEqc_abt1qNCA/profile-displayphoto-shrink_200_200/profile-displayphoto-shrink_200_200/0/1732085922867?e=2147483647&v=beta&t=9rsiYR1R4gJBUfHd0Hu2e1nyXnPMaIVCq89JpimgxZE",
+    "location_country": "United States",
+    "location_country_iso2": "US",
+    "location_country_iso3": "USA",
+    "location_full": "Fremont, California, United States",
+    "location_regions": [
+      "Americas",
+      "Northern America",
+      "AMER"
+    ],
+    "interests": [],
+    "inferred_skills": [
+      "management",
+      "leadership",
+      "strategy",
+      "offshore",
+      "operations",
+      "iot",
+      "saas",
+      "software",
+      "architectures",
+      "cloud",
+      "safe",
+      "pipelines",
+      "analytics",
+      "deployment",
+      "green",
+      "testing",
+      "production",
+      "silicon",
+      "capital",
+      "twitter",
+      "less",
+      "efficiency",
+      "director",
+      "engineering",
+      "responsible",
+      "maintenance",
+      "assurance",
+      "architecture",
+      "integration",
+      "hp",
+      "openstack",
+      "team building",
+      "big data",
+      "data center",
+      "machine learning",
+      "project management",
+      "continuous delivery",
+      "operational efficiency",
+      "software engineering",
+      "product development",
+      "quality assurance",
+      "system architecture",
+      "team development",
+      "product life cycle management"
+    ],
+    "historical_skills": [],
+    "connections_count": 500,
+    "followers_count": 5058,
+    "services": null,
+    "primary_professional_email": "gopinath@opsmx.com",
+    "primary_professional_email_status": "verified",
+    "professional_emails_collection": [
+      {
+        "professional_email": "gopinath@opsmx.com",
+        "professional_email_status": "verified",
+        "order_of_priority": 1
+      }
+    ],
+    "is_working": 1,
+    "active_experience_company_id": 11089880,
+    "active_experience_title": "CTO",
+    "active_experience_description": "OpsMx provides Enterprise Spinnaker, a multi-cloud, and a cloud-native Continuous Delivery Platform. Spinnaker is trusted by over 3000 Enterprises. OpsMx makes Spinnaker Simple, Scalable, Secure, and Safe, and is a trusted Spinnaker partner for several Fortune 500 companies. OpsMx also offers an automated software release verification platform called Autopilot, which accelerates CI/CD pipelines with in-depth release analytics, leveraging machine learning and AI. Autopilot can be used during deployment (canary, blue-green,rolling updates ), testing and build stages or in production. We are a passionate team of over 85 people and have offices in Silicon Valley and India. OpsMx is funded by Top-Tier VCs, Foundation Capital, and Dell Technologies Capital. Follow us on Twitter @Ops_Mx and learn more at www.opsmx.com. Show less",
+    "active_experience_department": "C-Suite",
+    "active_experience_management_level": "C-Level",
+    "is_decision_maker": 1,
+    "total_experience_duration_months": 258,
+    "total_experience_duration_months_breakdown_department": [
+      {
+        "department": "Design",
+        "total_experience_duration_months": 5
+      },
+      {
+        "department": "Engineering and Technical",
+        "total_experience_duration_months": 128
+      },
+      {
+        "department": "C-Suite",
+        "total_experience_duration_months": 135
+      }
+    ],
+    "total_experience_duration_months_breakdown_management_level": [
+      {
+        "management_level": "Specialist",
+        "total_experience_duration_months": 31
+      },
+      {
+        "management_level": "Senior",
+        "total_experience_duration_months": 108
+      },
+      {
+        "management_level": "Founder",
+        "total_experience_duration_months": 31
+      },
+      {
+        "management_level": "Director",
+        "total_experience_duration_months": 60
+      },
+      {
+        "management_level": "C-Level",
+        "total_experience_duration_months": 104
+      },
+      {
+        "management_level": "President/Vice President",
+        "total_experience_duration_months": 36
+      }
+    ],
+    "experience": [
+      {
+        "active_experience": 1,
+        "position_title": "CTO",
+        "department": "C-Suite",
+        "management_level": "C-Level",
+        "location": "Sunnyvale",
+        "description": "OpsMx provides Enterprise Spinnaker, a multi-cloud, and a cloud-native Continuous Delivery Platform. Spinnaker is trusted by over 3000 Enterprises. OpsMx makes Spinnaker Simple, Scalable, Secure, and Safe, and is a trusted Spinnaker partner for several Fortune 500 companies. OpsMx also offers an automated software release verification platform called Autopilot, which accelerates CI/CD pipelines with in-depth release analytics, leveraging machine learning and AI. Autopilot can be used during deployment (canary, blue-green,rolling updates ), testing and build stages or in production. We are a passionate team of over 85 people and have offices in Silicon Valley and India. OpsMx is funded by Top-Tier VCs, Foundation Capital, and Dell Technologies Capital. Follow us on Twitter @Ops_Mx and learn more at www.opsmx.com. Show less",
+        "date_from": "December 2016",
+        "date_from_year": 2016,
+        "date_from_month": 12,
+        "date_to": null,
+        "date_to_year": null,
+        "date_to_month": null,
+        "duration_months": 104,
+        "company_id": 11089880,
+        "company_name": "OpsMx",
+        "company_type": "Privately Held",
+        "company_founded_year": 2017,
+        "company_followers_count": 19956,
+        "company_website": "https://www.opsmx.com",
+        "company_facebook_url": [
+          "https://www.facebook.com/opsmxinc"
+        ],
+        "company_twitter_url": [
+          "https://www.twitter.com/ops_mx",
+          "https://www.twitter.com/integrations",
+          "https://www.twitter.com/guides-datasheets",
+          "https://www.twitter.com/careers",
+          "https://www.twitter.com/subscribe-to-our-newsletter",
+          "https://www.twitter.com/in-the-news",
+          "https://www.twitter.com/secure-continuous-delivery/isd-for-argo/delivery-intelligence",
+          "https://www.twitter.com/secure-continuous-delivery/visibility-and-insights-for-secure-cd",
+          "https://www.twitter.com/webinars/enterprise-application-security-posture-management-challenges-and-solutions",
+          "https://www.twitter.com/secure-continuous-delivery/isd-for-argo",
+          "https://www.twitter.com/blog/what-is-devsecops",
+          "https://www.twitter.com/guides-datasheets/securing-ci-cd-with-nist-compliance",
+          "https://www.twitter.com/devsecops",
+          "https://www.twitter.com/blog/online-site-accelerates-software-delivery",
+          "https://www.twitter.com/secured-software-delivery",
+          "https://www.twitter.com/deployment-firewall",
+          "https://www.twitter.com/blog/mastering-aspm-in-devops-strategies-for-enhancing-application-security",
+          "https://www.twitter.com/secure-continuous-delivery/secure-flux-cd/security-and-governance-for-flux",
+          "https://www.twitter.com/blog/automating-build-analysis-with-opsmx-autopilot",
+          "https://www.twitter.com/intelligent-deployments-and-delivery-for-jenkins",
+          "https://www.twitter.com/secure-software-delivery-demo",
+          "https://www.twitter.com/secure-continuous-delivery/isd-for-spinnaker/audit-and-traceability",
+          "https://www.twitter.com/secure-software-delivery",
+          "https://www.twitter.com/continuous-verification-for-argo",
+          "https://www.twitter.com/secure-continuous-delivery/audit-and-traceability-for-secure-cd",
+          "https://www.twitter.com/tutorials-and-podcasts",
+          "https://www.twitter.com/secure-continuous-delivery/isd-for-argo/policy-and-governance",
+          "https://www.twitter.com/intelligent-deployments-and-delivery-for-gitlab",
+          "https://www.twitter.com/webinars/fortifying-your-ci-cd-pipeline-best-practices-for-secure-software-delivery",
+          "https://www.twitter.com/governance-compliance-devsecops",
+          "https://www.twitter.com/delivery-bill-of-materials",
+          "https://www.twitter.com/customer-case-study",
+          "https://www.twitter.com/blog/cisco-partners-with-opsmx-to-transform-software-delivery",
+          "https://www.twitter.com/blog/telecom-leader-accelerates-time-to-market-with-opsmx",
+          "https://www.twitter.com/secure-continuous-delivery/isd-for-spinnaker/policy-and-governance",
+          "https://www.twitter.com/what-is-spinnaker",
+          "https://www.twitter.com/secure-continuous-delivery/secure-flux-cd/visibility-and-insights-for-flux",
+          "https://www.twitter.com/argo-center-of-excellence",
+          "https://www.twitter.com/developer-self-service-for-continuous-delivery",
+          "https://www.twitter.com/secure-continuous-delivery/secure-flux-cd",
+          "https://www.twitter.com/continuous-delivery-audit-visibility-and-control",
+          "https://www.twitter.com/what-is-gitops",
+          "https://www.twitter.com/secure-continuous-delivery/secure-flux-cd/delivery-intelligence-for-flux",
+          "https://www.twitter.com/intelligent-deployments-and-delivery-for-kubernetes",
+          "https://www.twitter.com/intelligent-deployments-and-delivery-for-openshift",
+          "https://www.twitter.com/company/#aboutopsmx",
+          "https://www.twitter.com/opsmx-partner-program",
+          "https://www.twitter.com/intelligent-deployments-and-delivery-for-github-enterprise-github-actions",
+          "https://www.twitter.com/talk-to-an-application-security-expert",
+          "https://www.twitter.com/secure-continuous-delivery/security-and-governance-for-secure-cd",
+          "https://www.twitter.com/blog/leading-application-saas-provider-achieves-scale-in-software-delivery-with-spinnaker",
+          "https://www.twitter.com/blog",
+          "https://www.twitter.com/guides-datasheets/four-effective-strategies-for-optimizing-application-security-with-aspm",
+          "https://www.twitter.com/guides-datasheets/advanced-deployment-strategies-ebook",
+          "https://www.twitter.com/spinnaker-center-of-excellence",
+          "https://www.twitter.com/videos",
+          "https://www.twitter.com/secure-continuous-delivery/delivery-intelligence-for-secure-cd",
+          "https://www.twitter.com/secure-continuous-delivery/isd-for-spinnaker/delivery-intelligence",
+          "https://www.twitter.com/guides-datasheets/argo-ebook",
+          "https://www.twitter.com/secure-continuous-delivery/secure-flux-cd/audit-and-traceability-for-flux",
+          "https://www.twitter.com/secure-continuous-delivery/isd-for-spinnaker/visibility-and-insights",
+          "https://www.twitter.com/secure-continuous-delivery",
+          "https://www.twitter.com/events",
+          "https://www.twitter.com/spinnaker-course",
+          "https://www.twitter.com/company/#investors",
+          "https://www.twitter.com/multicloud-deployments",
+          "https://www.twitter.com/continuous-risk-assessment",
+          "https://www.twitter.com/news-room/opsmx-announces-partnership-with-google-cloud-to-provide-intelligent-software-delivery-with-spinnaker",
+          "https://www.twitter.com/secure-continuous-delivery/isd-for-argo/audit-and-traceability",
+          "https://www.twitter.com/guides-datasheets/secure-software-delivery-ebook",
+          "https://www.twitter.com/news",
+          "https://www.twitter.com/webinars",
+          "https://www.twitter.com/secure-continuous-delivery/isd-for-spinnaker",
+          "https://www.twitter.com/what-is-continuous-delivery",
+          "https://www.twitter.com/secure-continuous-delivery/isd-for-argo/visibility-and-insights",
+          "https://www.twitter.com/hubfs/opsmx-secure-software-delivery-ssd-solution-brief.pdf",
+          "https://www.twitter.com/what-is-argocd",
+          "https://www.twitter.com/contact",
+          "https://www.twitter.com/intelligent-deployments-for-azure-devops"
+        ],
+        "company_linkedin_url": "https://www.linkedin.com/company/opsmx",
+        "company_size_range": "51-200 employees",
+        "company_employees_count": 128,
+        "company_industry": "Software Development",
+        "company_categories_and_keywords": [
+          "software/technology",
+          "computers electronics and technology > programming and developer software",
+          "devops",
+          "spinnaker",
+          "jenkins",
+          "ci/cd",
+          "canary analysis",
+          "blue/green",
+          "software delivery",
+          "continuous verification",
+          "application security",
+          "aspm",
+          "appsec",
+          "argo cd",
+          "argo rollouts",
+          "argo workflows",
+          "continuous deployment",
+          "continuous delivery",
+          "continuous integration",
+          "intelligent software delivery",
+          "secure software cd",
+          "delivery shield",
+          "deployment firewall",
+          "vulnerability management",
+          "compliance automation",
+          "technology",
+          "application-software",
+          "compliance",
+          "enterprise-software",
+          "platform",
+          "information technology",
+          "software"
+        ],
+        "company_annual_revenue_source_5": 18000000,
+        "company_annual_revenue_currency_source_5": "USD",
+        "company_annual_revenue_source_1": null,
+        "company_annual_revenue_currency_source_1": null,
+        "company_employees_count_change_yearly_percentage": -1.5384615384615385,
+        "company_last_funding_round_date": "2024-05-28",
+        "company_last_funding_round_amount_raised": null,
+        "company_hq_full_address": "Sunnyvale, California, US",
+        "company_hq_country": "United States",
+        "company_hq_regions": [
+          "Americas",
+          "Northern America",
+          "AMER"
+        ],
+        "company_hq_country_iso2": "US",
+        "company_hq_country_iso3": "USA",
+        "company_hq_city": null,
+        "company_hq_state": null,
+        "company_hq_street": null,
+        "company_hq_zipcode": null,
+        "company_last_updated_at": "2025-08-04",
+        "company_stock_ticker": [],
+        "company_is_b2b": 1,
+        "order_in_profile": 1
+      },
+      {
+        "active_experience": 0,
+        "position_title": "Co-Founder, CTO",
+        "department": "C-Suite",
+        "management_level": "Founder",
+        "location": "Sunnyvale, Ca",
+        "description": "Enabling Data Center operational efficiency for real time operations - application context based monitoring, anomaly detection and failure prediction using machine learning.",
+        "date_from": "November 2013",
+        "date_from_year": 2013,
+        "date_from_month": 11,
+        "date_to": "June 2016",
+        "date_to_year": 2016,
+        "date_to_month": 6,
+        "duration_months": 31,
+        "company_id": 4918481,
+        "company_name": "N42",
+        "company_type": "Privately Held",
+        "company_founded_year": null,
+        "company_followers_count": 0,
+        "company_website": "https://www.n42inc.com",
+        "company_facebook_url": [],
+        "company_twitter_url": [],
+        "company_linkedin_url": "https://www.linkedin.com/company/n42",
+        "company_size_range": "11-50 employees",
+        "company_employees_count": 3,
+        "company_industry": "Technology, Information and Internet",
+        "company_categories_and_keywords": [
+          "large-scale dynamic distributed systems",
+          "cloud and applicaiton operations",
+          "machine learning & ai",
+          "performance management",
+          "analytics",
+          "application performance management",
+          "cloud management",
+          "data center",
+          "machine learning",
+          "software",
+          "virtualization"
+        ],
+        "company_annual_revenue_source_5": null,
+        "company_annual_revenue_currency_source_5": null,
+        "company_annual_revenue_source_1": null,
+        "company_annual_revenue_currency_source_1": null,
+        "company_employees_count_change_yearly_percentage": null,
+        "company_last_funding_round_date": "2014-05-01",
+        "company_last_funding_round_amount_raised": 1000000,
+        "company_hq_full_address": "Mountain View, California, United States",
+        "company_hq_country": "United States",
+        "company_hq_regions": [
+          "Americas",
+          "Northern America",
+          "AMER"
+        ],
+        "company_hq_country_iso2": "US",
+        "company_hq_country_iso3": "USA",
+        "company_hq_city": "Mountain View",
+        "company_hq_state": "California",
+        "company_hq_street": null,
+        "company_hq_zipcode": null,
+        "company_last_updated_at": "2025-08-02",
+        "company_stock_ticker": [],
+        "company_is_b2b": null,
+        "order_in_profile": 2
+      },
+      {
+        "active_experience": 0,
+        "position_title": "VP Engineering",
+        "department": "Engineering and Technical",
+        "management_level": "President/Vice President",
+        "location": "San Jose",
+        "description": "Responsible for all aspects of enterprise product development, maintenance, quality assurance and IT teams. Responsible for system architecture, OEM integration, customer solutions and strategic product roadmap as member of executive team development.",
+        "date_from": "January 2010",
+        "date_from_year": 2010,
+        "date_from_month": 1,
+        "date_to": "January 2013",
+        "date_to_year": 2013,
+        "date_to_month": 1,
+        "duration_months": 36,
+        "company_id": null,
+        "company_name": "One Touch Systems",
+        "company_type": null,
+        "company_founded_year": null,
+        "company_followers_count": null,
+        "company_website": null,
+        "company_facebook_url": [],
+        "company_twitter_url": [],
+        "company_linkedin_url": null,
+        "company_size_range": null,
+        "company_employees_count": null,
+        "company_industry": null,
+        "company_categories_and_keywords": [],
+        "company_annual_revenue_source_5": null,
+        "company_annual_revenue_currency_source_5": null,
+        "company_annual_revenue_source_1": null,
+        "company_annual_revenue_currency_source_1": null,
+        "company_employees_count_change_yearly_percentage": null,
+        "company_last_funding_round_date": null,
+        "company_last_funding_round_amount_raised": null,
+        "company_hq_full_address": null,
+        "company_hq_country": null,
+        "company_hq_regions": [],
+        "company_hq_country_iso2": null,
+        "company_hq_country_iso3": null,
+        "company_hq_city": null,
+        "company_hq_state": null,
+        "company_hq_street": null,
+        "company_hq_zipcode": null,
+        "company_last_updated_at": null,
+        "company_stock_ticker": [],
+        "company_is_b2b": null,
+        "order_in_profile": 3
+      },
+      {
+        "active_experience": 0,
+        "position_title": "Architect",
+        "department": "Design",
+        "management_level": "Specialist",
+        "location": "palo alto, CA",
+        "description": "Architect in HP Cloud Services using Openstack for Public Cloud offering.",
+        "date_from": "March 2012",
+        "date_from_year": 2012,
+        "date_from_month": 3,
+        "date_to": "August 2012",
+        "date_to_year": 2012,
+        "date_to_month": 8,
+        "duration_months": 5,
+        "company_id": 863173,
+        "company_name": "HP",
+        "company_type": "Public Company",
+        "company_founded_year": null,
+        "company_followers_count": 5176517,
+        "company_website": "https://www.hp.com",
+        "company_facebook_url": [
+          "https://www.facebook.com/hp"
+        ],
+        "company_twitter_url": [
+          "https://www.twitter.com/hp"
+        ],
+        "company_linkedin_url": "https://www.linkedin.com/company/hp",
+        "company_size_range": "10,001+ employees",
+        "company_employees_count": 160309,
+        "company_industry": "IT Services and IT Consulting",
+        "company_categories_and_keywords": [
+          "technology/computers",
+          "manufacturing-industrial",
+          "ecommerce",
+          "electronics",
+          "ink",
+          "laptops",
+          "toner",
+          "printers",
+          "desktops"
+        ],
+        "company_annual_revenue_source_5": 54298000000,
+        "company_annual_revenue_currency_source_5": "USD",
+        "company_annual_revenue_source_1": 53559001088.0,
+        "company_annual_revenue_currency_source_1": "USD",
+        "company_employees_count_change_yearly_percentage": -15.906122299101405,
+        "company_last_funding_round_date": null,
+        "company_last_funding_round_amount_raised": null,
+        "company_hq_full_address": "1501 Page Mill Road; Palo Alto, CA 94304, US",
+        "company_hq_country": "United States",
+        "company_hq_regions": [
+          "Americas",
+          "Northern America",
+          "AMER"
+        ],
+        "company_hq_country_iso2": "US",
+        "company_hq_country_iso3": "USA",
+        "company_hq_city": "Palo Alto",
+        "company_hq_state": "California",
+        "company_hq_street": "1501 Page Mill Road",
+        "company_hq_zipcode": "94304",
+        "company_last_updated_at": "2025-08-01",
+        "company_stock_ticker": [
+          {
+            "exchange": "NYSE",
+            "ticker": "HPQ"
+          },
+          {
+            "exchange": null,
+            "ticker": "HPQ"
+          }
+        ],
+        "company_is_b2b": 1,
+        "order_in_profile": 4
+      },
+      {
+        "active_experience": 0,
+        "position_title": "Director, Software Engineering",
+        "department": "Engineering and Technical",
+        "management_level": "Director",
+        "location": null,
+        "description": null,
+        "date_from": "January 2005",
+        "date_from_year": 2005,
+        "date_from_month": 1,
+        "date_to": "January 2010",
+        "date_to_year": 2010,
+        "date_to_month": 1,
+        "duration_months": 60,
+        "company_id": 5991600,
+        "company_name": "OneTouch Systems, Inc",
+        "company_type": "Privately Held",
+        "company_founded_year": null,
+        "company_followers_count": 0,
+        "company_website": "https://www.otsys.com.au",
+        "company_facebook_url": [],
+        "company_twitter_url": [],
+        "company_linkedin_url": "https://www.linkedin.com/company/onetouch-systems",
+        "company_size_range": "51-200 employees",
+        "company_employees_count": 10,
+        "company_industry": "Software Development",
+        "company_categories_and_keywords": [],
+        "company_annual_revenue_source_5": null,
+        "company_annual_revenue_currency_source_5": null,
+        "company_annual_revenue_source_1": null,
+        "company_annual_revenue_currency_source_1": null,
+        "company_employees_count_change_yearly_percentage": null,
+        "company_last_funding_round_date": null,
+        "company_last_funding_round_amount_raised": null,
+        "company_hq_full_address": "2; Port Macquarie, New South Wales 2444, Australia",
+        "company_hq_country": "Australia",
+        "company_hq_regions": [
+          "Oceania",
+          "Australia and New Zealand",
+          "APAC"
+        ],
+        "company_hq_country_iso2": "AU",
+        "company_hq_country_iso3": "AUS",
+        "company_hq_city": "Port Macquarie",
+        "company_hq_state": "New South Wales",
+        "company_hq_street": "2",
+        "company_hq_zipcode": "2444",
+        "company_last_updated_at": "2025-08-03",
+        "company_stock_ticker": [],
+        "company_is_b2b": null,
+        "order_in_profile": 5
+      },
+      {
+        "active_experience": 0,
+        "position_title": "Technical Lead",
+        "department": "Engineering and Technical",
+        "management_level": "Senior",
+        "location": null,
+        "description": null,
+        "date_from": "1996",
+        "date_from_year": 1996,
+        "date_from_month": null,
+        "date_to": "2005",
+        "date_to_year": 2005,
+        "date_to_month": null,
+        "duration_months": 108,
+        "company_id": 5991600,
+        "company_name": "OneTouch Systems, Inc",
+        "company_type": "Privately Held",
+        "company_founded_year": null,
+        "company_followers_count": 0,
+        "company_website": "https://www.otsys.com.au",
+        "company_facebook_url": [],
+        "company_twitter_url": [],
+        "company_linkedin_url": "https://www.linkedin.com/company/onetouch-systems",
+        "company_size_range": "51-200 employees",
+        "company_employees_count": 10,
+        "company_industry": "Software Development",
+        "company_categories_and_keywords": [],
+        "company_annual_revenue_source_5": null,
+        "company_annual_revenue_currency_source_5": null,
+        "company_annual_revenue_source_1": null,
+        "company_annual_revenue_currency_source_1": null,
+        "company_employees_count_change_yearly_percentage": null,
+        "company_last_funding_round_date": null,
+        "company_last_funding_round_amount_raised": null,
+        "company_hq_full_address": "2; Port Macquarie, New South Wales 2444, Australia",
+        "company_hq_country": "Australia",
+        "company_hq_regions": [
+          "Oceania",
+          "Australia and New Zealand",
+          "APAC"
+        ],
+        "company_hq_country_iso2": "AU",
+        "company_hq_country_iso3": "AUS",
+        "company_hq_city": "Port Macquarie",
+        "company_hq_state": "New South Wales",
+        "company_hq_street": "2",
+        "company_hq_zipcode": "2444",
+        "company_last_updated_at": "2025-08-03",
+        "company_stock_ticker": [],
+        "company_is_b2b": null,
+        "order_in_profile": 6
+      },
+      {
+        "active_experience": 0,
+        "position_title": "Member Of Technical Staff",
+        "department": "Engineering and Technical",
+        "management_level": "Specialist",
+        "location": null,
+        "description": null,
+        "date_from": "July 1996",
+        "date_from_year": 1996,
+        "date_from_month": 7,
+        "date_to": "August 1997",
+        "date_to_year": 1997,
+        "date_to_month": 8,
+        "duration_months": 13,
+        "company_id": 6068905,
+        "company_name": "Oracle",
+        "company_type": "Public Company",
+        "company_founded_year": null,
+        "company_followers_count": 10513659,
+        "company_website": "https://www.oracle.com",
+        "company_facebook_url": [
+          "https://www.facebook.com/oracle"
+        ],
+        "company_twitter_url": [
+          "https://www.twitter.com/oracle"
+        ],
+        "company_linkedin_url": "https://www.linkedin.com/company/oracle",
+        "company_size_range": "10,001+ employees",
+        "company_employees_count": 201086,
+        "company_industry": "IT Services and IT Consulting",
+        "company_categories_and_keywords": [
+          "technology/cloud services",
+          "enterprise",
+          "software",
+          "applications",
+          "database",
+          "middleware",
+          "fusion",
+          "business intelligence",
+          "primavera",
+          "peoplesoft",
+          "epm",
+          "bea",
+          "hyperion",
+          "retek",
+          "utilities",
+          "on-demand",
+          "server & storage systems",
+          "bpm",
+          "solutions for communications industry",
+          "erp",
+          "crm",
+          "crm on demand",
+          "jde",
+          "siebel",
+          "cloud applications",
+          "analytics",
+          "multicloud",
+          "cloud platform",
+          "technology",
+          "application-software",
+          "cloud",
+          "data-management",
+          "data-storage",
+          "enterprise-software",
+          "it-consulting",
+          "data governance",
+          "data management",
+          "enterprise software",
+          "information technology",
+          "saas"
+        ],
+        "company_annual_revenue_source_5": 57399000000,
+        "company_annual_revenue_currency_source_5": "USD",
+        "company_annual_revenue_source_1": 57399001088.0,
+        "company_annual_revenue_currency_source_1": "USD",
+        "company_employees_count_change_yearly_percentage": 3.7520509354329405,
+        "company_last_funding_round_date": "2025-01-30",
+        "company_last_funding_round_amount_raised": 7750000000,
+        "company_hq_full_address": "2300 Oracle Way; Austin, Texas 78741, US",
+        "company_hq_country": "United States",
+        "company_hq_regions": [
+          "Americas",
+          "Northern America",
+          "AMER"
+        ],
+        "company_hq_country_iso2": "US",
+        "company_hq_country_iso3": "USA",
+        "company_hq_city": "Austin",
+        "company_hq_state": "Texas",
+        "company_hq_street": "2300 Oracle Way",
+        "company_hq_zipcode": "78741",
+        "company_last_updated_at": "2025-08-01",
+        "company_stock_ticker": [
+          {
+            "exchange": "NYSE",
+            "ticker": "ORCL"
+          },
+          {
+            "exchange": null,
+            "ticker": "ORCL"
+          }
+        ],
+        "company_is_b2b": 1,
+        "order_in_profile": 7
+      },
+      {
+        "active_experience": 0,
+        "position_title": "Member Of Technical Staff",
+        "department": "Engineering and Technical",
+        "management_level": "Specialist",
+        "location": null,
+        "description": null,
+        "date_from": "July 1993",
+        "date_from_year": 1993,
+        "date_from_month": 7,
+        "date_to": "August 1994",
+        "date_to_year": 1994,
+        "date_to_month": 8,
+        "duration_months": 13,
+        "company_id": null,
+        "company_name": "Inter Software and Technologies",
+        "company_type": null,
+        "company_founded_year": null,
+        "company_followers_count": null,
+        "company_website": null,
+        "company_facebook_url": [],
+        "company_twitter_url": [],
+        "company_linkedin_url": null,
+        "company_size_range": null,
+        "company_employees_count": null,
+        "company_industry": null,
+        "company_categories_and_keywords": [],
+        "company_annual_revenue_source_5": null,
+        "company_annual_revenue_currency_source_5": null,
+        "company_annual_revenue_source_1": null,
+        "company_annual_revenue_currency_source_1": null,
+        "company_employees_count_change_yearly_percentage": null,
+        "company_last_funding_round_date": null,
+        "company_last_funding_round_amount_raised": null,
+        "company_hq_full_address": null,
+        "company_hq_country": null,
+        "company_hq_regions": [],
+        "company_hq_country_iso2": null,
+        "company_hq_country_iso3": null,
+        "company_hq_city": null,
+        "company_hq_state": null,
+        "company_hq_street": null,
+        "company_hq_zipcode": null,
+        "company_last_updated_at": null,
+        "company_stock_ticker": [],
+        "company_is_b2b": null,
+        "order_in_profile": 8
+      }
+    ],
+    "projected_base_salary_p25": null,
+    "projected_base_salary_median": null,
+    "projected_base_salary_p75": null,
+    "projected_base_salary_period": null,
+    "projected_base_salary_currency": null,
+    "projected_base_salary_updated_at": null,
+    "projected_additional_salary": [],
+    "projected_additional_salary_period": null,
+    "projected_additional_salary_currency": null,
+    "projected_additional_salary_updated_at": null,
+    "projected_total_salary_p25": null,
+    "projected_total_salary_median": null,
+    "projected_total_salary_p75": null,
+    "projected_total_salary_period": null,
+    "projected_total_salary_currency": null,
+    "projected_total_salary_updated_at": null,
+    "last_graduation_date": 1996,
+    "education_degrees": [
+      "BTech, E & ECE",
+      "MS, Computer Science"
+    ],
+    "education": [
+      {
+        "degree": "MS, Computer Science",
+        "description": null,
+        "institution_url": "https://www.linkedin.com/school/university-of-maryland-baltimore-county",
+        "institution_name": "University of Maryland Baltimore County",
+        "institution_full_address": "1000 Hilltop Circle; Baltimore, MD 21250, US",
+        "institution_country_iso2": "US",
+        "institution_country_iso3": "USA",
+        "institution_regions": [
+          "Americas",
+          "Northern America",
+          "AMER"
+        ],
+        "institution_city": "Baltimore",
+        "institution_state": "Maryland",
+        "institution_street": "1000 Hilltop Circle",
+        "institution_zipcode": "21250",
+        "date_from_year": 1994,
+        "date_to_year": 1996,
+        "activities_and_societies": null,
+        "order_in_profile": 1
+      },
+      {
+        "degree": "BTech, E & ECE",
+        "description": null,
+        "institution_url": "https://www.linkedin.com/school/indian-institute-of-technology-kharagpur",
+        "institution_name": "Indian Institute of Technology, Kharagpur",
+        "institution_full_address": "IIT Kharagpur; KHARAGPUR, west bengal 721302, IN",
+        "institution_country_iso2": "IN",
+        "institution_country_iso3": "IND",
+        "institution_regions": [
+          "Asia",
+          "Southern Asia",
+          "APAC"
+        ],
+        "institution_city": null,
+        "institution_state": null,
+        "institution_street": null,
+        "institution_zipcode": null,
+        "date_from_year": 1989,
+        "date_to_year": 1993,
+        "activities_and_societies": null,
+        "order_in_profile": 2
+      }
+    ],
+    "recommendations_count": null,
+    "recommendations": [],
+    "activity": [],
+    "awards": [],
+    "courses": [],
+    "certifications": [],
+    "languages": [],
+    "patents_count": null,
+    "patents_topics": [],
+    "patents": [],
+    "publications_count": null,
+    "publications_topics": [],
+    "publications": [],
+    "projects_count": null,
+    "projects_topics": [],
+    "projects": [],
+    "organizations": [],
+    "github_url": null,
+    "github_username": null,
+    "github_mapping_confidence": null,
+    "github_contributions_count": null,
+    "github_repos_summary": [],
+    "profile_root_field_changes_summary": [
+      {
+        "field_name": "summary",
+        "change_type": "new",
+        "last_changed_at": "2025-02-26 21:28:30.473167"
+      },
+      {
+        "field_name": "summary",
+        "change_type": "updated",
+        "last_changed_at": "2025-05-31 08:45:38.392637"
+      },
+      {
+        "field_name": "connections_count",
+        "change_type": "deleted",
+        "last_changed_at": "2025-06-25 13:16:01.204531"
+      },
+      {
+        "field_name": "shorthand_name",
+        "change_type": "updated",
+        "last_changed_at": "2025-07-23 18:52:56.989323"
+      },
+      {
+        "field_name": "location",
+        "change_type": "updated",
+        "last_changed_at": "2025-02-26 21:28:30.473167"
+      },
+      {
+        "field_name": "profile_photo_url",
+        "change_type": "new",
+        "last_changed_at": "2025-02-26 21:28:30.473167"
+      },
+      {
+        "field_name": "connections_count",
+        "change_type": "new",
+        "last_changed_at": "2025-06-26 03:51:42.466131"
+      },
+      {
+        "field_name": "country",
+        "change_type": "updated",
+        "last_changed_at": "2025-02-26 21:28:30.473167"
+      },
+      {
+        "field_name": "follower_count",
+        "change_type": "updated",
+        "last_changed_at": "2025-08-16 05:39:46.821584"
+      },
+      {
+        "field_name": "profile_url",
+        "change_type": "updated",
+        "last_changed_at": "2025-07-23 18:52:56.989323"
+      }
+    ],
+    "profile_collection_field_changes_summary": [
+      {
+        "field_name": "education",
+        "last_changed_at": "2025-03-23 20:26:22.833366"
+      },
+      {
+        "field_name": "experience",
+        "last_changed_at": "2023-11-29 12:04:53.000000"
+      }
+    ],
+    "experience_recently_started": [],
+    "experience_recently_closed": []
+  },
+  {
+    "id": 448828973,
+    "parent_id": 448828973,
+    "created_at": "2020-05-16T15:45:03.000Z",
+    "updated_at": "2025-08-16T04:24:39.938513Z",
+    "checked_at": "2025-08-16T04:24:39.938513Z",
+    "changed_at": "2025-08-16T04:24:39.938513Z",
+    "experience_change_last_identified_at": null,
+    "is_deleted": 0,
+    "is_parent": 1,
+    "public_profile_id": 804686741,
+    "linkedin_url": "https://www.linkedin.com/in/max-weidemann",
+    "linkedin_shorthand_names": [
+      "max-weidemann",
+      "max-weidemann-2455a31a5"
+    ],
+    "historical_ids": [
+      448828973
+    ],
+    "full_name": "Max Weidemann",
+    "first_name": "Max",
+    "first_name_initial": "M",
+    "middle_name": null,
+    "middle_name_initial": null,
+    "last_name": "Weidemann",
+    "last_name_initial": "W",
+    "headline": "Co-Founder & CTO at millionways",
+    "summary": "Max is a self-taught full-stack engineer and product builder who thrives on turning",
+    "picture_url": "https://media.licdn.com/dms/image/v2/D4E03AQGi5hb64j789w/profile-displayphoto-shrink_200_200/profile-displayphoto-shrink_200_200/0/1663407325866?e=2147483647&v=beta&t=yttBKKCfRKYewNZ1FsHPcG2pphsPwb9LJS2o5WrhSb8",
+    "location_country": "United States",
+    "location_country_iso2": "US",
+    "location_country_iso3": "USA",
+    "location_full": "New York, New York, United States",
+    "location_regions": [
+      "Americas",
+      "Northern America",
+      "AMER"
+    ],
+    "interests": [],
+    "inferred_skills": [
+      "hiring",
+      "engagement",
+      "leadership",
+      "analysis",
+      "intelligence",
+      "mobile",
+      "api",
+      "c",
+      "investors",
+      "driving",
+      "discipline",
+      "mathematics",
+      "courses",
+      "algebra",
+      "calculus",
+      "integration",
+      "theory",
+      "customer engagement",
+      "business transformation",
+      "linear algebra",
+      "functional analysis"
+    ],
+    "historical_skills": [],
+    "connections_count": 500,
+    "followers_count": 628,
+    "services": null,
+    "primary_professional_email": "maxweidemann@millionways.me",
+    "primary_professional_email_status": "guessed_common_pattern",
+    "professional_emails_collection": [
+      {
+        "professional_email": "maxweidemann@millionways.me",
+        "professional_email_status": "guessed_common_pattern",
+        "order_of_priority": 1
+      },
+      {
+        "professional_email": "max.weidemann@millionways.me",
+        "professional_email_status": "guessed_common_pattern",
+        "order_of_priority": 2
+      },
+      {
+        "professional_email": "max@millionways.me",
+        "professional_email_status": "guessed_common_pattern",
+        "order_of_priority": 3
+      }
+    ],
+    "is_working": 1,
+    "active_experience_company_id": 87983974,
+    "active_experience_title": "Co-Founder CTO",
+    "active_experience_description": "millionways AI delivers deep, transparent personality insights from any raw text, helping businesses make smarter hiring decisions, enhance customer engagement, and improve leadership selection\u2014going beyond sentiment analysis to provide actionable, explainable intelligence. Max is the technical co-founder and quickly learned the skills needed to create fully fleshed-out product demos, including the millionways mobile and web apps and the API, and set up the technical side of the business.",
+    "active_experience_department": "C-Suite",
+    "active_experience_management_level": "Founder",
+    "is_decision_maker": 1,
+    "total_experience_duration_months": 145,
+    "total_experience_duration_months_breakdown_department": [
+      {
+        "department": "Other",
+        "total_experience_duration_months": 2
+      },
+      {
+        "department": "Education",
+        "total_experience_duration_months": 72
+      },
+      {
+        "department": "C-Suite",
+        "total_experience_duration_months": 78
+      }
+    ],
+    "total_experience_duration_months_breakdown_management_level": [
+      {
+        "management_level": "Specialist",
+        "total_experience_duration_months": 74
+      },
+      {
+        "management_level": "Founder",
+        "total_experience_duration_months": 78
+      }
+    ],
+    "experience": [
+      {
+        "active_experience": 1,
+        "position_title": "Co-Founder CTO",
+        "department": "C-Suite",
+        "management_level": "Founder",
+        "location": "New York, United States",
+        "description": "millionways AI delivers deep, transparent personality insights from any raw text, helping businesses make smarter hiring decisions, enhance customer engagement, and improve leadership selection\u2014going beyond sentiment analysis to provide actionable, explainable intelligence. Max is the technical co-founder and quickly learned the skills needed to create fully fleshed-out product demos, including the millionways mobile and web apps and the API, and set up the technical side of the business.",
+        "date_from": "February 2019",
+        "date_from_year": 2019,
+        "date_from_month": 2,
+        "date_to": null,
+        "date_to_year": null,
+        "date_to_month": null,
+        "duration_months": 78,
+        "company_id": 87983974,
+        "company_name": "millionways",
+        "company_type": "Privately Held",
+        "company_founded_year": 2017,
+        "company_followers_count": 415,
+        "company_website": "https://www.millionways.me",
+        "company_facebook_url": [
+          "https://www.facebook.com/millionways.net"
+        ],
+        "company_twitter_url": [],
+        "company_linkedin_url": "https://www.linkedin.com/company/millionways-hamburg",
+        "company_size_range": "11-50 employees",
+        "company_employees_count": 15,
+        "company_industry": "Software Development",
+        "company_categories_and_keywords": [
+          "industry: n/a",
+          "technology",
+          "artificial-intelligence",
+          "enterprise-software",
+          "artificial intelligence (ai)",
+          "life science",
+          "personal development"
+        ],
+        "company_annual_revenue_source_5": 1200000,
+        "company_annual_revenue_currency_source_5": "USD",
+        "company_annual_revenue_source_1": null,
+        "company_annual_revenue_currency_source_1": null,
+        "company_employees_count_change_yearly_percentage": 0.0,
+        "company_last_funding_round_date": "2023-04-04",
+        "company_last_funding_round_amount_raised": 10000000,
+        "company_hq_full_address": "1350 Avenue of the Americas; FL. 2 - 1073; New York, NY 10019, US",
+        "company_hq_country": "United States",
+        "company_hq_regions": [
+          "Americas",
+          "Northern America",
+          "AMER"
+        ],
+        "company_hq_country_iso2": "US",
+        "company_hq_country_iso3": "USA",
+        "company_hq_city": "New York",
+        "company_hq_state": "New York",
+        "company_hq_street": "1350 Avenue of the Americas; FL. 2 - 1073",
+        "company_hq_zipcode": "10019",
+        "company_last_updated_at": "2025-08-02",
+        "company_stock_ticker": [],
+        "company_is_b2b": null,
+        "order_in_profile": 1
+      },
+      {
+        "active_experience": 1,
+        "position_title": "Member",
+        "department": "Other",
+        "management_level": "Specialist",
+        "location": null,
+        "description": "ON_Discourse is a membership based global community of C-suite leaders, investors, and innovators focused on driving business transformation through the discipline of discourse.",
+        "date_from": "January 2025",
+        "date_from_year": 2025,
+        "date_from_month": 1,
+        "date_to": null,
+        "date_to_year": null,
+        "date_to_month": null,
+        "duration_months": 2,
+        "company_id": 89086031,
+        "company_name": "ON_Discourse",
+        "company_type": "Privately Held",
+        "company_founded_year": 2022,
+        "company_followers_count": 3274,
+        "company_website": "https://www.ondiscourse.com",
+        "company_facebook_url": [],
+        "company_twitter_url": [
+          "https://www.twitter.com/live",
+          "https://www.twitter.com/on_discourse"
+        ],
+        "company_linkedin_url": "https://www.linkedin.com/company/ondiscourse",
+        "company_size_range": "11-50 employees",
+        "company_employees_count": 37,
+        "company_industry": "Technology, Information and Media",
+        "company_categories_and_keywords": [
+          "business/marketing",
+          "- -",
+          "sports",
+          "business",
+          "ai",
+          "artificial intelligence",
+          "discourse",
+          "sports business",
+          "ai business",
+          "technology",
+          "tech",
+          "brands",
+          "entrepreneurship",
+          "investors",
+          "business leaders",
+          "c-suite",
+          "business transformation",
+          "innovators",
+          "leadership",
+          "artificial intelligence (ai)",
+          "business development",
+          "content",
+          "guides",
+          "information technology",
+          "media and entertainment"
+        ],
+        "company_annual_revenue_source_5": null,
+        "company_annual_revenue_currency_source_5": null,
+        "company_annual_revenue_source_1": null,
+        "company_annual_revenue_currency_source_1": null,
+        "company_employees_count_change_yearly_percentage": 60.86956521739131,
+        "company_last_funding_round_date": null,
+        "company_last_funding_round_amount_raised": null,
+        "company_hq_full_address": null,
+        "company_hq_country": null,
+        "company_hq_regions": [],
+        "company_hq_country_iso2": null,
+        "company_hq_country_iso3": null,
+        "company_hq_city": null,
+        "company_hq_state": null,
+        "company_hq_street": null,
+        "company_hq_zipcode": null,
+        "company_last_updated_at": "2025-08-02",
+        "company_stock_ticker": [],
+        "company_is_b2b": 1,
+        "order_in_profile": 2
+      },
+      {
+        "active_experience": 0,
+        "position_title": "Mathematics Tutor",
+        "department": "Education",
+        "management_level": "Specialist",
+        "location": null,
+        "description": "Designed and lead exercise sessions and graded homework and exams for the following courses: Linear Algebra, Calculus I, Calculus II, Integration Theory, Complex Analysis, Functional Analysis, Mathematics for Physicists I, II and III.",
+        "date_from": "February 2013",
+        "date_from_year": 2013,
+        "date_from_month": 2,
+        "date_to": "February 2019",
+        "date_to_year": 2019,
+        "date_to_month": 2,
+        "duration_months": 72,
+        "company_id": 26964788,
+        "company_name": "Goethe-Universit\u00e4t Frankfurt a. Main",
+        "company_type": "Educational",
+        "company_founded_year": 1914,
+        "company_followers_count": 125313,
+        "company_website": "https://www.uni-frankfurt.de",
+        "company_facebook_url": [],
+        "company_twitter_url": [
+          "https://www.twitter.com/goetheuni"
+        ],
+        "company_linkedin_url": "https://www.linkedin.com/company/goethe-universitat-frankfurt",
+        "company_size_range": "1001-5000 employees",
+        "company_employees_count": 5378,
+        "company_industry": "Higher Education",
+        "company_categories_and_keywords": [
+          "science and education > universities and colleges"
+        ],
+        "company_annual_revenue_source_5": null,
+        "company_annual_revenue_currency_source_5": null,
+        "company_annual_revenue_source_1": null,
+        "company_annual_revenue_currency_source_1": null,
+        "company_employees_count_change_yearly_percentage": 12.065013544488435,
+        "company_last_funding_round_date": null,
+        "company_last_funding_round_amount_raised": null,
+        "company_hq_full_address": "Theodor-W.-Adorno-Platz, Frankfurt am Main; Frankfurt, Hessen 60323, DE",
+        "company_hq_country": "Germany",
+        "company_hq_regions": [
+          "Europe",
+          "Western Europe",
+          "EMEA",
+          "EU"
+        ],
+        "company_hq_country_iso2": "DE",
+        "company_hq_country_iso3": "DEU",
+        "company_hq_city": null,
+        "company_hq_state": null,
+        "company_hq_street": null,
+        "company_hq_zipcode": null,
+        "company_last_updated_at": "2025-08-01",
+        "company_stock_ticker": [],
+        "company_is_b2b": null,
+        "order_in_profile": 3
+      }
+    ],
+    "projected_base_salary_p25": null,
+    "projected_base_salary_median": null,
+    "projected_base_salary_p75": null,
+    "projected_base_salary_period": null,
+    "projected_base_salary_currency": null,
+    "projected_base_salary_updated_at": null,
+    "projected_additional_salary": [],
+    "projected_additional_salary_period": null,
+    "projected_additional_salary_currency": null,
+    "projected_additional_salary_updated_at": null,
+    "projected_total_salary_p25": null,
+    "projected_total_salary_median": null,
+    "projected_total_salary_p75": null,
+    "projected_total_salary_period": null,
+    "projected_total_salary_currency": null,
+    "projected_total_salary_updated_at": null,
+    "last_graduation_date": 2019,
+    "education_degrees": [
+      "Bachelor of Science - BS, Mathematics, 1,9",
+      "Master of Science - MS, Mathematics, 1,8"
+    ],
+    "education": [
+      {
+        "degree": null,
+        "description": null,
+        "institution_url": "https://www.linkedin.com/school/goethe-universitat-frankfurt",
+        "institution_name": "Johann Wolfgang Goethe-Universit\u00e4t Frankfurt am Main",
+        "institution_full_address": "Theodor-W.-Adorno-Platz, Frankfurt am Main; Frankfurt, Hessen 60323, DE",
+        "institution_country_iso2": "DE",
+        "institution_country_iso3": "DEU",
+        "institution_regions": [
+          "Europe",
+          "Western Europe",
+          "EMEA",
+          "EU"
+        ],
+        "institution_city": null,
+        "institution_state": null,
+        "institution_street": null,
+        "institution_zipcode": null,
+        "date_from_year": 2015,
+        "date_to_year": 2019,
+        "activities_and_societies": null,
+        "order_in_profile": 1
+      },
+      {
+        "degree": "Bachelor of Science - BS, Mathematics, 1,9",
+        "description": null,
+        "institution_url": "https://www.linkedin.com/school/goethe-universitat-frankfurt",
+        "institution_name": "Johann Wolfgang Goethe-Universit\u00e4t Frankfurt am Main",
+        "institution_full_address": "Theodor-W.-Adorno-Platz, Frankfurt am Main; Frankfurt, Hessen 60323, DE",
+        "institution_country_iso2": "DE",
+        "institution_country_iso3": "DEU",
+        "institution_regions": [
+          "Europe",
+          "Western Europe",
+          "EMEA",
+          "EU"
+        ],
+        "institution_city": null,
+        "institution_state": null,
+        "institution_street": null,
+        "institution_zipcode": null,
+        "date_from_year": 2012,
+        "date_to_year": 2015,
+        "activities_and_societies": null,
+        "order_in_profile": 2
+      },
+      {
+        "degree": "Master of Science - MS, Mathematics, 1,8",
+        "description": null,
+        "institution_url": "https://www.linkedin.com/school/goethe-universitat-frankfurt",
+        "institution_name": "Johann Wolfgang Goethe-Universit\u00e4t Frankfurt am Main",
+        "institution_full_address": "Theodor-W.-Adorno-Platz, Frankfurt am Main; Frankfurt, Hessen 60323, DE",
+        "institution_country_iso2": "DE",
+        "institution_country_iso3": "DEU",
+        "institution_regions": [
+          "Europe",
+          "Western Europe",
+          "EMEA",
+          "EU"
+        ],
+        "institution_city": null,
+        "institution_state": null,
+        "institution_street": null,
+        "institution_zipcode": null,
+        "date_from_year": 2015,
+        "date_to_year": 2019,
+        "activities_and_societies": null,
+        "order_in_profile": 3
+      }
+    ],
+    "recommendations_count": null,
+    "recommendations": [],
+    "activity": [
+      {
+        "activity_url": "https://www.linkedin.com/posts/max-weidemann_devlife-techhottake-engineeringculture-activity-7361382545969582080-HP03",
+        "title": "Hot take: We\u2019ve turned \u201clearning a new framework\u201d into a personality trait.\n\nEvery week, a new tool drops, Twitter loses its mind, and suddenly you\u2026",
+        "action": "Posted by",
+        "order_in_profile": 1
+      },
+      {
+        "activity_url": "https://www.linkedin.com/posts/max-weidemann_devhumor-engineeringculture-techhottake-activity-7358887150618132481-C5rL",
+        "title": "Hot take: Modern dev stacks are so overengineered it feels like you need a PhD just to move a button. And AI doesn't make it better. \n\nWant to\u2026",
+        "action": "Posted by",
+        "order_in_profile": 2
+      },
+      {
+        "activity_url": "https://www.linkedin.com/posts/roykorner_every-ai-startup-needs-to-hear-this-nobody-activity-7356615288500482048-ULdp",
+        "title": "Every AI startup needs to hear this:\n\nNobody cares that you're using AI.\n\nSeriously. That used to be exciting, now it\u2019s the bare minimum. Investors\u2026",
+        "action": "Liked by",
+        "order_in_profile": 3
+      },
+      {
+        "activity_url": "https://www.linkedin.com/posts/islam-zahurul_ai-generativeai-productdevelopment-activity-7358452560124428288-3EOp",
+        "title": "\ud83d\ude80 Building apps with AI? Here's what really matters:\n\nTechnical stuff:\n\u2022 Pick the right AI provider (OpenAI, Anthropic, etc.) for your needs and\u2026",
+        "action": "Liked by",
+        "order_in_profile": 4
+      },
+      {
+        "activity_url": "https://www.linkedin.com/posts/max-weidemann_ai-dataprivacy-proprietarydata-activity-7356309092044263424-NN80",
+        "title": "Hot take: We\u2019ve gone from fearing what we search\u2026 to sharing everything we are.\n\nFirst, we were nervous search engines knew our questions.\nThen we\u2026",
+        "action": "Posted by",
+        "order_in_profile": 5
+      },
+      {
+        "activity_url": "https://www.linkedin.com/posts/nataliekaminski_another-day-another-vibe-coded-disaster-activity-7355566792485871616-ZPCW",
+        "title": "Another day, another \u201cvibe coded\u201d disaster.\n\nLast week, the women\u2019s dating app \u201cTea\u201d reportedly leaked highly sensitive user data including\u2026",
+        "action": "Liked by",
+        "order_in_profile": 6
+      },
+      {
+        "activity_url": "https://www.linkedin.com/posts/islam-zahurul_humanintheloop-ai-llm-activity-7355385502650220544-8HC4",
+        "title": "Why Human Intervention is Still Crucial in Using Large Language Models?\n\nLarge Language Models (LLMs) are impressive at generating text, but they are\u2026",
+        "action": "Liked by",
+        "order_in_profile": 7
+      },
+      {
+        "activity_url": "https://www.linkedin.com/posts/cordsmeier_we-automated-everything-now-we-have-scalable-activity-7355353126641537024-32nm",
+        "title": "We automated everything. \nNow we have scalable confusion.\n\nAlmost every major industry has quietly failed to understand people.\n\nHealthcare reduced\u2026",
+        "action": "Liked by",
+        "order_in_profile": 8
+      },
+      {
+        "activity_url": "https://www.linkedin.com/posts/max-weidemann_vibecoding-ai-llm-activity-7354191958048710656-8nrd",
+        "title": "Hot take: #Vibecoding gets you far\u2014until you hit the wall.\n\nI\u2019ve been using Grok 4 lately, and while the output is impressive, the delay is real\u2026",
+        "action": "Posted by",
+        "order_in_profile": 9
+      },
+      {
+        "activity_url": "https://www.linkedin.com/posts/islam-zahurul_ai-psychology-machinelearning-activity-7352670770063405056-6OtJ",
+        "title": "Most AI systems miss what humans really mean\n\nCurrent AI is good at finding patterns in text. But it struggles to understand the hidden meanings\u2026",
+        "action": "Liked by",
+        "order_in_profile": 10
+      },
+      {
+        "activity_url": "https://www.linkedin.com/posts/florianhuber_startups-activity-7350893948913037340-OFAV",
+        "title": "\ud83d\udcb6 \u20ac58.984 in notary fees for a Series A financing round in Germany \ud83c\udde9\ud83c\uddea\u270d\ufe0f \n\nWhen we talk about bureaucratic red tape, here\u2019s a concrete\u2026",
+        "action": "Liked by",
+        "order_in_profile": 11
+      },
+      {
+        "activity_url": "https://www.linkedin.com/posts/max-weidemann_ai-llm-developertools-activity-7351616238009094146-TZRw",
+        "title": "Hot take: LLMs are great at remembering context\u2014but terrible at knowing what you actually want.\n\nI\u2019ve been using Grok 4 recently (seriously\u2026",
+        "action": "Posted by",
+        "order_in_profile": 12
+      },
+      {
+        "activity_url": "https://www.linkedin.com/posts/cordsmeier_after-ai-replaces-all-the-jobs-then-what-activity-7350624430642847744-vc5P",
+        "title": "After AI Replaces All the Jobs \u2014 Then What?\n\nJoe Rogan talks about it.\nSo do people on the complete opposite end of the spectrum.\n\nThey all agree on\u2026",
+        "action": "Liked by",
+        "order_in_profile": 13
+      },
+      {
+        "activity_url": "https://www.linkedin.com/posts/max-weidemann_ai-models-still-struggle-to-debug-software-activity-7349582098992693248-HTqm",
+        "title": "Hot take: AI can generate code like a pro \u2014 but ask it to debug, and it falls apart.\n\nAccording to a recent Microsoft study\u2026",
+        "action": "Shared by",
+        "order_in_profile": 14
+      },
+      {
+        "activity_url": "https://www.linkedin.com/posts/cordsmeier_mental-health-isnt-broken-it-was-never-activity-7341947339483299840-hn3k",
+        "title": "Mental Health Isn\u2019t Broken. It Was Never Built. \ud83d\ude35\n\nWe talk about mental health like it\u2019s this progressive, solved thing.\nLoneliness epidemic\u2026",
+        "action": "Liked by",
+        "order_in_profile": 15
+      },
+      {
+        "activity_url": "https://www.linkedin.com/posts/cordsmeier_what-europe-taught-me-about-depth-and-the-activity-7345905611512946689-gbM2",
+        "title": "What Europe Taught Me About Depth \u2014 and the US Taught Me About Impact \n\nI grew up in Europe \u2014\nwhere the rule is:\nGet it right first.\nThen, maybe\u2026",
+        "action": "Liked by",
+        "order_in_profile": 16
+      },
+      {
+        "activity_url": "https://www.linkedin.com/posts/max-weidemann_ai-productdesign-startuptruths-activity-7345817923455774722-hcyw",
+        "title": "AI is destroying UI-only startups\u2014and it\u2019s about time.\n\nIf your product is just a slick interface over public data or someone else\u2019s model, you\u2019re\u2026",
+        "action": "Posted by",
+        "order_in_profile": 17
+      }
+    ],
+    "awards": [],
+    "courses": [],
+    "certifications": [
+      {
+        "title": "Neural Networks and Deep Learning",
+        "issuer": "Coursera",
+        "issuer_url": "https://www.linkedin.com/company/coursera",
+        "credential_id": null,
+        "certificate_url": "https://www.coursera.org/account/accomplishments/certificate/AKREWNUD9GAF?trk=public_profile_certification-title",
+        "date_from": "May 2022",
+        "date_from_year": 2022,
+        "date_from_month": 5,
+        "date_to": null,
+        "date_to_year": null,
+        "date_to_month": null,
+        "order_in_profile": 1
+      }
+    ],
+    "languages": [
+      {
+        "language": "Englisch",
+        "proficiency": "Full professional proficiency",
+        "order_in_profile": 1
+      },
+      {
+        "language": "Spanisch",
+        "proficiency": "Elementary proficiency",
+        "order_in_profile": 2
+      },
+      {
+        "language": "Deutsch",
+        "proficiency": "Native or bilingual proficiency",
+        "order_in_profile": 3
+      }
+    ],
+    "patents_count": null,
+    "patents_topics": [],
+    "patents": [],
+    "publications_count": null,
+    "publications_topics": [],
+    "publications": [],
+    "projects_count": null,
+    "projects_topics": [],
+    "projects": [],
+    "organizations": [],
+    "github_url": "https://github.com/Max-Weidemann",
+    "github_username": "Max-Weidemann",
+    "github_mapping_confidence": 50,
+    "github_contributions_count": 200,
+    "github_repos_summary": [
+      {
+        "name": "activity-generator",
+        "summary": null,
+        "stars": 0,
+        "contributions_count": 30
+      },
+      {
+        "name": "tf_ner",
+        "summary": "Simple and Efficient Tensorflow implementations of NER models with tf.estimator and tf.data",
+        "stars": 0,
+        "contributions_count": 0
+      }
+    ],
+    "profile_root_field_changes_summary": [
+      {
+        "field_name": "summary",
+        "change_type": "updated",
+        "last_changed_at": "2025-07-14 11:58:45.393733"
+      },
+      {
+        "field_name": "summary",
+        "change_type": "new",
+        "last_changed_at": "2025-03-08 06:56:55.546567"
+      },
+      {
+        "field_name": "follower_count",
+        "change_type": "updated",
+        "last_changed_at": "2025-08-11 20:25:53.343175"
+      },
+      {
+        "field_name": "profile_photo_url",
+        "change_type": "new",
+        "last_changed_at": "2025-03-08 06:56:55.546567"
+      },
+      {
+        "field_name": "connections_count",
+        "change_type": "updated",
+        "last_changed_at": "2025-03-08 06:56:55.546567"
+      }
+    ],
+    "profile_collection_field_changes_summary": [
+      {
+        "field_name": "activity",
+        "last_changed_at": "2025-08-16 04:24:39.938513"
+      },
+      {
+        "field_name": "experience",
+        "last_changed_at": "2025-04-22 04:26:25.019283"
+      },
+      {
+        "field_name": "education",
+        "last_changed_at": "2025-04-22 04:26:25.019283"
+      }
+    ],
+    "experience_recently_started": [],
+    "experience_recently_closed": []
+  },
+  {
+    "id": 287858635,
+    "parent_id": 287858635,
+    "created_at": "2016-08-31T18:56:01.000Z",
+    "updated_at": "2025-08-17T07:56:47.800884Z",
+    "checked_at": "2025-08-17T07:56:47.800884Z",
+    "changed_at": "2025-07-19T05:35:10.000964Z",
+    "experience_change_last_identified_at": null,
+    "is_deleted": 0,
+    "is_parent": 1,
+    "public_profile_id": 7298290,
+    "linkedin_url": "https://www.linkedin.com/in/jeffbezanson",
+    "linkedin_shorthand_names": [
+      "jeff-bezanson-66a53b2",
+      "jeffbezanson"
+    ],
+    "historical_ids": [
+      287858635
+    ],
+    "full_name": "Jeff Bezanson",
+    "first_name": "Jeff",
+    "first_name_initial": "J",
+    "middle_name": null,
+    "middle_name_initial": null,
+    "last_name": "Bezanson",
+    "last_name_initial": "B",
+    "headline": null,
+    "summary": null,
+    "picture_url": "https://static.licdn.com/aero-v1/sc/h/9c8pery4andzj6ohjkjp54ma2",
+    "location_country": "United States",
+    "location_country_iso2": "US",
+    "location_country_iso3": "USA",
+    "location_full": "Suffolk County, Massachusetts, United States",
+    "location_regions": [
+      "Americas",
+      "Northern America",
+      "AMER"
+    ],
+    "interests": [],
+    "inferred_skills": [
+      "software",
+      "computing",
+      "open source"
+    ],
+    "historical_skills": [],
+    "connections_count": 147,
+    "followers_count": 455,
+    "services": null,
+    "primary_professional_email": "jeff@juliahub.com",
+    "primary_professional_email_status": "verified",
+    "professional_emails_collection": [
+      {
+        "professional_email": "jeff@juliahub.com",
+        "professional_email_status": "verified",
+        "order_of_priority": 1
+      }
+    ],
+    "is_working": 1,
+    "active_experience_company_id": 8114818,
+    "active_experience_title": "CTO",
+    "active_experience_description": null,
+    "active_experience_department": "C-Suite",
+    "active_experience_management_level": "C-Level",
+    "is_decision_maker": 1,
+    "total_experience_duration_months": 234,
+    "total_experience_duration_months_breakdown_department": [
+      {
+        "department": "C-Suite",
+        "total_experience_duration_months": 141
+      },
+      {
+        "department": "Engineering and Technical",
+        "total_experience_duration_months": 202
+      },
+      {
+        "department": "Research",
+        "total_experience_duration_months": 12
+      },
+      {
+        "department": "Education",
+        "total_experience_duration_months": 57
+      }
+    ],
+    "total_experience_duration_months_breakdown_management_level": [
+      {
+        "management_level": "C-Level",
+        "total_experience_duration_months": 122
+      },
+      {
+        "management_level": "Senior",
+        "total_experience_duration_months": 32
+      },
+      {
+        "management_level": "Founder",
+        "total_experience_duration_months": 19
+      },
+      {
+        "management_level": "Specialist",
+        "total_experience_duration_months": 69
+      }
+    ],
+    "experience": [
+      {
+        "active_experience": 1,
+        "position_title": "CTO",
+        "department": "C-Suite",
+        "management_level": "C-Level",
+        "location": "Greater Boston Area",
+        "description": null,
+        "date_from": "July 2015",
+        "date_from_year": 2015,
+        "date_from_month": 7,
+        "date_to": null,
+        "date_to_year": null,
+        "date_to_month": null,
+        "duration_months": 121,
+        "company_id": 8114818,
+        "company_name": "JuliaHub",
+        "company_type": "Privately Held",
+        "company_founded_year": 2015,
+        "company_followers_count": 33205,
+        "company_website": "https://www.juliahub.com",
+        "company_facebook_url": [
+          "https://www.facebook.com/juliahubinc"
+        ],
+        "company_twitter_url": [
+          "https://www.twitter.com/juliahub_inc",
+          "https://www.twitter.com/juliacomputing"
+        ],
+        "company_linkedin_url": "https://www.linkedin.com/company/julia-computing",
+        "company_size_range": "51-200 employees",
+        "company_employees_count": 111,
+        "company_industry": "Software Development",
+        "company_categories_and_keywords": [
+          "technology/software",
+          "other development software",
+          "juliahub",
+          "science and education > math",
+          "julialang",
+          "machine learning",
+          "julia language",
+          "high performance computing",
+          "artificial intelligence",
+          "technical computing",
+          "cloud computing",
+          "modeling",
+          "simulation",
+          "scientific machine learning",
+          "engineers",
+          "digital twin modeling",
+          "scientists",
+          "advanced simulations",
+          "technology",
+          "3d-modeling",
+          "cloud",
+          "developer-tools",
+          "platform",
+          "software"
+        ],
+        "company_annual_revenue_source_5": 3400000,
+        "company_annual_revenue_currency_source_5": "USD",
+        "company_annual_revenue_source_1": null,
+        "company_annual_revenue_currency_source_1": null,
+        "company_employees_count_change_yearly_percentage": 11.0,
+        "company_last_funding_round_date": "2023-06-27",
+        "company_last_funding_round_amount_raised": 13000000,
+        "company_hq_full_address": "Cambridge, Massachusetts 02139, US",
+        "company_hq_country": "United States",
+        "company_hq_regions": [
+          "Americas",
+          "Northern America",
+          "AMER"
+        ],
+        "company_hq_country_iso2": "US",
+        "company_hq_country_iso3": "USA",
+        "company_hq_city": "Cambridge",
+        "company_hq_state": "Massachusetts",
+        "company_hq_street": "",
+        "company_hq_zipcode": "02139",
+        "company_last_updated_at": "2025-08-02",
+        "company_stock_ticker": [],
+        "company_is_b2b": 1,
+        "order_in_profile": 1
+      },
+      {
+        "active_experience": 1,
+        "position_title": "Open Source Developer",
+        "department": "Engineering and Technical",
+        "management_level": "Specialist",
+        "location": null,
+        "description": "Julia is a high-level, high-performance dynamic language for technical computing, with syntax that is familiar to users of other technical computing environments. It provides a sophisticated compiler, distributed parallel execution, numerical accuracy, and an extensive mathematical function library.",
+        "date_from": "September 2009",
+        "date_from_year": 2009,
+        "date_from_month": 9,
+        "date_to": null,
+        "date_to_year": null,
+        "date_to_month": null,
+        "duration_months": 169,
+        "company_id": 28872835,
+        "company_name": "The Julia Language",
+        "company_type": "Nonprofit",
+        "company_founded_year": 2012,
+        "company_followers_count": 16163,
+        "company_website": "https://www.julialang.org",
+        "company_facebook_url": [],
+        "company_twitter_url": [
+          "https://www.twitter.com/julialanguage"
+        ],
+        "company_linkedin_url": "https://www.linkedin.com/company/the-julia-language",
+        "company_size_range": "11-50 employees",
+        "company_employees_count": 13,
+        "company_industry": "Software Development",
+        "company_categories_and_keywords": [
+          "language development",
+          "- -",
+          "open source",
+          "julia",
+          "julia programming",
+          "fast",
+          "julia programming language",
+          "easy to use",
+          "dynamic"
+        ],
+        "company_annual_revenue_source_5": null,
+        "company_annual_revenue_currency_source_5": null,
+        "company_annual_revenue_source_1": null,
+        "company_annual_revenue_currency_source_1": null,
+        "company_employees_count_change_yearly_percentage": 0.0,
+        "company_last_funding_round_date": null,
+        "company_last_funding_round_amount_raised": null,
+        "company_hq_full_address": "Everywhere on Earth, OO",
+        "company_hq_country": "United States",
+        "company_hq_regions": [
+          "Americas",
+          "Northern America",
+          "AMER"
+        ],
+        "company_hq_country_iso2": "US",
+        "company_hq_country_iso3": "USA",
+        "company_hq_city": null,
+        "company_hq_state": null,
+        "company_hq_street": null,
+        "company_hq_zipcode": null,
+        "company_last_updated_at": "2025-08-02",
+        "company_stock_ticker": [],
+        "company_is_b2b": 0,
+        "order_in_profile": 2
+      },
+      {
+        "active_experience": 0,
+        "position_title": "Graduate Student",
+        "department": "Education",
+        "management_level": "Specialist",
+        "location": null,
+        "description": null,
+        "date_from": "September 2010",
+        "date_from_year": 2010,
+        "date_from_month": 9,
+        "date_to": "June 2015",
+        "date_to_year": 2015,
+        "date_to_month": 6,
+        "duration_months": 57,
+        "company_id": 26052437,
+        "company_name": "MIT",
+        "company_type": "Educational",
+        "company_founded_year": 1861,
+        "company_followers_count": 1639539,
+        "company_website": "https://www.mit.edu",
+        "company_facebook_url": [
+          "https://www.facebook.com/mitnews",
+          "https://www.facebook.com/sharer/sharer.php?u=http://web.mit.edu/spotlight/modeling-vision-0"
+        ],
+        "company_twitter_url": [
+          "https://www.twitter.com/mit",
+          "https://www.twitter.com/share?url=http://web.mit.edu/spotlight/modeling-vision-0"
+        ],
+        "company_linkedin_url": "https://www.linkedin.com/company/mit",
+        "company_size_range": "5001-10,000 employees",
+        "company_employees_count": 22819,
+        "company_industry": "Higher Education",
+        "company_categories_and_keywords": [
+          "education",
+          "science",
+          "engineering",
+          "research",
+          "technology",
+          "mit",
+          "scholarship",
+          "adult-education",
+          "higher-education",
+          "professional-education"
+        ],
+        "company_annual_revenue_source_5": 3945100000,
+        "company_annual_revenue_currency_source_5": "USD",
+        "company_annual_revenue_source_1": 5070848000.0,
+        "company_annual_revenue_currency_source_1": "USD",
+        "company_employees_count_change_yearly_percentage": null,
+        "company_last_funding_round_date": null,
+        "company_last_funding_round_amount_raised": null,
+        "company_hq_full_address": "77 Massachusetts Avenue; Address 2; Cambridge, MA 02139-4307, US",
+        "company_hq_country": "United States",
+        "company_hq_regions": [
+          "Americas",
+          "Northern America",
+          "AMER"
+        ],
+        "company_hq_country_iso2": "US",
+        "company_hq_country_iso3": "USA",
+        "company_hq_city": "Cambridge",
+        "company_hq_state": "Massachusetts",
+        "company_hq_street": "77 Massachusetts Avenue; Address 2",
+        "company_hq_zipcode": "02139-4307",
+        "company_last_updated_at": "2025-08-01",
+        "company_stock_ticker": [],
+        "company_is_b2b": 0,
+        "order_in_profile": 3
+      },
+      {
+        "active_experience": 0,
+        "position_title": "Project Researcher",
+        "department": "Research",
+        "management_level": "Specialist",
+        "location": null,
+        "description": null,
+        "date_from": "September 2009",
+        "date_from_year": 2009,
+        "date_from_month": 9,
+        "date_to": "September 2010",
+        "date_to_year": 2010,
+        "date_to_month": 9,
+        "duration_months": 12,
+        "company_id": 26052437,
+        "company_name": "MIT",
+        "company_type": "Educational",
+        "company_founded_year": 1861,
+        "company_followers_count": 1639539,
+        "company_website": "https://www.mit.edu",
+        "company_facebook_url": [
+          "https://www.facebook.com/mitnews",
+          "https://www.facebook.com/sharer/sharer.php?u=http://web.mit.edu/spotlight/modeling-vision-0"
+        ],
+        "company_twitter_url": [
+          "https://www.twitter.com/mit",
+          "https://www.twitter.com/share?url=http://web.mit.edu/spotlight/modeling-vision-0"
+        ],
+        "company_linkedin_url": "https://www.linkedin.com/company/mit",
+        "company_size_range": "5001-10,000 employees",
+        "company_employees_count": 22819,
+        "company_industry": "Higher Education",
+        "company_categories_and_keywords": [
+          "education",
+          "science",
+          "engineering",
+          "research",
+          "technology",
+          "mit",
+          "scholarship",
+          "adult-education",
+          "higher-education",
+          "professional-education"
+        ],
+        "company_annual_revenue_source_5": 3945100000,
+        "company_annual_revenue_currency_source_5": "USD",
+        "company_annual_revenue_source_1": 5070848000.0,
+        "company_annual_revenue_currency_source_1": "USD",
+        "company_employees_count_change_yearly_percentage": null,
+        "company_last_funding_round_date": null,
+        "company_last_funding_round_amount_raised": null,
+        "company_hq_full_address": "77 Massachusetts Avenue; Address 2; Cambridge, MA 02139-4307, US",
+        "company_hq_country": "United States",
+        "company_hq_regions": [
+          "Americas",
+          "Northern America",
+          "AMER"
+        ],
+        "company_hq_country_iso2": "US",
+        "company_hq_country_iso3": "USA",
+        "company_hq_city": "Cambridge",
+        "company_hq_state": "Massachusetts",
+        "company_hq_street": "77 Massachusetts Avenue; Address 2",
+        "company_hq_zipcode": "02139-4307",
+        "company_last_updated_at": "2025-08-01",
+        "company_stock_ticker": [],
+        "company_is_b2b": 0,
+        "order_in_profile": 4
+      },
+      {
+        "active_experience": 0,
+        "position_title": "Senior Software Engineer",
+        "department": "Engineering and Technical",
+        "management_level": "Senior",
+        "location": null,
+        "description": null,
+        "date_from": "2007",
+        "date_from_year": 2007,
+        "date_from_month": null,
+        "date_to": "September 2009",
+        "date_to_year": 2009,
+        "date_to_month": 9,
+        "duration_months": 32,
+        "company_id": 3672056,
+        "company_name": "Interactive Supercomputing",
+        "company_type": "Privately Held",
+        "company_founded_year": 2004,
+        "company_followers_count": 65,
+        "company_website": "https://www.interactivesupercomputing.com",
+        "company_facebook_url": [],
+        "company_twitter_url": [],
+        "company_linkedin_url": "https://www.linkedin.com/company/interactive-supercomputing",
+        "company_size_range": "11-50 employees",
+        "company_employees_count": null,
+        "company_industry": "Software Development",
+        "company_categories_and_keywords": [
+          "parallel computing power to the desktop",
+          "cloud computing",
+          "enterprise software",
+          "financial services",
+          "software"
+        ],
+        "company_annual_revenue_source_5": null,
+        "company_annual_revenue_currency_source_5": null,
+        "company_annual_revenue_source_1": null,
+        "company_annual_revenue_currency_source_1": null,
+        "company_employees_count_change_yearly_percentage": null,
+        "company_last_funding_round_date": "2007-10-24",
+        "company_last_funding_round_amount_raised": 11000000,
+        "company_hq_full_address": "135 Beaver Street; Waltham, MA 02452, US",
+        "company_hq_country": "United States",
+        "company_hq_regions": [
+          "Americas",
+          "Northern America",
+          "AMER"
+        ],
+        "company_hq_country_iso2": "US",
+        "company_hq_country_iso3": "USA",
+        "company_hq_city": "Waltham",
+        "company_hq_state": "Massachusetts",
+        "company_hq_street": "135 Beaver Street",
+        "company_hq_zipcode": "02452",
+        "company_last_updated_at": "2025-07-20",
+        "company_stock_ticker": [],
+        "company_is_b2b": 0,
+        "order_in_profile": 5
+      },
+      {
+        "active_experience": 0,
+        "position_title": "Founder",
+        "department": "C-Suite",
+        "management_level": "Founder",
+        "location": null,
+        "description": null,
+        "date_from": "February 2006",
+        "date_from_year": 2006,
+        "date_from_month": 2,
+        "date_to": "September 2007",
+        "date_to_year": 2007,
+        "date_to_month": 9,
+        "duration_months": 19,
+        "company_id": 34038341,
+        "company_name": "Computing Tools, LLC",
+        "company_type": null,
+        "company_founded_year": null,
+        "company_followers_count": null,
+        "company_website": null,
+        "company_facebook_url": [],
+        "company_twitter_url": [],
+        "company_linkedin_url": null,
+        "company_size_range": null,
+        "company_employees_count": null,
+        "company_industry": null,
+        "company_categories_and_keywords": [],
+        "company_annual_revenue_source_5": null,
+        "company_annual_revenue_currency_source_5": null,
+        "company_annual_revenue_source_1": null,
+        "company_annual_revenue_currency_source_1": null,
+        "company_employees_count_change_yearly_percentage": null,
+        "company_last_funding_round_date": null,
+        "company_last_funding_round_amount_raised": null,
+        "company_hq_full_address": null,
+        "company_hq_country": null,
+        "company_hq_regions": [],
+        "company_hq_country_iso2": null,
+        "company_hq_country_iso3": null,
+        "company_hq_city": null,
+        "company_hq_state": null,
+        "company_hq_street": null,
+        "company_hq_zipcode": null,
+        "company_last_updated_at": null,
+        "company_stock_ticker": [],
+        "company_is_b2b": null,
+        "order_in_profile": 6
+      }
+    ],
+    "projected_base_salary_p25": null,
+    "projected_base_salary_median": null,
+    "projected_base_salary_p75": null,
+    "projected_base_salary_period": null,
+    "projected_base_salary_currency": null,
+    "projected_base_salary_updated_at": null,
+    "projected_additional_salary": [],
+    "projected_additional_salary_period": null,
+    "projected_additional_salary_currency": null,
+    "projected_additional_salary_updated_at": null,
+    "projected_total_salary_p25": null,
+    "projected_total_salary_median": null,
+    "projected_total_salary_p75": null,
+    "projected_total_salary_period": null,
+    "projected_total_salary_currency": null,
+    "projected_total_salary_updated_at": null,
+    "last_graduation_date": 2012,
+    "education_degrees": [
+      "Bachelor of Arts (B.A.)",
+      "Master of Science (M.S.)"
+    ],
+    "education": [
+      {
+        "degree": "Bachelor of Arts (B.A.)",
+        "description": null,
+        "institution_url": "https://www.linkedin.com/school/harvard-university",
+        "institution_name": "Harvard University",
+        "institution_full_address": "30 Dunster St; Cambridge, Massachusetts 02138, US",
+        "institution_country_iso2": "US",
+        "institution_country_iso3": "USA",
+        "institution_regions": [
+          "Americas",
+          "Northern America",
+          "AMER"
+        ],
+        "institution_city": "Cambridge",
+        "institution_state": "Massachusetts",
+        "institution_street": "30 Dunster St",
+        "institution_zipcode": "02138",
+        "date_from_year": 2000,
+        "date_to_year": 2004,
+        "activities_and_societies": null,
+        "order_in_profile": 1
+      },
+      {
+        "degree": "Master of Science (M.S.)",
+        "description": null,
+        "institution_url": "https://www.linkedin.com/school/mit",
+        "institution_name": "MIT",
+        "institution_full_address": "77 Massachusetts Avenue; Address 2; Cambridge, MA 02139-4307, US",
+        "institution_country_iso2": "US",
+        "institution_country_iso3": "USA",
+        "institution_regions": [
+          "Americas",
+          "Northern America",
+          "AMER"
+        ],
+        "institution_city": "Cambridge",
+        "institution_state": "Massachusetts",
+        "institution_street": "77 Massachusetts Avenue; Address 2",
+        "institution_zipcode": "02139-4307",
+        "date_from_year": 2010,
+        "date_to_year": 2012,
+        "activities_and_societies": null,
+        "order_in_profile": 2
+      }
+    ],
+    "recommendations_count": 1,
+    "recommendations": [
+      {
+        "recommendation": "\u201cWhen Jeff applied for a job at ISC, one quick read of his r\u00e9sum\u00e9 convinced everyone that we had to get this guy on board, even though we did not have an open position!\n\nHe is an excellent programmer, smart, and hard working (in spite of his Harvard education).  He quickly became a major contributor to development and was formally recognized for his diligence.\n\nWhoever hires him next is darned lucky and I would hire him myself if I could.\u201d",
+        "referee_full_name": "Luis Ortiz",
+        "referee_url": "https://www.linkedin.com/in/luisfortiz",
+        "order_in_profile": 1
+      }
+    ],
+    "activity": [
+      {
+        "activity_url": "https://www.linkedin.com/posts/viralbshah_julialang-activity-6846135889744207872-DlBz",
+        "title": "Pumas-AI, Inc. is a strategic technology partner of ours at Julia Computing. Recently, we raised a $24M Series A from Dorilton Ventures, Menlo\u2026",
+        "action": "Liked by",
+        "order_in_profile": 1
+      },
+      {
+        "activity_url": "https://www.linkedin.com/posts/codechef_bye-bye-python-hello-julia-activity-6695561281065275392-TeJZ",
+        "title": "Bye-bye Python. Hello Julia!\nAs Python\u2019s lifetime grinds to a halt, a hot new competitor is emerging.\nSince data scientists and AI specialists deal\u2026",
+        "action": "Liked by",
+        "order_in_profile": 2
+      }
+    ],
+    "awards": [],
+    "courses": [],
+    "certifications": [],
+    "languages": [
+      {
+        "language": "English",
+        "proficiency": null,
+        "order_in_profile": 1
+      }
+    ],
+    "patents_count": null,
+    "patents_topics": [],
+    "patents": [],
+    "publications_count": 1,
+    "publications_topics": [
+      "Julia: A Fast Dynamic Language for Technical Computing"
+    ],
+    "publications": [
+      {
+        "title": "Julia: A Fast Dynamic Language for Technical Computing",
+        "description": "Dynamic languages have become popular for scientific computing. They are generally considered highly productive, but lacking in performance. This paper presents Julia, a new dynamic language for technical computing, designed for performance from the beginning by adapting and extending modern programming language techniques.",
+        "publication_url": "https://www.linkedin.com/redir/redirect?url=http://julialang.org/images/julia-dynamic-2012-tr.pdf&urlhash=Zzia&trk=public_profile_publication-button",
+        "publisher_names": [
+          "Viral B. Shah",
+          "Stefan Karpinski",
+          "Alan Edelman"
+        ],
+        "date": "August 16, 2012",
+        "date_year": 2012,
+        "date_month": 8,
+        "order_in_profile": 1
+      }
+    ],
+    "projects_count": null,
+    "projects_topics": [],
+    "projects": [],
+    "organizations": [],
+    "github_url": "https://github.com/JeffBezanson",
+    "github_username": "JeffBezanson",
+    "github_mapping_confidence": 50,
+    "github_contributions_count": 213919,
+    "github_repos_summary": [
+      {
+        "name": "HDF5.jl",
+        "summary": "Saving and loading data in the HDF5 file format",
+        "stars": 1,
+        "contributions_count": 0
+      },
+      {
+        "name": "femtolisp",
+        "summary": "a lightweight, robust, scheme-like lisp implementation",
+        "stars": 1581,
+        "contributions_count": 0
+      },
+      {
+        "name": "julia-emacs",
+        "summary": "Julia support in Emacs.",
+        "stars": 1,
+        "contributions_count": 0
+      },
+      {
+        "name": "Poltergeist.jl",
+        "summary": "Julia package for transfer operator spectral methods",
+        "stars": 0,
+        "contributions_count": 0
+      },
+      {
+        "name": "libsupport",
+        "summary": "a library of useful C utilities",
+        "stars": 63,
+        "contributions_count": 0
+      },
+      {
+        "name": "METADATA.jl",
+        "summary": "Metadata for registered Julia packages.",
+        "stars": 0,
+        "contributions_count": 0
+      },
+      {
+        "name": "RandomMatrices.jl",
+        "summary": "Random matrices package for Julia",
+        "stars": 0,
+        "contributions_count": 0
+      },
+      {
+        "name": "BSON.jl",
+        "summary": null,
+        "stars": 0,
+        "contributions_count": 0
+      },
+      {
+        "name": "Benchmark.jl",
+        "summary": "A package for benchmarking code and packages",
+        "stars": 0,
+        "contributions_count": 0
+      },
+      {
+        "name": "AbstractTrees.jl",
+        "summary": "Abstract julia interfaces for working with trees",
+        "stars": 0,
+        "contributions_count": 0
+      },
+      {
+        "name": "Discretizers.jl",
+        "summary": "A Julia package for data discretization and label maps",
+        "stars": 0,
+        "contributions_count": 0
+      },
+      {
+        "name": "Plots.jl",
+        "summary": "Powerful convenience for Julia visualizations and data analysis",
+        "stars": 0,
+        "contributions_count": 0
+      },
+      {
+        "name": "cutef8",
+        "summary": "simple, fast C routines for manipulating UTF-8",
+        "stars": 81,
+        "contributions_count": 0
+      },
+      {
+        "name": "WeakRefStrings.jl",
+        "summary": "a minimal String type for Julia that allows for efficient string representation and transfer",
+        "stars": 0,
+        "contributions_count": 0
+      },
+      {
+        "name": "BaseBenchmarks.jl",
+        "summary": " A collection of Julia benchmarks available for CI tracking from the JuliaLang/julia repository",
+        "stars": 0,
+        "contributions_count": 0
+      },
+      {
+        "name": "MemPool.jl",
+        "summary": "a simple distributed spill-LRU-to-disk data store",
+        "stars": 0,
+        "contributions_count": 0
+      },
+      {
+        "name": "StructArrays.jl",
+        "summary": "Efficient implementation of struct arrays in Julia",
+        "stars": 0,
+        "contributions_count": 0
+      },
+      {
+        "name": "OpenBLAS",
+        "summary": "OpenBLAS is an optimized BLAS library based on GotoBLAS2 1.13 BSD version. ",
+        "stars": 0,
+        "contributions_count": 0
+      },
+      {
+        "name": "BrowseTables.jl",
+        "summary": "Julia package for browsing tables that that implement the Tables.jl interface as HTML.",
+        "stars": 0,
+        "contributions_count": 0
+      },
+      {
+        "name": "julia",
+        "summary": "The Julia Language: A fresh approach to technical computing.",
+        "stars": 1,
+        "contributions_count": 0
+      },
+      {
+        "name": "DataArrays.jl",
+        "summary": "Data structures that allow missing values",
+        "stars": 1,
+        "contributions_count": 0
+      },
+      {
+        "name": "CSTParser.jl",
+        "summary": "A concrete syntax tree parser for Julia",
+        "stars": 0,
+        "contributions_count": 0
+      },
+      {
+        "name": "dataflow.jl",
+        "summary": "introduction to dataflow analysis using julia",
+        "stars": 13,
+        "contributions_count": 6
+      },
+      {
+        "name": "r7rs-benchmarks",
+        "summary": "Benchmarks for various Scheme implementations. Taken with kind permission from the Larceny project, based on the Gabriel and Gambit benchmarks.",
+        "stars": 0,
+        "contributions_count": 0
+      },
+      {
+        "name": "Diffractor.jl",
+        "summary": "Next-generation AD",
+        "stars": 0,
+        "contributions_count": 0
+      },
+      {
+        "name": "StaticNumbers.jl",
+        "summary": "Static numbers in Julia",
+        "stars": 0,
+        "contributions_count": 0
+      },
+      {
+        "name": "Complexvid.jl",
+        "summary": null,
+        "stars": 0,
+        "contributions_count": 0
+      },
+      {
+        "name": "Nullables.jl",
+        "summary": "Nullable type for Julia > 0.6",
+        "stars": 0,
+        "contributions_count": 0
+      },
+      {
+        "name": "JLD2.jl",
+        "summary": "HDF5-compatible file format in pure Julia",
+        "stars": 1,
+        "contributions_count": 0
+      },
+      {
+        "name": "NamedTuples.jl",
+        "summary": "NamedTuples.jl",
+        "stars": 1,
+        "contributions_count": 0
+      },
+      {
+        "name": "RayTracer.jl",
+        "summary": "Differentiable RayTracing built on Zygote Source-to-Source AD",
+        "stars": 0,
+        "contributions_count": 0
+      },
+      {
+        "name": "YAJL.jl",
+        "summary": "JSON stream processing with YAJL in Julia",
+        "stars": 0,
+        "contributions_count": 0
+      },
+      {
+        "name": "EasyModelAnalysis.jl",
+        "summary": "High level functions for analyzing the output of simulations",
+        "stars": 0,
+        "contributions_count": 0
+      },
+      {
+        "name": "experiments",
+        "summary": "small experiments and prototypes",
+        "stars": 0,
+        "contributions_count": 0
+      },
+      {
+        "name": "julia_examples",
+        "summary": "Examples using Julia",
+        "stars": 0,
+        "contributions_count": 2
+      },
+      {
+        "name": "TOML.jl",
+        "summary": "TOML v0.4.0 parser for Julia",
+        "stars": 0,
+        "contributions_count": 0
+      },
+      {
+        "name": "NLopt.jl",
+        "summary": "Package to call the NLopt nonlinear-optimization library from the Julia language",
+        "stars": 0,
+        "contributions_count": 0
+      },
+      {
+        "name": "Compat.jl",
+        "summary": "cross-version compatibility",
+        "stars": 0,
+        "contributions_count": 0
+      },
+      {
+        "name": "SymbolServer.jl",
+        "summary": null,
+        "stars": 0,
+        "contributions_count": 0
+      },
+      {
+        "name": "ProtoBuf.jl",
+        "summary": "Julia protobuf implementation",
+        "stars": 0,
+        "contributions_count": 0
+      },
+      {
+        "name": "Dagger.jl",
+        "summary": "A framework for out-of-core and parallel execution",
+        "stars": 0,
+        "contributions_count": 0
+      },
+      {
+        "name": "LanguageServer.jl",
+        "summary": "An implementation of the Microsoft Language Server Protocol for the Julia language.",
+        "stars": 2,
+        "contributions_count": 0
+      },
+      {
+        "name": "PlotUtils.jl",
+        "summary": "Generic helper algorithms for building plotting components",
+        "stars": 0,
+        "contributions_count": 0
+      },
+      {
+        "name": "UUID.jl",
+        "summary": "Uuid library for Julia",
+        "stars": 1,
+        "contributions_count": 0
+      },
+      {
+        "name": "StructuralTransformations.jl",
+        "summary": "Structural transformation passes for ModelingToolkit.jl, such as Pantelides algorithm for DAE index reduction",
+        "stars": 1,
+        "contributions_count": 24
+      },
+      {
+        "name": "IntervalArithmetic.jl",
+        "summary": "Rigorous floating-point calculations using interval arithmetic in Julia",
+        "stars": 0,
+        "contributions_count": 0
+      },
+      {
+        "name": "CodecBzip2.jl",
+        "summary": "A bzip2 codec for TranscodingStreams.jl.",
+        "stars": 0,
+        "contributions_count": 0
+      },
+      {
+        "name": "Yggdrasil",
+        "summary": "Collection of builder repositories for BinaryBuilder.jl",
+        "stars": 0,
+        "contributions_count": 0
+      },
+      {
+        "name": "Bridge.jl",
+        "summary": "A statistical toolbox for diffusion processes and stochastic differential equations. Named after the Brownian Bridge.",
+        "stars": 0,
+        "contributions_count": 0
+      },
+      {
+        "name": "Cthulhu.jl",
+        "summary": "The slow descent into madness",
+        "stars": 0,
+        "contributions_count": 0
+      },
+      {
+        "name": "phdthesis",
+        "summary": "phd thesis document source",
+        "stars": 160,
+        "contributions_count": 0
+      },
+      {
+        "name": "MemoizedMethods.jl",
+        "summary": "Methodwise Memoization for Julia",
+        "stars": 3,
+        "contributions_count": 0
+      },
+      {
+        "name": "StatsBase.jl",
+        "summary": "Basic statistics for Julia",
+        "stars": 0,
+        "contributions_count": 0
+      },
+      {
+        "name": "GSL.jl",
+        "summary": "Julia interface to the GNU Scientific Library (GSL)",
+        "stars": 0,
+        "contributions_count": 0
+      },
+      {
+        "name": "AlgebraicRewriting.jl",
+        "summary": "Implementations of algebraic rewriting techniques like DPO, SPO, SqPO.",
+        "stars": 0,
+        "contributions_count": 0
+      },
+      {
+        "name": "JuliaWebAPI.jl",
+        "summary": "Julia package for deploying APIs on JuliaBox",
+        "stars": 0,
+        "contributions_count": 0
+      },
+      {
+        "name": "scipy_2014_julia",
+        "summary": null,
+        "stars": 2,
+        "contributions_count": 0
+      },
+      {
+        "name": "FastIOBuffers.jl",
+        "summary": "Faster alternatives to Julia's IOBuffer type",
+        "stars": 0,
+        "contributions_count": 26
+      },
+      {
+        "name": "Media.jl",
+        "summary": "Julia Display System",
+        "stars": 0,
+        "contributions_count": 0
+      },
+      {
+        "name": "Documenter.jl",
+        "summary": "A documentation generator for Julia.",
+        "stars": 0,
+        "contributions_count": 0
+      },
+      {
+        "name": "Mongo.jl",
+        "summary": "Mongo bindings for the Julia programming language",
+        "stars": 0,
+        "contributions_count": 0
+      },
+      {
+        "name": "JLD.jl",
+        "summary": "Saving and loading julia variables while preserving native types",
+        "stars": 0,
+        "contributions_count": 0
+      },
+      {
+        "name": "RingBuffers.jl",
+        "summary": "A thread-safe non-allocating circular RingBuffer type",
+        "stars": 0,
+        "contributions_count": 0
+      },
+      {
+        "name": "numal",
+        "summary": "Numerical Algorithms in C",
+        "stars": 81,
+        "contributions_count": 0
+      },
+      {
+        "name": "Revise.jl",
+        "summary": "Automatically update function definitions in a running Julia session",
+        "stars": 0,
+        "contributions_count": 0
+      },
+      {
+        "name": "LibBSON.jl",
+        "summary": "libbson bindings for the Julia programming language",
+        "stars": 0,
+        "contributions_count": 0
+      },
+      {
+        "name": "FileIO.jl",
+        "summary": "Main Package for IO, loading all different kind of files",
+        "stars": 0,
+        "contributions_count": 0
+      },
+      {
+        "name": "JSON.jl",
+        "summary": "JSON parsing and printing",
+        "stars": 0,
+        "contributions_count": 0
+      },
+      {
+        "name": "AxisArrays.jl",
+        "summary": "Performant arrays where each dimension can have a named axis with values",
+        "stars": 0,
+        "contributions_count": 0
+      },
+      {
+        "name": "ODSC2020",
+        "summary": null,
+        "stars": 2,
+        "contributions_count": 3
+      }
+    ],
+    "profile_root_field_changes_summary": [
+      {
+        "field_name": "profile_url",
+        "change_type": "updated",
+        "last_changed_at": "2025-06-25 11:53:06.827133"
+      },
+      {
+        "field_name": "location",
+        "change_type": "updated",
+        "last_changed_at": "2025-02-27 04:00:06.512695"
+      },
+      {
+        "field_name": "follower_count",
+        "change_type": "updated",
+        "last_changed_at": "2025-07-19 05:35:10.000964"
+      },
+      {
+        "field_name": "shorthand_name",
+        "change_type": "updated",
+        "last_changed_at": "2025-06-25 11:53:06.827133"
+      },
+      {
+        "field_name": "country",
+        "change_type": "updated",
+        "last_changed_at": "2025-02-27 04:00:06.512695"
+      }
+    ],
+    "profile_collection_field_changes_summary": [
+      {
+        "field_name": "experience",
+        "last_changed_at": "2025-03-20 19:23:40.845188"
+      },
+      {
+        "field_name": "education",
+        "last_changed_at": "2025-03-23 16:18:07.631770"
+      },
+      {
+        "field_name": "publications",
+        "last_changed_at": "2025-03-23 16:18:07.631770"
+      }
+    ],
+    "experience_recently_started": [],
+    "experience_recently_closed": []
+  },
+  {
+    "id": 119446100,
+    "parent_id": 119446100,
+    "created_at": "2016-08-07T08:03:02.000Z",
+    "updated_at": "2025-08-17T07:27:51.486411Z",
+    "checked_at": "2025-08-17T07:27:51.486411Z",
+    "changed_at": "2025-06-22T05:04:36.219358Z",
+    "experience_change_last_identified_at": "2024-06-05T16:42:36.962050Z",
+    "is_deleted": 0,
+    "is_parent": 1,
+    "public_profile_id": 319248702,
+    "linkedin_url": "https://www.linkedin.com/in/dannyharding1",
+    "linkedin_shorthand_names": [
+      "dannyharding1"
+    ],
+    "historical_ids": [
+      119446100
+    ],
+    "full_name": "Danny Harding",
+    "first_name": "Danny",
+    "first_name_initial": "D",
+    "middle_name": null,
+    "middle_name_initial": null,
+    "last_name": "Harding",
+    "last_name_initial": "H",
+    "headline": "Lead Software Engineer at Mission.io",
+    "summary": null,
+    "picture_url": "https://media.licdn.com/dms/image/v2/D5603AQEv6p6QxmNprQ/profile-displayphoto-shrink_200_200/profile-displayphoto-shrink_200_200/0/1696559812157?e=2147483647&v=beta&t=Syd_-hgJYiQSa_BGNvLfyTRC7MlRRr66rPFBwibgBYs",
+    "location_country": "United States",
+    "location_country_iso2": "US",
+    "location_country_iso3": "USA",
+    "location_full": "Dallas-Fort Worth Metroplex",
+    "location_regions": [
+      "Americas",
+      "Northern America",
+      "AMER"
+    ],
+    "interests": [],
+    "inferred_skills": [
+      "residential",
+      "responsible",
+      "coordination",
+      "software",
+      "customer satisfaction",
+      "customer service"
+    ],
+    "historical_skills": [],
+    "connections_count": 373,
+    "followers_count": 380,
+    "services": null,
+    "primary_professional_email": "dharding@mission.io",
+    "primary_professional_email_status": "guessed_common_pattern",
+    "professional_emails_collection": [
+      {
+        "professional_email": "dharding@mission.io",
+        "professional_email_status": "guessed_common_pattern",
+        "order_of_priority": 1
+      },
+      {
+        "professional_email": "danny.harding@mission.io",
+        "professional_email_status": "guessed_common_pattern",
+        "order_of_priority": 2
+      },
+      {
+        "professional_email": "danny@mission.io",
+        "professional_email_status": "guessed_common_pattern",
+        "order_of_priority": 3
+      }
+    ],
+    "is_working": 1,
+    "active_experience_company_id": 95130132,
+    "active_experience_title": "CTO",
+    "active_experience_description": null,
+    "active_experience_department": "C-Suite",
+    "active_experience_management_level": "C-Level",
+    "is_decision_maker": 1,
+    "total_experience_duration_months": 173,
+    "total_experience_duration_months_breakdown_department": [
+      {
+        "department": "C-Suite",
+        "total_experience_duration_months": 95
+      },
+      {
+        "department": "Customer Service",
+        "total_experience_duration_months": 8
+      },
+      {
+        "department": "Other",
+        "total_experience_duration_months": 9
+      },
+      {
+        "department": "Product",
+        "total_experience_duration_months": 35
+      },
+      {
+        "department": "Engineering and Technical",
+        "total_experience_duration_months": 27
+      },
+      {
+        "department": "Administrative",
+        "total_experience_duration_months": 4
+      },
+      {
+        "department": "Education",
+        "total_experience_duration_months": 37
+      }
+    ],
+    "total_experience_duration_months_breakdown_management_level": [
+      {
+        "management_level": "C-Level",
+        "total_experience_duration_months": 95
+      },
+      {
+        "management_level": "Other",
+        "total_experience_duration_months": 9
+      },
+      {
+        "management_level": "Specialist",
+        "total_experience_duration_months": 76
+      }
+    ],
+    "experience": [
+      {
+        "active_experience": 1,
+        "position_title": "CTO",
+        "department": "C-Suite",
+        "management_level": "C-Level",
+        "location": "Orem, Utah",
+        "description": null,
+        "date_from": "October 2017",
+        "date_from_year": 2017,
+        "date_from_month": 10,
+        "date_to": null,
+        "date_to_year": null,
+        "date_to_month": null,
+        "duration_months": 94,
+        "company_id": 95130132,
+        "company_name": "Mission.io",
+        "company_type": "Educational",
+        "company_founded_year": 2017,
+        "company_followers_count": 250,
+        "company_website": "https://www.mission.io",
+        "company_facebook_url": [
+          "https://www.facebook.com/missiondotio",
+          "https://www.facebook.com/infinidlearning"
+        ],
+        "company_twitter_url": [
+          "https://www.twitter.com/missiondotio",
+          "https://www.twitter.com/infinidlearning"
+        ],
+        "company_linkedin_url": "https://www.linkedin.com/company/infini-d-learning",
+        "company_size_range": "11-50 employees",
+        "company_employees_count": 16,
+        "company_industry": "E-Learning Providers",
+        "company_categories_and_keywords": [
+          "education",
+          "industry: n/a",
+          "technology",
+          "software",
+          "experiential learning",
+          "ngss",
+          "mission",
+          "collaboration",
+          "real-world",
+          "learning",
+          "problem-solving",
+          "edtech",
+          "e-learning",
+          "platform",
+          "training"
+        ],
+        "company_annual_revenue_source_5": null,
+        "company_annual_revenue_currency_source_5": null,
+        "company_annual_revenue_source_1": null,
+        "company_annual_revenue_currency_source_1": null,
+        "company_employees_count_change_yearly_percentage": 45.45454545454545,
+        "company_last_funding_round_date": "2024-01-09",
+        "company_last_funding_round_amount_raised": null,
+        "company_hq_full_address": "2121 N 550 W Suite #100; Provo, UT 84604, US",
+        "company_hq_country": "United States",
+        "company_hq_regions": [
+          "Americas",
+          "Northern America",
+          "AMER"
+        ],
+        "company_hq_country_iso2": "US",
+        "company_hq_country_iso3": "USA",
+        "company_hq_city": "Provo",
+        "company_hq_state": "Utah",
+        "company_hq_street": "2121 N 550 W Suite #100",
+        "company_hq_zipcode": "84604",
+        "company_last_updated_at": "2025-08-01",
+        "company_stock_ticker": [],
+        "company_is_b2b": 0,
+        "order_in_profile": 1
+      },
+      {
+        "active_experience": 0,
+        "position_title": "Junior Software Developer",
+        "department": "Engineering and Technical",
+        "management_level": "Specialist",
+        "location": "Provo, Utah Area",
+        "description": "Worked for 2 years at an established tech company where I gained many valuable skills.",
+        "date_from": "July 2015",
+        "date_from_year": 2015,
+        "date_from_month": 7,
+        "date_to": "October 2017",
+        "date_to_year": 2017,
+        "date_to_month": 10,
+        "duration_months": 27,
+        "company_id": 3143248,
+        "company_name": "Qualtrics",
+        "company_type": "Privately Held",
+        "company_founded_year": 2002,
+        "company_followers_count": 304354,
+        "company_website": "https://www.qualtrics.com",
+        "company_facebook_url": [
+          "https://www.facebook.com/qualtrics"
+        ],
+        "company_twitter_url": [
+          "https://www.twitter.com/qualtrics"
+        ],
+        "company_linkedin_url": "https://www.linkedin.com/company/qualtrics",
+        "company_size_range": "5001-10,000 employees",
+        "company_employees_count": 5737,
+        "company_industry": "Software Development",
+        "company_categories_and_keywords": [
+          "experience management software",
+          "business and consumer services > business services",
+          "online survey software",
+          "market research",
+          "consumer feedback",
+          "employee feedback",
+          "360 evaluations",
+          "nps",
+          "panels",
+          "voc",
+          "customer experience",
+          "brand experience",
+          "employee experience",
+          "product experience",
+          "experience management",
+          "surveys",
+          "enterprise feedback management",
+          "analytics",
+          "ai-driven",
+          "technology",
+          "business-intelligence",
+          "compliance",
+          "customer-experience",
+          "enterprise-software",
+          "market-research",
+          "platform",
+          "consumer",
+          "data integration",
+          "saas"
+        ],
+        "company_annual_revenue_source_5": 1532751000,
+        "company_annual_revenue_currency_source_5": "USD",
+        "company_annual_revenue_source_1": 1458627968.0,
+        "company_annual_revenue_currency_source_1": "USD",
+        "company_employees_count_change_yearly_percentage": 3.7995295820517456,
+        "company_last_funding_round_date": "2023-06-28",
+        "company_last_funding_round_amount_raised": null,
+        "company_hq_full_address": "Provo, UT and Seattle, WA, US",
+        "company_hq_country": "United States",
+        "company_hq_regions": [
+          "Americas",
+          "Northern America",
+          "AMER"
+        ],
+        "company_hq_country_iso2": "US",
+        "company_hq_country_iso3": "USA",
+        "company_hq_city": "Seattle",
+        "company_hq_state": "Washington",
+        "company_hq_street": "",
+        "company_hq_zipcode": "",
+        "company_last_updated_at": "2025-08-03",
+        "company_stock_ticker": [
+          {
+            "exchange": "NASDAQ",
+            "ticker": "XM"
+          }
+        ],
+        "company_is_b2b": 1,
+        "order_in_profile": 2
+      },
+      {
+        "active_experience": 0,
+        "position_title": "Phone Ops",
+        "department": null,
+        "management_level": null,
+        "location": "Provo, Utah",
+        "description": null,
+        "date_from": "October 2014",
+        "date_from_year": 2014,
+        "date_from_month": 10,
+        "date_to": "July 2015",
+        "date_to_year": 2015,
+        "date_to_month": 7,
+        "duration_months": 9,
+        "company_id": 3143248,
+        "company_name": "Qualtrics",
+        "company_type": "Privately Held",
+        "company_founded_year": 2002,
+        "company_followers_count": 304354,
+        "company_website": "https://www.qualtrics.com",
+        "company_facebook_url": [
+          "https://www.facebook.com/qualtrics"
+        ],
+        "company_twitter_url": [
+          "https://www.twitter.com/qualtrics"
+        ],
+        "company_linkedin_url": "https://www.linkedin.com/company/qualtrics",
+        "company_size_range": "5001-10,000 employees",
+        "company_employees_count": 5737,
+        "company_industry": "Software Development",
+        "company_categories_and_keywords": [
+          "experience management software",
+          "business and consumer services > business services",
+          "online survey software",
+          "market research",
+          "consumer feedback",
+          "employee feedback",
+          "360 evaluations",
+          "nps",
+          "panels",
+          "voc",
+          "customer experience",
+          "brand experience",
+          "employee experience",
+          "product experience",
+          "experience management",
+          "surveys",
+          "enterprise feedback management",
+          "analytics",
+          "ai-driven",
+          "technology",
+          "business-intelligence",
+          "compliance",
+          "customer-experience",
+          "enterprise-software",
+          "market-research",
+          "platform",
+          "consumer",
+          "data integration",
+          "saas"
+        ],
+        "company_annual_revenue_source_5": 1532751000,
+        "company_annual_revenue_currency_source_5": "USD",
+        "company_annual_revenue_source_1": 1458627968.0,
+        "company_annual_revenue_currency_source_1": "USD",
+        "company_employees_count_change_yearly_percentage": 3.7995295820517456,
+        "company_last_funding_round_date": "2023-06-28",
+        "company_last_funding_round_amount_raised": null,
+        "company_hq_full_address": "Provo, UT and Seattle, WA, US",
+        "company_hq_country": "United States",
+        "company_hq_regions": [
+          "Americas",
+          "Northern America",
+          "AMER"
+        ],
+        "company_hq_country_iso2": "US",
+        "company_hq_country_iso3": "USA",
+        "company_hq_city": "Seattle",
+        "company_hq_state": "Washington",
+        "company_hq_street": "",
+        "company_hq_zipcode": "",
+        "company_last_updated_at": "2025-08-03",
+        "company_stock_ticker": [
+          {
+            "exchange": "NASDAQ",
+            "ticker": "XM"
+          }
+        ],
+        "company_is_b2b": 1,
+        "order_in_profile": 3
+      },
+      {
+        "active_experience": 0,
+        "position_title": "Independent Product Consultant",
+        "department": "Product",
+        "management_level": "Specialist",
+        "location": null,
+        "description": null,
+        "date_from": "November 2013",
+        "date_from_year": 2013,
+        "date_from_month": 11,
+        "date_to": "October 2016",
+        "date_to_year": 2016,
+        "date_to_month": 10,
+        "duration_months": 35,
+        "company_id": 23109156,
+        "company_name": "doTERRA Wellness Advocate",
+        "company_type": "Public Company",
+        "company_founded_year": 2008,
+        "company_followers_count": 27425,
+        "company_website": "https://www.doterra.com/us/en/about-our-advocates",
+        "company_facebook_url": [
+          "https://www.facebook.com/doterra",
+          "https://www.facebook.com/pages/i-heart-essential-oils/275171759179449"
+        ],
+        "company_twitter_url": [
+          "https://www.twitter.com/doterra",
+          "https://www.twitter.com/doterrasandiego"
+        ],
+        "company_linkedin_url": "https://www.linkedin.com/company/doterrawellnessadvocates",
+        "company_size_range": "501-1000 employees",
+        "company_employees_count": 5615,
+        "company_industry": "Wellness and Fitness Services",
+        "company_categories_and_keywords": [
+          "e-commerce",
+          "fitness",
+          "health care",
+          "wellness"
+        ],
+        "company_annual_revenue_source_5": 21465012,
+        "company_annual_revenue_currency_source_5": "USD",
+        "company_annual_revenue_source_1": null,
+        "company_annual_revenue_currency_source_1": null,
+        "company_employees_count_change_yearly_percentage": -2.3308401461123673,
+        "company_last_funding_round_date": null,
+        "company_last_funding_round_amount_raised": null,
+        "company_hq_full_address": "549 S 1300 W; Pleasant Grove, Utah 84062, US",
+        "company_hq_country": "United States",
+        "company_hq_regions": [
+          "Americas",
+          "Northern America",
+          "AMER"
+        ],
+        "company_hq_country_iso2": "US",
+        "company_hq_country_iso3": "USA",
+        "company_hq_city": "Pleasant Grove",
+        "company_hq_state": "Utah",
+        "company_hq_street": "549 S 1300 W",
+        "company_hq_zipcode": "84062",
+        "company_last_updated_at": "2025-08-03",
+        "company_stock_ticker": [],
+        "company_is_b2b": null,
+        "order_in_profile": 4
+      },
+      {
+        "active_experience": 0,
+        "position_title": "Bellhop",
+        "department": "Customer Service",
+        "management_level": "Specialist",
+        "location": null,
+        "description": "Bellhops is a tech-based moving solution that exclusively employs college students to provide small local moving help in 115+ cities across the country. Supervise, manage and execute small residential moves Responsible for all customer coordination and communication in the moving process Ensure customer satisfaction through unparalleled customer service",
+        "date_from": "September 2014",
+        "date_from_year": 2014,
+        "date_from_month": 9,
+        "date_to": "May 2015",
+        "date_to_year": 2015,
+        "date_to_month": 5,
+        "duration_months": 8,
+        "company_id": 27761482,
+        "company_name": "Bellhops",
+        "company_type": "Privately Held",
+        "company_founded_year": 2011,
+        "company_followers_count": 7412,
+        "company_website": "https://www.getbellhops.com",
+        "company_facebook_url": [
+          "https://www.facebook.com/bellhopsmoving",
+          "https://www.facebook.com/bellhopmoving"
+        ],
+        "company_twitter_url": [
+          "https://www.twitter.com/bellhopsmoving",
+          "https://www.twitter.com/bellhopmoving"
+        ],
+        "company_linkedin_url": "https://www.linkedin.com/company/bellhopsmoving",
+        "company_size_range": "201-500 employees",
+        "company_employees_count": 401,
+        "company_industry": "Consumer Services",
+        "company_categories_and_keywords": [
+          "transportation",
+          "business and consumer services > real estate",
+          "moving",
+          "moving services",
+          "relocation",
+          "corporate relocation",
+          "local moving",
+          "long-distance moving",
+          "move",
+          "tech",
+          "technology",
+          "long distance moves",
+          "last-minute moves",
+          "local moves",
+          "hourly labor",
+          "consumer-products-services",
+          "moving-services",
+          "platform",
+          "delivery service",
+          "service industry"
+        ],
+        "company_annual_revenue_source_5": 54800000,
+        "company_annual_revenue_currency_source_5": "USD",
+        "company_annual_revenue_source_1": null,
+        "company_annual_revenue_currency_source_1": null,
+        "company_employees_count_change_yearly_percentage": null,
+        "company_last_funding_round_date": "2020-10-01",
+        "company_last_funding_round_amount_raised": null,
+        "company_hq_full_address": "1500 Chestnut; Suite 106; Chattanooga, Tennessee 37402, US",
+        "company_hq_country": "United States",
+        "company_hq_regions": [
+          "Americas",
+          "Northern America",
+          "AMER"
+        ],
+        "company_hq_country_iso2": "US",
+        "company_hq_country_iso3": "USA",
+        "company_hq_city": "Chattanooga",
+        "company_hq_state": "Tennessee",
+        "company_hq_street": "1500 Chestnut; Suite 106",
+        "company_hq_zipcode": "37402",
+        "company_last_updated_at": "2025-08-05",
+        "company_stock_ticker": [],
+        "company_is_b2b": 0,
+        "order_in_profile": 5
+      },
+      {
+        "active_experience": 0,
+        "position_title": "Personal Tutor",
+        "department": "Education",
+        "management_level": "Specialist",
+        "location": null,
+        "description": null,
+        "date_from": "May 2011",
+        "date_from_year": 2011,
+        "date_from_month": 5,
+        "date_to": "June 2014",
+        "date_to_year": 2014,
+        "date_to_month": 6,
+        "duration_months": 37,
+        "company_id": null,
+        "company_name": "Private Employer",
+        "company_type": null,
+        "company_founded_year": null,
+        "company_followers_count": null,
+        "company_website": null,
+        "company_facebook_url": [],
+        "company_twitter_url": [],
+        "company_linkedin_url": null,
+        "company_size_range": null,
+        "company_employees_count": null,
+        "company_industry": null,
+        "company_categories_and_keywords": [],
+        "company_annual_revenue_source_5": null,
+        "company_annual_revenue_currency_source_5": null,
+        "company_annual_revenue_source_1": null,
+        "company_annual_revenue_currency_source_1": null,
+        "company_employees_count_change_yearly_percentage": null,
+        "company_last_funding_round_date": null,
+        "company_last_funding_round_amount_raised": null,
+        "company_hq_full_address": null,
+        "company_hq_country": null,
+        "company_hq_regions": [],
+        "company_hq_country_iso2": null,
+        "company_hq_country_iso3": null,
+        "company_hq_city": null,
+        "company_hq_state": null,
+        "company_hq_street": null,
+        "company_hq_zipcode": null,
+        "company_last_updated_at": null,
+        "company_stock_ticker": [],
+        "company_is_b2b": null,
+        "order_in_profile": 6
+      },
+      {
+        "active_experience": 0,
+        "position_title": "Personal Tutor",
+        "department": "Education",
+        "management_level": "Specialist",
+        "location": null,
+        "description": null,
+        "date_from": "January 2014",
+        "date_from_year": 2014,
+        "date_from_month": 1,
+        "date_to": "June 2014",
+        "date_to_year": 2014,
+        "date_to_month": 6,
+        "duration_months": 5,
+        "company_id": 34038341,
+        "company_name": "Private Employer",
+        "company_type": null,
+        "company_founded_year": null,
+        "company_followers_count": null,
+        "company_website": null,
+        "company_facebook_url": [],
+        "company_twitter_url": [],
+        "company_linkedin_url": null,
+        "company_size_range": null,
+        "company_employees_count": null,
+        "company_industry": null,
+        "company_categories_and_keywords": [],
+        "company_annual_revenue_source_5": null,
+        "company_annual_revenue_currency_source_5": null,
+        "company_annual_revenue_source_1": null,
+        "company_annual_revenue_currency_source_1": null,
+        "company_employees_count_change_yearly_percentage": null,
+        "company_last_funding_round_date": null,
+        "company_last_funding_round_amount_raised": null,
+        "company_hq_full_address": null,
+        "company_hq_country": null,
+        "company_hq_regions": [],
+        "company_hq_country_iso2": null,
+        "company_hq_country_iso3": null,
+        "company_hq_city": null,
+        "company_hq_state": null,
+        "company_hq_street": null,
+        "company_hq_zipcode": null,
+        "company_last_updated_at": null,
+        "company_stock_ticker": [],
+        "company_is_b2b": null,
+        "order_in_profile": 7
+      },
+      {
+        "active_experience": 0,
+        "position_title": "Personal Tutor",
+        "department": "Education",
+        "management_level": "Specialist",
+        "location": null,
+        "description": null,
+        "date_from": "May 2011",
+        "date_from_year": 2011,
+        "date_from_month": 5,
+        "date_to": "June 2014",
+        "date_to_year": 2014,
+        "date_to_month": 6,
+        "duration_months": 37,
+        "company_id": 34038341,
+        "company_name": "Private Employer",
+        "company_type": null,
+        "company_founded_year": null,
+        "company_followers_count": null,
+        "company_website": null,
+        "company_facebook_url": [],
+        "company_twitter_url": [],
+        "company_linkedin_url": null,
+        "company_size_range": null,
+        "company_employees_count": null,
+        "company_industry": null,
+        "company_categories_and_keywords": [],
+        "company_annual_revenue_source_5": null,
+        "company_annual_revenue_currency_source_5": null,
+        "company_annual_revenue_source_1": null,
+        "company_annual_revenue_currency_source_1": null,
+        "company_employees_count_change_yearly_percentage": null,
+        "company_last_funding_round_date": null,
+        "company_last_funding_round_amount_raised": null,
+        "company_hq_full_address": null,
+        "company_hq_country": null,
+        "company_hq_regions": [],
+        "company_hq_country_iso2": null,
+        "company_hq_country_iso3": null,
+        "company_hq_city": null,
+        "company_hq_state": null,
+        "company_hq_street": null,
+        "company_hq_zipcode": null,
+        "company_last_updated_at": null,
+        "company_stock_ticker": [],
+        "company_is_b2b": null,
+        "order_in_profile": 8
+      },
+      {
+        "active_experience": 0,
+        "position_title": "Administrative Assistant",
+        "department": "Administrative",
+        "management_level": "Specialist",
+        "location": null,
+        "description": null,
+        "date_from": "May 2010",
+        "date_from_year": 2010,
+        "date_from_month": 5,
+        "date_to": "September 2010",
+        "date_to_year": 2010,
+        "date_to_month": 9,
+        "duration_months": 4,
+        "company_id": null,
+        "company_name": "Academy Square Dental",
+        "company_type": null,
+        "company_founded_year": null,
+        "company_followers_count": null,
+        "company_website": null,
+        "company_facebook_url": [],
+        "company_twitter_url": [],
+        "company_linkedin_url": null,
+        "company_size_range": null,
+        "company_employees_count": null,
+        "company_industry": null,
+        "company_categories_and_keywords": [],
+        "company_annual_revenue_source_5": null,
+        "company_annual_revenue_currency_source_5": null,
+        "company_annual_revenue_source_1": null,
+        "company_annual_revenue_currency_source_1": null,
+        "company_employees_count_change_yearly_percentage": null,
+        "company_last_funding_round_date": null,
+        "company_last_funding_round_amount_raised": null,
+        "company_hq_full_address": null,
+        "company_hq_country": null,
+        "company_hq_regions": [],
+        "company_hq_country_iso2": null,
+        "company_hq_country_iso3": null,
+        "company_hq_city": null,
+        "company_hq_state": null,
+        "company_hq_street": null,
+        "company_hq_zipcode": null,
+        "company_last_updated_at": null,
+        "company_stock_ticker": [],
+        "company_is_b2b": null,
+        "order_in_profile": 9
+      }
+    ],
+    "projected_base_salary_p25": null,
+    "projected_base_salary_median": null,
+    "projected_base_salary_p75": null,
+    "projected_base_salary_period": null,
+    "projected_base_salary_currency": null,
+    "projected_base_salary_updated_at": null,
+    "projected_additional_salary": [],
+    "projected_additional_salary_period": null,
+    "projected_additional_salary_currency": null,
+    "projected_additional_salary_updated_at": null,
+    "projected_total_salary_p25": null,
+    "projected_total_salary_median": null,
+    "projected_total_salary_p75": null,
+    "projected_total_salary_period": null,
+    "projected_total_salary_currency": null,
+    "projected_total_salary_updated_at": null,
+    "last_graduation_date": 2018,
+    "education_degrees": [
+      "Computer Science",
+      "Computer Science"
+    ],
+    "education": [
+      {
+        "degree": "Computer Science",
+        "description": null,
+        "institution_url": "https://www.linkedin.com/school/brigham-young-university",
+        "institution_name": "Brigham Young University",
+        "institution_full_address": "Main Campus; Provo, UT 84602, US",
+        "institution_country_iso2": "US",
+        "institution_country_iso3": "USA",
+        "institution_regions": [
+          "Americas",
+          "Northern America",
+          "AMER"
+        ],
+        "institution_city": "Provo",
+        "institution_state": "Utah",
+        "institution_street": "Main Campus",
+        "institution_zipcode": "84602",
+        "date_from_year": 2014,
+        "date_to_year": 2018,
+        "activities_and_societies": null,
+        "order_in_profile": 1
+      },
+      {
+        "degree": "Computer Science",
+        "description": null,
+        "institution_url": "https://www.linkedin.com/school/brigham-young-university",
+        "institution_name": "Brigham Young University",
+        "institution_full_address": "Main Campus; Provo, UT 84602, US",
+        "institution_country_iso2": "US",
+        "institution_country_iso3": "USA",
+        "institution_regions": [
+          "Americas",
+          "Northern America",
+          "AMER"
+        ],
+        "institution_city": "Provo",
+        "institution_state": "Utah",
+        "institution_street": "Main Campus",
+        "institution_zipcode": "84602",
+        "date_from_year": 2014,
+        "date_to_year": 2017,
+        "activities_and_societies": null,
+        "order_in_profile": 2
+      }
+    ],
+    "recommendations_count": null,
+    "recommendations": [],
+    "activity": [
+      {
+        "activity_url": "https://www.linkedin.com/posts/danmascola_in-nyc-this-week-for-the-aws-summit-going-activity-7350896309198856192-jf0_",
+        "title": "In NYC this week for the AWS Summit. Going to be some exciting announcements tomorrow I\u2019ve been working on for a while.",
+        "action": "Liked by",
+        "order_in_profile": 1
+      },
+      {
+        "activity_url": "https://www.linkedin.com/posts/missiondotio_missionio-2ndgradescience-ngss-activity-7358195802952847360-WCTw",
+        "title": "\ud83d\udeb0 New Mission Alert: Go With the Flow\nGrade: 2nd\nSubject: Earth Science \u2013 Properties and Locations of Water (NGSS 2-ESS2-3)\nDuration: ~21\u2026",
+        "action": "Liked by",
+        "order_in_profile": 2
+      },
+      {
+        "activity_url": "https://www.linkedin.com/posts/hilightedu_schoolculture-edleadership-superintendents-activity-7356321731029987329-BKqo",
+        "title": "As the new school year begins, let's not miss the chance to see the positive moments all of our staff help create.\u2728 \ud83d\ude8d \u2728 \n.\n.\n.\n#SchoolCulture\u2026",
+        "action": "Liked by",
+        "order_in_profile": 3
+      },
+      {
+        "activity_url": "https://www.linkedin.com/posts/wayne-syrek-5638a27_newbeginnings-activity-7350533336198508547-M6dI",
+        "title": "After three decades, I've transitioned from overseeing day-to-day operations at The Adams Agency to assuming the role of Senior Advisor under the\u2026",
+        "action": "Liked by",
+        "order_in_profile": 4
+      },
+      {
+        "activity_url": "https://www.linkedin.com/posts/randyvarela_ive-been-working-on-a-swiftui-e-commerce-activity-7358566667230064640-qUvd",
+        "title": "I\u2019ve been working on a SwiftUI e-commerce app in my free time called Mock Locker.  Its inspired by Foot Locker and built to showcase my iOS dev\u2026",
+        "action": "Liked by",
+        "order_in_profile": 5
+      },
+      {
+        "activity_url": "https://www.linkedin.com/posts/skylercarr_devlife-engineeringhumor-startuplife-activity-7340484506719514625-h8w7",
+        "title": "Every summer our dev team rallies around a \u201cbattle board\u201d (literally the name of the board on Asana) of high-risk, high-reward projects\u2014things we can\u2026",
+        "action": "Liked by",
+        "order_in_profile": 6
+      },
+      {
+        "activity_url": "https://www.linkedin.com/posts/missiondotio_missionio-1stgradescience-lifescience-activity-7321286700498890753-sPHA",
+        "title": "\ud83d\udc3e New Mission Alert: A Pawfect Pair\n\nSubject: Life Science \u2013 Similarities of Parents and Offspring\nGrade Level: 1st Grade\nDuration: ~24\u2026",
+        "action": "Liked by",
+        "order_in_profile": 7
+      },
+      {
+        "activity_url": "https://www.linkedin.com/posts/missiondotio_collaborativelearning-stemclassroom-edtech-activity-7318684326257201154-W3ot",
+        "title": "Are you the \"find cool stuff\" person on your team? This is the one.\n\nMission.io = real-world problem solving + epic classroom storylines + data that\u2026",
+        "action": "Liked by",
+        "order_in_profile": 8
+      },
+      {
+        "activity_url": "https://www.linkedin.com/posts/dnsbty_last-night-i-decided-to-take-a-break-from-activity-7313580557697785856-U9TR",
+        "title": "Last night I decided to take a break from coding, so I decided to try vibe coding a real-time strategy game like the ones I played as a kid.\n\nIn just\u2026",
+        "action": "Liked by",
+        "order_in_profile": 9
+      },
+      {
+        "activity_url": "https://www.linkedin.com/posts/skylercarr_i-found-an-old-goal-journal-last-week-while-activity-7311491619768197121-JUt0",
+        "title": "I found an old goal journal last week while I was cleaning out a closet. On it I saw a goal I wrote down as a teenager... \"Build something that will\u2026",
+        "action": "Liked by",
+        "order_in_profile": 10
+      },
+      {
+        "activity_url": "https://www.linkedin.com/posts/skylercarr_edtech-teachersupport-techcoaches-activity-7308236266930663424-zKSj",
+        "title": "Huge thanks to Jordan School District for having me spend the day with their tech coaches! \ud83d\ude4c\n\nTech coaches are my kind of people\u2014they\u2019re already\u2026",
+        "action": "Liked by",
+        "order_in_profile": 11
+      },
+      {
+        "activity_url": "https://www.linkedin.com/posts/skylercarr_this-mission-is-one-of-my-favorites-weve-activity-7305999588719546369-lHos",
+        "title": "This mission is one of my favorites we've worked on! It was inspired by my 9 year old almost getting scammed online when he tried to buy something\u2026",
+        "action": "Liked by",
+        "order_in_profile": 12
+      },
+      {
+        "activity_url": "https://www.linkedin.com/posts/josephmwarren_reactjs-dallas-march-2025-text-em-all-activity-7303036597740945409-BN2e",
+        "title": "We are less than a week away from our third ReactJS Dallas meetup of 2025, and you do not want to miss this one!\n\nOn Tuesday March 11th, we will have\u2026",
+        "action": "Liked by",
+        "order_in_profile": 13
+      },
+      {
+        "activity_url": "https://www.linkedin.com/posts/sandrach-swdev_yesterday-i-had-the-opportunity-to-join-the-activity-7295547014207979520-K-rm",
+        "title": "Yesterday I had the opportunity to join the ReactJS Dallas meetup. We had a great time learning about the presentation from Danny Harding  about\u2026",
+        "action": "Liked by",
+        "order_in_profile": 14
+      }
+    ],
+    "awards": [],
+    "courses": [],
+    "certifications": [],
+    "languages": [],
+    "patents_count": null,
+    "patents_topics": [],
+    "patents": [],
+    "publications_count": null,
+    "publications_topics": [],
+    "publications": [],
+    "projects_count": null,
+    "projects_topics": [],
+    "projects": [],
+    "organizations": [],
+    "github_url": null,
+    "github_username": null,
+    "github_mapping_confidence": null,
+    "github_contributions_count": null,
+    "github_repos_summary": [],
+    "profile_root_field_changes_summary": [
+      {
+        "field_name": "profile_photo_url",
+        "change_type": "new",
+        "last_changed_at": "2025-02-26 21:13:25.223388"
+      },
+      {
+        "field_name": "follower_count",
+        "change_type": "updated",
+        "last_changed_at": "2025-06-22 05:04:36.219358"
+      },
+      {
+        "field_name": "headline",
+        "change_type": "updated",
+        "last_changed_at": "2025-01-25 05:55:31.226663"
+      },
+      {
+        "field_name": "connections_count",
+        "change_type": "updated",
+        "last_changed_at": "2025-06-22 05:04:36.219358"
+      }
+    ],
+    "profile_collection_field_changes_summary": [
+      {
+        "field_name": "experience",
+        "last_changed_at": "2025-04-23 19:09:34.300966"
+      },
+      {
+        "field_name": "education",
+        "last_changed_at": "2025-03-23 15:20:03.493166"
+      },
+      {
+        "field_name": "activity",
+        "last_changed_at": "2025-06-22 05:04:36.219358"
+      }
+    ],
+    "experience_recently_started": [],
+    "experience_recently_closed": []
+  }
+]

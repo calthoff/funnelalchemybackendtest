@@ -1,0 +1,183 @@
+Found .env file !
+Found .env file !
+
+result dict from retrieving prospects Prospect JSON generated successfully
+ prospect dtaa returned = |{
+    "prospect_id": "coresignal267051946",
+    "full_name": "James Mazzu",
+    "basic_profile": {
+        "headline": "Product, Innovation and Design Leader",
+        "summary": "Career architect of digital experiences with passion for defining product/UX strategy, building/managing design teams, creating multi-channel/AI applications, and directing the end-to-end UX/design thinking process to deliver innovative solutions that transform enterprise and consumer experiences. - UX/Design Team Leadership - Product Strategy/UX Vision Leadership - Generative AI + Symbolic AI Expertise - Enterprise/Consumer Solutions Design - Mobile/Web/Voice Channel Expertise - Personal/Conversational AI Applications - Financial Services/Trading Expertise",
+        "location_country": "United States",
+        "location_full": "Harvard, Massachusetts, United States",
+        "inferred_skills": [
+            "digital",
+            "ux",
+            "strategy",
+            "design",
+            "directing",
+            "leadership",
+            "mobile",
+            "trading",
+            "api",
+            "responsible",
+            "director",
+            "planning",
+            "health",
+            "benefits",
+            "portals",
+            "research",
+            "collaboration",
+            "management",
+            "analysis",
+            "surveillance",
+            "agile",
+            "securities",
+            "prototyping",
+            "performing",
+            "usability",
+            "software",
+            "engineers",
+            "cision",
+            "assessment",
+            "intranet",
+            "investments",
+            "retail",
+            "brokerage",
+            "insurance",
+            "consulting",
+            "apple",
+            "testing",
+            "dod",
+            "intelligence",
+            "sales",
+            "architecture",
+            "ux design",
+            "design thinking",
+            "team leadership",
+            "product strategy",
+            "financial services",
+            "strategic planning",
+            "product design",
+            "call center",
+            "continuous improvement",
+            "design development",
+            "visual design",
+            "wealth management",
+            "mobile applications",
+            "customer support",
+            "knowledge management",
+            "trading strategies",
+            "portfolio management",
+            "strategic vision",
+            "software design",
+            "learning management",
+            "software development",
+            "best practices",
+            "leadership skills",
+            "artificial intelligence",
+            "interaction design"
+        ],
+        "connections_count": 500,
+        "followers_count": 672
+    },
+    "current_job": {
+        "is_working": true,
+        "active_experience_title": "CEO Principal AI Architect",
+        "active_experience_description": "Leading mission to simplify and personalize the digital experience. Created proprietary symbolic AI, combined w/ generative AI, for a suite of personal assistant apps. Digie captures user knowledge/preferences via conversational and graphical interface, providing automatic organization and secure data sharing between connected users. DigieFaith and DigieTravel integrate Digie with GPT API to enable personalized conversations with divine entities and to generate AI-managed travel plans.",
+        "active_experience_department": null,
+        "active_experience_management_level": null,
+        "is_decision_maker": null
+    },
+    "current_company": {
+        "position_title": "CEO Principal AI Architect",
+        "department": null,
+        "management_level": null,
+        "duration_months": 103,
+        "location": "Worcester County, Massachusetts, United States",
+        "company_id": 10498624,
+        "company_name": "Digie.ai",
+        "company_industry": "Software Development",
+        "company_followers_count": 0,
+        "company_size_range": "1-10 employees",
+        "company_employees_count": 5,
+        "company_categories_and_keywords": "[\"travel\", \"personal travel\", \"destination preferences\", \"encrypted\", \"data security\", \"personalized\", \"artificial intelligence (ai)\", \"b2b\", \"big data\", \"education\", \"information technology\", \"internet\", \"machine learning\", \"software\"]",
+        "company_hq_country": "United States",
+        "company_last_funding_round_date": null,
+        "company_last_funding_round_amount_raised": null,
+        "company_employees_count_change_yearly_percentage": 0.0,
+        "company_hq_full_address": "16192 Coastal Hwy; Lewes, Delaware 19958, United States",
+        "company_is_b2b": "0"
+    },
+    "total_experience": {
+        "total_experience_duration_months": 453,
+        "total_experience_duration_months_breakdown_department": [
+            {
+                "department": "Design",
+                "total_experience_duration_months": 37
+            },
+            {
+                "department": "Research",
+                "total_experience_duration_months": 11
+            },
+            {
+                "department": "Other",
+                "total_experience_duration_months": 371
+            },
+            {
+                "department": "Project Management",
+                "total_experience_duration_months": 14
+            },
+            {
+                "department": "Engineering and Technical",
+                "total_experience_duration_months": 35
+            }
+        ],
+        "total_experience_duration_months_breakdown_management_level": [
+            {
+                "management_level": "Senior",
+                "total_experience_duration_months": 48
+            },
+            {
+                "management_level": "Other",
+                "total_experience_duration_months": 371
+            },
+            {
+                "management_level": "Specialist",
+                "total_experience_duration_months": 24
+            },
+            {
+                "management_level": "Director",
+                "total_experience_duration_months": 25
+            }
+        ]
+    },
+    "education": {
+        "education_degrees": [
+            "M.S.M.E., Mech. Engineering, Simulation/Animation",
+            "B.S.M.E., Mechanical Engineering",
+            "Candidate for D.Eng., Eng. Leadership Program, Applied AI",
+            "Master of Science - MS Mechanical Engineering"
+        ]
+    },
+    "languages": [],
+    "additional_info": {
+        "awards": [
+            {
+                "date": "Jun 1984",
+                "title": "UMass Art Expo’84: Third Place Winner",
+                "issuer": "UMass Board of Governors and Department of Fine Arts",
+                "date_year": 1984,
+                "date_month": 6,
+                "description": "As a second-year Engineering student, submitted best artwork to compete against university-wide graduate-level art students and won 3rd Place. This piece was created a few years earlier while in high school, with pastels and pencil, entitled 'Similarity'.",
+                "order_in_profile": 1
+            }
+        ],
+        "certifications": [],
+        "courses": []
+    },
+    "contact_info": {
+        "email": "jmazzu@digie.ai",
+        "linkedin_url": "https://www.linkedin.com/in/james-mazzu-a0a1682"
+    }
+}|

@@ -1,0 +1,1019 @@
+
+=== Trying query (dd/mm/yyyy) ===
+hostname:"google.com" after:01/10/2022 before:02/10/2022
+Total (reported by Shodan): 0
+Matches fetched (pages ≤ 2): 0
+No matches on this attempt.
+
+=== Trying query (yyyy-mm-dd) ===
+hostname:"google.com" after:2022-10-01 before:2022-10-02
+Total (reported by Shodan): 0
+Matches fetched (pages ≤ 2): 0
+No matches on this attempt.
+
+=== Trying query (no-date) ===
+hostname:"google.com"
+Total (reported by Shodan): 388280
+Matches fetched (pages ≤ 2): 200
+
+--- Match 1 ---
+ip:        104.133.128.86
+port:      8551
+hostnames: ['ncc-poc-104-133-128-86.corp.google.com']
+
+--- Match 2 ---
+ip:        104.133.128.18
+port:      4165
+hostnames: ['ncc-poc-104-133-128-18.corp.google.com']
+
+--- Match 3 ---
+ip:        104.133.128.32
+port:      7171
+hostnames: ['ncc-poc-104-133-128-32.corp.google.com']
+
+--- Match 4 ---
+ip:        104.133.128.58
+port:      20018
+hostnames: ['ncc-poc-104-133-128-58.corp.google.com']
+
+--- Match 5 ---
+ip:        104.133.128.26
+port:      1454
+hostnames: ['ncc-poc-104-133-128-26.corp.google.com']
+
+--- Match 6 ---
+ip:        190.63.135.13
+port:      80
+hostnames: ['cache.google.com']
+
+--- Match 7 ---
+ip:        104.133.128.120
+port:      4567
+hostnames: ['ncc-poc-104-133-128-120.corp.google.com']
+
+--- Match 8 ---
+ip:        104.133.128.254
+port:      2628
+hostnames: ['ncc-poc-104-133-128-254.corp.google.com']
+
+--- Match 9 ---
+ip:        104.133.128.119
+port:      2550
+hostnames: ['ncc-poc-104-133-128-119.corp.google.com']
+
+--- Match 10 ---
+ip:        104.133.128.31
+port:      4242
+hostnames: ['ncc-poc-104-133-128-31.corp.google.com']
+
+--- Match 11 ---
+ip:        63.135.48.137
+port:      22
+hostnames: ['cache.google.com']
+
+--- Match 12 ---
+ip:        104.133.128.251
+port:      5440
+hostnames: ['ncc-poc-104-133-128-251.corp.google.com']
+
+--- Match 13 ---
+ip:        104.133.128.154
+port:      8085
+hostnames: ['ncc-poc-104-133-128-154.corp.google.com']
+
+--- Match 14 ---
+ip:        104.133.128.221
+port:      6379
+hostnames: ['ncc-poc-104-133-128-221.corp.google.com']
+
+--- Match 15 ---
+ip:        104.133.128.35
+port:      19014
+hostnames: ['ncc-poc-104-133-128-35.corp.google.com']
+
+--- Match 16 ---
+ip:        104.133.128.196
+port:      12114
+hostnames: ['ncc-poc-104-133-128-196.corp.google.com']
+
+--- Match 17 ---
+ip:        104.133.128.152
+port:      83
+hostnames: ['ncc-poc-104-133-128-152.corp.google.com']
+
+--- Match 18 ---
+ip:        104.133.128.107
+port:      4899
+hostnames: ['ncc-poc-104-133-128-107.corp.google.com']
+
+--- Match 19 ---
+ip:        104.133.128.212
+port:      88
+hostnames: ['ncc-poc-104-133-128-212.corp.google.com']
+
+--- Match 20 ---
+ip:        96.20.0.126
+port:      179
+hostnames: ['cache.google.com']
+
+--- Match 21 ---
+ip:        104.133.128.120
+port:      16102
+hostnames: ['ncc-poc-104-133-128-120.corp.google.com']
+
+--- Match 22 ---
+ip:        104.133.128.177
+port:      6080
+hostnames: ['ncc-poc-104-133-128-177.corp.google.com']
+
+--- Match 23 ---
+ip:        104.133.128.115
+port:      7083
+hostnames: ['ncc-poc-104-133-128-115.corp.google.com']
+
+--- Match 24 ---
+ip:        104.133.128.167
+port:      18264
+hostnames: ['ncc-poc-104-133-128-167.corp.google.com']
+
+--- Match 25 ---
+ip:        104.133.128.246
+port:      9876
+hostnames: ['ncc-poc-104-133-128-246.corp.google.com']
+
+--- Match 26 ---
+ip:        104.133.128.46
+port:      3749
+hostnames: ['ncc-poc-104-133-128-46.corp.google.com']
+
+--- Match 27 ---
+ip:        104.133.128.69
+port:      10045
+hostnames: ['ncc-poc-104-133-128-69.corp.google.com']
+
+--- Match 28 ---
+ip:        104.133.128.14
+port:      12195
+hostnames: ['ncc-poc-104-133-128-14.corp.google.com']
+
+--- Match 29 ---
+ip:        104.133.128.80
+port:      10554
+hostnames: ['ncc-poc-104-133-128-80.corp.google.com']
+
+--- Match 30 ---
+ip:        104.133.128.120
+port:      2222
+hostnames: ['ncc-poc-104-133-128-120.corp.google.com']
+
+--- Match 31 ---
+ip:        104.133.128.62
+port:      11688
+hostnames: ['ncc-poc-104-133-128-62.corp.google.com']
+
+--- Match 32 ---
+ip:        104.133.128.126
+port:      1177
+hostnames: ['ncc-poc-104-133-128-126.corp.google.com']
+
+--- Match 33 ---
+ip:        104.133.128.43
+port:      11211
+hostnames: ['ncc-poc-104-133-128-43.corp.google.com']
+
+--- Match 34 ---
+ip:        104.133.128.205
+port:      221
+hostnames: ['ncc-poc-104-133-128-205.corp.google.com']
+
+--- Match 35 ---
+ip:        104.133.128.149
+port:      6050
+hostnames: ['ncc-poc-104-133-128-149.corp.google.com']
+
+--- Match 36 ---
+ip:        104.133.128.208
+port:      12163
+hostnames: ['ncc-poc-104-133-128-208.corp.google.com']
+
+--- Match 37 ---
+ip:        104.133.128.132
+port:      16992
+hostnames: ['ncc-poc-104-133-128-132.corp.google.com']
+
+--- Match 38 ---
+ip:        187.17.155.84
+port:      443
+hostnames: ['i.ytimg.com', 'play-lh.googleusercontent.com', 'cache.google.com', '187-17-155-84.telgo.com.br', 'xn--ngstr-lra8j.com']
+
+--- Match 39 ---
+ip:        104.133.128.26
+port:      12197
+hostnames: ['ncc-poc-104-133-128-26.corp.google.com']
+
+--- Match 40 ---
+ip:        104.133.128.187
+port:      541
+hostnames: ['ncc-poc-104-133-128-187.corp.google.com']
+
+--- Match 41 ---
+ip:        104.133.128.107
+port:      12262
+hostnames: ['ncc-poc-104-133-128-107.corp.google.com']
+
+--- Match 42 ---
+ip:        104.133.128.157
+port:      4520
+hostnames: ['ncc-poc-104-133-128-157.corp.google.com']
+
+--- Match 43 ---
+ip:        104.133.128.251
+port:      10031
+hostnames: ['ncc-poc-104-133-128-251.corp.google.com']
+
+--- Match 44 ---
+ip:        104.133.128.13
+port:      14184
+hostnames: ['ncc-poc-104-133-128-13.corp.google.com']
+
+--- Match 45 ---
+ip:        35.201.56.131
+port:      443
+hostnames: ['googleplex.com', '131.56.201.35.bc.googleusercontent.com', 'uberproxy.corp.google.com']
+
+--- Match 46 ---
+ip:        104.133.128.156
+port:      8583
+hostnames: ['ncc-poc-104-133-128-156.corp.google.com']
+
+--- Match 47 ---
+ip:        104.133.128.31
+port:      9241
+hostnames: ['ncc-poc-104-133-128-31.corp.google.com']
+
+--- Match 48 ---
+ip:        104.133.128.193
+port:      12297
+hostnames: ['ncc-poc-104-133-128-193.corp.google.com']
+
+--- Match 49 ---
+ip:        104.133.128.200
+port:      1454
+hostnames: ['ncc-poc-104-133-128-200.corp.google.com']
+
+--- Match 50 ---
+ip:        104.133.128.15
+port:      12412
+hostnames: ['ncc-poc-104-133-128-15.corp.google.com']
+
+--- Match 51 ---
+ip:        104.133.128.98
+port:      6001
+hostnames: ['ncc-poc-104-133-128-98.corp.google.com']
+
+--- Match 52 ---
+ip:        104.133.128.149
+port:      7283
+hostnames: ['ncc-poc-104-133-128-149.corp.google.com']
+
+--- Match 53 ---
+ip:        104.133.128.206
+port:      8414
+hostnames: ['ncc-poc-104-133-128-206.corp.google.com']
+
+--- Match 54 ---
+ip:        104.133.128.68
+port:      23424
+hostnames: ['ncc-poc-104-133-128-68.corp.google.com']
+
+--- Match 55 ---
+ip:        104.133.128.96
+port:      50000
+hostnames: ['ncc-poc-104-133-128-96.corp.google.com']
+
+--- Match 56 ---
+ip:        207.181.192.130
+port:      443
+hostnames: ['cache.google.com', 'images.apple.com']
+
+--- Match 57 ---
+ip:        104.133.128.127
+port:      9600
+hostnames: ['ncc-poc-104-133-128-127.corp.google.com']
+
+--- Match 58 ---
+ip:        104.133.128.138
+port:      12293
+hostnames: ['ncc-poc-104-133-128-138.corp.google.com']
+
+--- Match 59 ---
+ip:        104.133.128.74
+port:      64295
+hostnames: ['ncc-poc-104-133-128-74.corp.google.com']
+
+--- Match 60 ---
+ip:        142.251.36.125
+port:      443
+hostnames: ['lh3-da.photos0.sandbox.google.com', 'manifest.lh3-dg.photos6.sandbox.google.com', 'manifest.lh3-dz.photos-autopush.sandbox.google.com', 'lh3-dy.photos-staging.sandbox.google.com', 'lh3-db.photos1.sandbox.google.com', 'lh3-de.photos4.sandbox.google.com', 'lh3-dd.photos3.sandbox.google.com', 'manifest.lh3-dd.photos3.sandbox.google.com', 'prg03s11-in-f29.1e100.net', 'test-bigquery.eu.sandbox.google.com', 'manifest.lh3-dc.photos2.sandbox.google.com', 'sandbox.google.com', 'lh3-dg.photos6.sandbox.google.com', 'manifest.lh3-da.photos0.sandbox.google.com', 'test-bigquery.us.sandbox.google.com', 'lh3-dc.photos2.sandbox.google.com', 'manifest.lh3-df.photos5.sandbox.google.com', 'lh3-dz.photos-autopush.sandbox.google.com', 'manifest.lh3-db.photos1.sandbox.google.com', 'manifest.lh3-dy.photos-staging.sandbox.google.com', 'lh3-df.photos5.sandbox.google.com', 'manifest.lh3-de.photos4.sandbox.google.com', 'gmeet.net']
+
+--- Match 61 ---
+ip:        104.133.128.80
+port:      4242
+hostnames: ['ncc-poc-104-133-128-80.corp.google.com']
+
+--- Match 62 ---
+ip:        104.133.128.179
+port:      55554
+hostnames: ['ncc-poc-104-133-128-179.corp.google.com']
+
+--- Match 63 ---
+ip:        104.133.128.185
+port:      16053
+hostnames: ['ncc-poc-104-133-128-185.corp.google.com']
+
+--- Match 64 ---
+ip:        104.133.128.39
+port:      3101
+hostnames: ['ncc-poc-104-133-128-39.corp.google.com']
+
+--- Match 65 ---
+ip:        104.133.128.242
+port:      3128
+hostnames: ['ncc-poc-104-133-128-242.corp.google.com']
+
+--- Match 66 ---
+ip:        104.133.128.205
+port:      2072
+hostnames: ['ncc-poc-104-133-128-205.corp.google.com']
+
+--- Match 67 ---
+ip:        41.220.141.68
+port:      5248
+hostnames: ['cache.google.com', 'host-41-220-141-68.habari.co.tz']
+
+--- Match 68 ---
+ip:        104.133.128.63
+port:      16028
+hostnames: ['ncc-poc-104-133-128-63.corp.google.com']
+
+--- Match 69 ---
+ip:        104.133.128.120
+port:      1337
+hostnames: ['ncc-poc-104-133-128-120.corp.google.com']
+
+--- Match 70 ---
+ip:        104.133.128.219
+port:      4321
+hostnames: ['ncc-poc-104-133-128-219.corp.google.com']
+
+--- Match 71 ---
+ip:        104.133.128.129
+port:      8554
+hostnames: ['ncc-poc-104-133-128-129.corp.google.com']
+
+--- Match 72 ---
+ip:        219.124.146.148
+port:      443
+hostnames: ['i.ytimg.com', 'play-lh.googleusercontent.com', 'cache.google.com', 'xn--ngstr-lra8j.com']
+
+--- Match 73 ---
+ip:        104.133.128.215
+port:      593
+hostnames: ['ncc-poc-104-133-128-215.corp.google.com']
+
+--- Match 74 ---
+ip:        104.133.128.168
+port:      8728
+hostnames: ['ncc-poc-104-133-128-168.corp.google.com']
+
+--- Match 75 ---
+ip:        104.133.128.231
+port:      4434
+hostnames: ['ncc-poc-104-133-128-231.corp.google.com']
+
+--- Match 76 ---
+ip:        43.255.113.24
+port:      10443
+hostnames: ['cache.google.com']
+
+--- Match 77 ---
+ip:        104.133.128.226
+port:      2087
+hostnames: ['ncc-poc-104-133-128-226.corp.google.com']
+
+--- Match 78 ---
+ip:        104.133.128.163
+port:      3173
+hostnames: ['ncc-poc-104-133-128-163.corp.google.com']
+
+--- Match 79 ---
+ip:        104.133.128.149
+port:      14147
+hostnames: ['ncc-poc-104-133-128-149.corp.google.com']
+
+--- Match 80 ---
+ip:        96.22.15.102
+port:      179
+hostnames: ['cache.google.com']
+
+--- Match 81 ---
+ip:        104.133.128.226
+port:      5007
+hostnames: ['ncc-poc-104-133-128-226.corp.google.com']
+
+--- Match 82 ---
+ip:        104.133.128.234
+port:      10249
+hostnames: ['ncc-poc-104-133-128-234.corp.google.com']
+
+--- Match 83 ---
+ip:        104.133.128.183
+port:      10909
+hostnames: ['ncc-poc-104-133-128-183.corp.google.com']
+
+--- Match 84 ---
+ip:        104.133.128.96
+port:      1599
+hostnames: ['ncc-poc-104-133-128-96.corp.google.com']
+
+--- Match 85 ---
+ip:        104.133.128.59
+port:      2154
+hostnames: ['ncc-poc-104-133-128-59.corp.google.com']
+
+--- Match 86 ---
+ip:        104.133.128.130
+port:      5083
+hostnames: ['ncc-poc-104-133-128-130.corp.google.com']
+
+--- Match 87 ---
+ip:        104.133.128.151
+port:      4369
+hostnames: ['ncc-poc-104-133-128-151.corp.google.com']
+
+--- Match 88 ---
+ip:        104.133.128.2
+port:      4664
+hostnames: ['ncc-poc-104-133-128-2.corp.google.com']
+
+--- Match 89 ---
+ip:        104.133.128.86
+port:      3016
+hostnames: ['ncc-poc-104-133-128-86.corp.google.com']
+
+--- Match 90 ---
+ip:        104.133.128.205
+port:      9803
+hostnames: ['ncc-poc-104-133-128-205.corp.google.com']
+
+--- Match 91 ---
+ip:        104.133.128.99
+port:      444
+hostnames: ['ncc-poc-104-133-128-99.corp.google.com']
+
+--- Match 92 ---
+ip:        104.133.128.63
+port:      32764
+hostnames: ['ncc-poc-104-133-128-63.corp.google.com']
+
+--- Match 93 ---
+ip:        104.133.128.83
+port:      12178
+hostnames: ['ncc-poc-104-133-128-83.corp.google.com']
+
+--- Match 94 ---
+ip:        104.133.128.199
+port:      1800
+hostnames: ['ncc-poc-104-133-128-199.corp.google.com']
+
+--- Match 95 ---
+ip:        104.133.128.130
+port:      995
+hostnames: ['ncc-poc-104-133-128-130.corp.google.com']
+
+--- Match 96 ---
+ip:        104.133.128.91
+port:      13443
+hostnames: ['ncc-poc-104-133-128-91.corp.google.com']
+
+--- Match 97 ---
+ip:        89.111.192.62
+port:      80
+hostnames: ['cache.google.com']
+
+--- Match 98 ---
+ip:        104.133.128.38
+port:      12452
+hostnames: ['ncc-poc-104-133-128-38.corp.google.com']
+
+--- Match 99 ---
+ip:        66.58.255.3
+port:      179
+hostnames: ['cache.google.com']
+
+--- Match 100 ---
+ip:        104.133.128.14
+port:      6432
+hostnames: ['ncc-poc-104-133-128-14.corp.google.com']
+
+--- Match 101 ---
+ip:        104.133.128.29
+port:      35251
+hostnames: ['ncc-poc-104-133-128-29.corp.google.com']
+
+--- Match 102 ---
+ip:        104.133.128.127
+port:      9600
+hostnames: ['ncc-poc-104-133-128-127.corp.google.com']
+
+--- Match 103 ---
+ip:        104.133.128.135
+port:      9398
+hostnames: ['ncc-poc-104-133-128-135.corp.google.com']
+
+--- Match 104 ---
+ip:        104.133.128.138
+port:      12293
+hostnames: ['ncc-poc-104-133-128-138.corp.google.com']
+
+--- Match 105 ---
+ip:        104.133.128.74
+port:      64295
+hostnames: ['ncc-poc-104-133-128-74.corp.google.com']
+
+--- Match 106 ---
+ip:        213.157.199.56
+port:      443
+hostnames: ['cache.google.com']
+
+--- Match 107 ---
+ip:        142.251.36.125
+port:      443
+hostnames: ['lh3-da.photos0.sandbox.google.com', 'manifest.lh3-dg.photos6.sandbox.google.com', 'manifest.lh3-dz.photos-autopush.sandbox.google.com', 'lh3-dy.photos-staging.sandbox.google.com', 'lh3-db.photos1.sandbox.google.com', 'lh3-de.photos4.sandbox.google.com', 'lh3-dd.photos3.sandbox.google.com', 'manifest.lh3-dd.photos3.sandbox.google.com', 'prg03s11-in-f29.1e100.net', 'test-bigquery.eu.sandbox.google.com', 'manifest.lh3-dc.photos2.sandbox.google.com', 'sandbox.google.com', 'lh3-dg.photos6.sandbox.google.com', 'manifest.lh3-da.photos0.sandbox.google.com', 'test-bigquery.us.sandbox.google.com', 'lh3-dc.photos2.sandbox.google.com', 'manifest.lh3-df.photos5.sandbox.google.com', 'lh3-dz.photos-autopush.sandbox.google.com', 'manifest.lh3-db.photos1.sandbox.google.com', 'manifest.lh3-dy.photos-staging.sandbox.google.com', 'lh3-df.photos5.sandbox.google.com', 'manifest.lh3-de.photos4.sandbox.google.com', 'gmeet.net']
+
+--- Match 108 ---
+ip:        104.133.128.80
+port:      4242
+hostnames: ['ncc-poc-104-133-128-80.corp.google.com']
+
+--- Match 109 ---
+ip:        104.133.128.179
+port:      55554
+hostnames: ['ncc-poc-104-133-128-179.corp.google.com']
+
+--- Match 110 ---
+ip:        104.133.128.46
+port:      9443
+hostnames: ['ncc-poc-104-133-128-46.corp.google.com']
+
+--- Match 111 ---
+ip:        104.133.128.205
+port:      2072
+hostnames: ['ncc-poc-104-133-128-205.corp.google.com']
+
+--- Match 112 ---
+ip:        104.133.128.172
+port:      2008
+hostnames: ['ncc-poc-104-133-128-172.corp.google.com']
+
+--- Match 113 ---
+ip:        41.220.141.68
+port:      5248
+hostnames: ['cache.google.com', 'host-41-220-141-68.habari.co.tz']
+
+--- Match 114 ---
+ip:        104.133.128.113
+port:      1723
+hostnames: ['ncc-poc-104-133-128-113.corp.google.com']
+
+--- Match 115 ---
+ip:        104.133.128.74
+port:      55443
+hostnames: ['ncc-poc-104-133-128-74.corp.google.com']
+
+--- Match 116 ---
+ip:        104.133.128.63
+port:      16028
+hostnames: ['ncc-poc-104-133-128-63.corp.google.com']
+
+--- Match 117 ---
+ip:        104.133.128.215
+port:      12345
+hostnames: ['ncc-poc-104-133-128-215.corp.google.com']
+
+--- Match 118 ---
+ip:        104.133.128.119
+port:      7548
+hostnames: ['ncc-poc-104-133-128-119.corp.google.com']
+
+--- Match 119 ---
+ip:        104.133.128.120
+port:      1337
+hostnames: ['ncc-poc-104-133-128-120.corp.google.com']
+
+--- Match 120 ---
+ip:        104.133.128.171
+port:      10043
+hostnames: ['ncc-poc-104-133-128-171.corp.google.com']
+
+--- Match 121 ---
+ip:        104.133.128.133
+port:      12188
+hostnames: ['ncc-poc-104-133-128-133.corp.google.com']
+
+--- Match 122 ---
+ip:        104.133.128.117
+port:      9527
+hostnames: ['ncc-poc-104-133-128-117.corp.google.com']
+
+--- Match 123 ---
+ip:        104.133.128.40
+port:      18081
+hostnames: ['ncc-poc-104-133-128-40.corp.google.com']
+
+--- Match 124 ---
+ip:        219.124.146.148
+port:      443
+hostnames: ['i.ytimg.com', 'play-lh.googleusercontent.com', 'cache.google.com', 'xn--ngstr-lra8j.com']
+
+--- Match 125 ---
+ip:        104.133.128.215
+port:      593
+hostnames: ['ncc-poc-104-133-128-215.corp.google.com']
+
+--- Match 126 ---
+ip:        104.133.128.168
+port:      8728
+hostnames: ['ncc-poc-104-133-128-168.corp.google.com']
+
+--- Match 127 ---
+ip:        104.133.128.231
+port:      4434
+hostnames: ['ncc-poc-104-133-128-231.corp.google.com']
+
+--- Match 128 ---
+ip:        104.133.128.227
+port:      9001
+hostnames: ['ncc-poc-104-133-128-227.corp.google.com']
+
+--- Match 129 ---
+ip:        104.133.128.1
+port:      6464
+hostnames: ['ncc-poc-104-133-128-1.corp.google.com']
+
+--- Match 130 ---
+ip:        104.133.128.226
+port:      2087
+hostnames: ['ncc-poc-104-133-128-226.corp.google.com']
+
+--- Match 131 ---
+ip:        104.133.128.163
+port:      3173
+hostnames: ['ncc-poc-104-133-128-163.corp.google.com']
+
+--- Match 132 ---
+ip:        104.133.128.129
+port:      22609
+hostnames: ['ncc-poc-104-133-128-129.corp.google.com']
+
+--- Match 133 ---
+ip:        104.133.128.72
+port:      10037
+hostnames: ['ncc-poc-104-133-128-72.corp.google.com']
+
+--- Match 134 ---
+ip:        104.133.128.149
+port:      14147
+hostnames: ['ncc-poc-104-133-128-149.corp.google.com']
+
+--- Match 135 ---
+ip:        104.133.128.3
+port:      22380
+hostnames: ['ncc-poc-104-133-128-3.corp.google.com']
+
+--- Match 136 ---
+ip:        96.22.15.102
+port:      179
+hostnames: ['cache.google.com']
+
+--- Match 137 ---
+ip:        104.133.128.234
+port:      10249
+hostnames: ['ncc-poc-104-133-128-234.corp.google.com']
+
+--- Match 138 ---
+ip:        104.133.128.183
+port:      10909
+hostnames: ['ncc-poc-104-133-128-183.corp.google.com']
+
+--- Match 139 ---
+ip:        104.133.128.234
+port:      52230
+hostnames: ['ncc-poc-104-133-128-234.corp.google.com']
+
+--- Match 140 ---
+ip:        104.133.128.96
+port:      1599
+hostnames: ['ncc-poc-104-133-128-96.corp.google.com']
+
+--- Match 141 ---
+ip:        104.133.128.59
+port:      2154
+hostnames: ['ncc-poc-104-133-128-59.corp.google.com']
+
+--- Match 142 ---
+ip:        104.133.128.130
+port:      5083
+hostnames: ['ncc-poc-104-133-128-130.corp.google.com']
+
+--- Match 143 ---
+ip:        104.133.128.151
+port:      4369
+hostnames: ['ncc-poc-104-133-128-151.corp.google.com']
+
+--- Match 144 ---
+ip:        104.133.128.2
+port:      4664
+hostnames: ['ncc-poc-104-133-128-2.corp.google.com']
+
+--- Match 145 ---
+ip:        2001:4860:4806:8::
+port:      80
+hostnames: ['time3.google.com']
+
+--- Match 146 ---
+ip:        104.133.128.86
+port:      3016
+hostnames: ['ncc-poc-104-133-128-86.corp.google.com']
+
+--- Match 147 ---
+ip:        104.133.128.205
+port:      9803
+hostnames: ['ncc-poc-104-133-128-205.corp.google.com']
+
+--- Match 148 ---
+ip:        104.133.128.99
+port:      444
+hostnames: ['ncc-poc-104-133-128-99.corp.google.com']
+
+--- Match 149 ---
+ip:        104.133.128.63
+port:      32764
+hostnames: ['ncc-poc-104-133-128-63.corp.google.com']
+
+--- Match 150 ---
+ip:        104.133.128.83
+port:      12178
+hostnames: ['ncc-poc-104-133-128-83.corp.google.com']
+
+--- Match 151 ---
+ip:        104.133.128.199
+port:      1800
+hostnames: ['ncc-poc-104-133-128-199.corp.google.com']
+
+--- Match 152 ---
+ip:        104.133.128.130
+port:      995
+hostnames: ['ncc-poc-104-133-128-130.corp.google.com']
+
+--- Match 153 ---
+ip:        104.133.128.91
+port:      13443
+hostnames: ['ncc-poc-104-133-128-91.corp.google.com']
+
+--- Match 154 ---
+ip:        89.111.192.62
+port:      80
+hostnames: ['cache.google.com']
+
+--- Match 155 ---
+ip:        104.133.128.38
+port:      12452
+hostnames: ['ncc-poc-104-133-128-38.corp.google.com']
+
+--- Match 156 ---
+ip:        66.58.255.3
+port:      179
+hostnames: ['cache.google.com']
+
+--- Match 157 ---
+ip:        104.133.128.4
+port:      8086
+hostnames: ['ncc-poc-104-133-128-4.corp.google.com']
+
+--- Match 158 ---
+ip:        104.133.128.127
+port:      2087
+hostnames: ['ncc-poc-104-133-128-127.corp.google.com']
+
+--- Match 159 ---
+ip:        104.133.128.171
+port:      9011
+hostnames: ['ncc-poc-104-133-128-171.corp.google.com']
+
+--- Match 160 ---
+ip:        96.20.0.190
+port:      179
+hostnames: ['cache.google.com']
+
+--- Match 161 ---
+ip:        104.133.128.44
+port:      10034
+hostnames: ['ncc-poc-104-133-128-44.corp.google.com']
+
+--- Match 162 ---
+ip:        104.133.128.71
+port:      10016
+hostnames: ['ncc-poc-104-133-128-71.corp.google.com']
+
+--- Match 163 ---
+ip:        104.133.128.237
+port:      8842
+hostnames: ['ncc-poc-104-133-128-237.corp.google.com']
+
+--- Match 164 ---
+ip:        104.133.128.247
+port:      8140
+hostnames: ['ncc-poc-104-133-128-247.corp.google.com']
+
+--- Match 165 ---
+ip:        104.133.128.9
+port:      4444
+hostnames: ['ncc-poc-104-133-128-9.corp.google.com']
+
+--- Match 166 ---
+ip:        104.133.128.34
+port:      13082
+hostnames: ['ncc-poc-104-133-128-34.corp.google.com']
+
+--- Match 167 ---
+ip:        104.133.128.138
+port:      2057
+hostnames: ['ncc-poc-104-133-128-138.corp.google.com']
+
+--- Match 168 ---
+ip:        104.133.128.7
+port:      8731
+hostnames: ['ncc-poc-104-133-128-7.corp.google.com']
+
+--- Match 169 ---
+ip:        104.133.128.111
+port:      8086
+hostnames: ['ncc-poc-104-133-128-111.corp.google.com']
+
+--- Match 170 ---
+ip:        96.20.0.118
+port:      179
+hostnames: ['cache.google.com']
+
+--- Match 171 ---
+ip:        2001:4860:4806::
+port:      80
+hostnames: ['time1.google.com']
+
+--- Match 172 ---
+ip:        185.4.81.158
+port:      80
+hostnames: ['cache.google.com']
+
+--- Match 173 ---
+ip:        104.133.128.211
+port:      4444
+hostnames: ['ncc-poc-104-133-128-211.corp.google.com']
+
+--- Match 174 ---
+ip:        104.133.128.114
+port:      1987
+hostnames: ['ncc-poc-104-133-128-114.corp.google.com']
+
+--- Match 175 ---
+ip:        104.133.128.161
+port:      10554
+hostnames: ['ncc-poc-104-133-128-161.corp.google.com']
+
+--- Match 176 ---
+ip:        104.133.128.33
+port:      833
+hostnames: ['ncc-poc-104-133-128-33.corp.google.com']
+
+--- Match 177 ---
+ip:        104.133.128.163
+port:      9089
+hostnames: ['ncc-poc-104-133-128-163.corp.google.com']
+
+--- Match 178 ---
+ip:        104.133.128.158
+port:      55475
+hostnames: ['ncc-poc-104-133-128-158.corp.google.com']
+
+--- Match 179 ---
+ip:        96.20.0.186
+port:      179
+hostnames: ['cache.google.com']
+
+--- Match 180 ---
+ip:        104.133.128.161
+port:      9869
+hostnames: ['ncc-poc-104-133-128-161.corp.google.com']
+
+--- Match 181 ---
+ip:        104.133.128.32
+port:      5801
+hostnames: ['ncc-poc-104-133-128-32.corp.google.com']
+
+--- Match 182 ---
+ip:        104.133.128.198
+port:      9001
+hostnames: ['ncc-poc-104-133-128-198.corp.google.com']
+
+--- Match 183 ---
+ip:        104.133.128.83
+port:      6007
+hostnames: ['ncc-poc-104-133-128-83.corp.google.com']
+
+--- Match 184 ---
+ip:        104.133.128.180
+port:      16992
+hostnames: ['ncc-poc-104-133-128-180.corp.google.com']
+
+--- Match 185 ---
+ip:        104.133.128.252
+port:      3129
+hostnames: ['ncc-poc-104-133-128-252.corp.google.com']
+
+--- Match 186 ---
+ip:        104.133.128.209
+port:      32764
+hostnames: ['ncc-poc-104-133-128-209.corp.google.com']
+
+--- Match 187 ---
+ip:        104.133.128.184
+port:      2222
+hostnames: ['ncc-poc-104-133-128-184.corp.google.com']
+
+--- Match 188 ---
+ip:        104.133.128.92
+port:      7500
+hostnames: ['ncc-poc-104-133-128-92.corp.google.com']
+
+--- Match 189 ---
+ip:        104.133.128.102
+port:      10134
+hostnames: ['ncc-poc-104-133-128-102.corp.google.com']
+
+--- Match 190 ---
+ip:        192.178.164.129
+port:      443
+hostnames: ['googleplex.com', 'uberproxy.corp.google.com', 'yuphxer-in-f129.1e100.net']
+
+--- Match 191 ---
+ip:        104.133.128.87
+port:      9869
+hostnames: ['ncc-poc-104-133-128-87.corp.google.com']
+
+--- Match 192 ---
+ip:        35.201.61.50
+port:      443
+hostnames: ['googleplex.com', 'uberproxy.corp.google.com', '50.61.201.35.bc.googleusercontent.com']
+
+--- Match 193 ---
+ip:        104.133.128.230
+port:      4664
+hostnames: ['ncc-poc-104-133-128-230.corp.google.com']
+
+--- Match 194 ---
+ip:        104.133.128.166
+port:      12245
+hostnames: ['ncc-poc-104-133-128-166.corp.google.com']
+
+--- Match 195 ---
+ip:        104.133.128.186
+port:      4524
+hostnames: ['ncc-poc-104-133-128-186.corp.google.com']
+
+--- Match 196 ---
+ip:        2001:4860:4806:4::
+port:      80
+hostnames: ['time2.google.com']
+
+--- Match 197 ---
+ip:        104.133.128.37
+port:      10443
+hostnames: ['ncc-poc-104-133-128-37.corp.google.com']
+
+--- Match 198 ---
+ip:        104.133.128.87
+port:      5913
+hostnames: ['ncc-poc-104-133-128-87.corp.google.com']
+
+--- Match 199 ---
+ip:        104.133.128.146
+port:      8421
+hostnames: ['ncc-poc-104-133-128-146.corp.google.com']
+
+--- Match 200 ---
+ip:        104.133.128.235
+port:      54138
+hostnames: ['ncc-poc-104-133-128-235.corp.google.com']
+
+Done.

@@ -1,0 +1,13 @@
+type of |company_industry| = |<class 'dict'>|
+list keys of |company_industry| = |<class 'list'>|
+list keys of |company_industry| = |['Software Development', 'IT Services and IT Consulting', 'Business Consulting and Services']|
+type of |location| = |<class 'dict'>|
+list keys of |location| = |<class 'list'>|
+list keys of |location| = |['Seattle, Washington, United States', 'United States', 'San Francisco Bay Area']|
+type of |position_title| = |<class 'dict'>|
+list keys of |position_title| = |<class 'list'>|
+list keys of |position_title| = |['Software Engineer', 'Senior Software Engineer', 'Founder']|
+type of |company_size_range| = |<class 'dict'>|
+list keys of |company_size_range| = |<class 'list'>|
+list keys of |company_size_range| = |['10,001+ employees', '1-10 employees', '11-50 employees']|
+count for sof dev = |340|

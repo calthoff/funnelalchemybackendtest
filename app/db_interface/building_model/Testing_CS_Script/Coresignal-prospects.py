@@ -1,0 +1,1087 @@
+import os
+import sys
+import asyncio
+import json
+import requests
+import random
+from typing import List, Dict, Any, Optional
+
+import psycopg2
+from psycopg2 import Error
+from datetime import datetime
+
+
+from dotenv import load_dotenv
+from pathlib import Path
+
+dotenv_path = Path(__file__).parent / '.env'
+
+for i in range(3):
+    if dotenv_path.exists():
+        print(f"Found .env file !")
+        break
+    else:
+        print(f"WARNING: .env file does not exist at {dotenv_path}, trying parent directory...")
+        dotenv_path = dotenv_path.parent.parent / '.env'
+if not dotenv_path.exists():
+    raise FileNotFoundError(f"Could not find .env file in the directory tree starting from {Path(__file__).parent}")
+
+
+load_dotenv(dotenv_path)
+
+POSTGRES_HOST = os.getenv("POSTGRES_HOST", "127.0.0.1")
+POSTGRES_PORT = int(os.getenv("POSTGRES_PORT", "5432"))
+POSTGRES_USER = os.getenv("POSTGRES_USER", "postgres")
+POSTGRES_PWD = os.getenv("POSTGRES_PWD", "postgres")
+POSTGRES_DB = os.getenv("POSTGRES_DB", "postgres")
+db_url = f'postgresql+psycopg2://{POSTGRES_USER}:{POSTGRES_PWD}@{POSTGRES_HOST}:{POSTGRES_PORT}/{POSTGRES_DB}'
+
+Parameters = {}
+Parameters['min_employee_size']=0
+Parameters['max_employee_size']=0
+
+####################################################################################
+####################################################################################
+####################################################################################
+class CoreSignalService:
+    def __init__(self):
+        self.api_key = 'oxBN1X7gc2ThK3jNSSHCON0oILDZ4wp5'
+        self.base_url = "https://api.coresignal.com"
+        self.headers = {
+            "apikey": self.api_key,
+            "Content-Type": "application/json"
+        }
+    
+    def _is_city(self, location: str) -> bool:
+        """
+        Determine if a location is a city (contains comma) or a country
+        """
+        return ',' in location or 'Metro Area' in location
+    
+    def _expand_industry_keywords(self, industry: str) -> str:
+        """
+        Expand industry terms with common variations
+        """
+        expansions = {
+            'Cybersecurity': '"cybersecurity" OR "cyber security"',
+            'Information Technology & Services': '"Information Technology & Services" OR "IT Services" OR "Information Technology"'
+        }
+        return expansions.get(industry, f'"{industry}"')
+    
+    def build_search_query(self, company_profiles: List[Dict], personas: List[Dict], company_description: Dict={}) -> Dict[str, Any]:
+
+
+        query = {
+            "query": {
+                "bool": {
+                    "must": [
+                        {
+                            "nested": {
+                                "path": "experience",
+                                "query": {
+                                    "bool": {
+                                        "must": [
+                                            {
+                                                "term": {
+                                                    "experience.active_experience": 1
+                                                }
+                                            },
+                                            {
+                                                "exists": {
+                                                    "field": "experience.location"
+                                                }
+                                            },
+                                            {
+                                                "bool": {
+                                                    "must_not": [
+                                                        {
+                                                            "term": {
+                                                                "experience.location": ""
+                                                            }
+                                                        }
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    }
+                                }
+                            }
+                        }
+                    ]
+                }
+            }
+        }
+        
+        nested_must = query["query"]["bool"]["must"][0]["nested"]["query"]["bool"]["must"]
+        
+        icp = company_profiles[0] if company_profiles and len(company_profiles) > 0 else {}
+
+
+        persona = personas[0] if personas and len(personas) > 0 else {}
+        
+        # Handle position titles
+        if persona.get('position_title'):
+            titles = persona['position_title'] if isinstance(persona['position_title'], list) else [persona['position_title']]  # Handle single string or list
+            if titles:
+                if len(titles) == 1:
+                    nested_must.append({
+                        "match_phrase": {
+                            "experience.position_title": titles[0]
+                        }
+                    })
+                else:
+                    nested_must.append({
+                        "bool": {
+                            "should": [
+                                {"match_phrase": {"experience.position_title": title}} for title in titles
+                            ],
+                            "minimum_should_match": 1
+                        }
+                    })
+
+
+        # Position titles
+        if persona.get('title_keywords'):
+            titles = persona['title_keywords'] if isinstance(persona['title_keywords'], list) else [persona['title_keywords']]
+
+            Parameters['personas']= titles
+
+            if titles:
+                nested_must.append({
+                    "bool": {
+                        "should": [
+                            {"match_phrase": {"experience.position_title": title}} for title in titles
+                        ],
+                        "minimum_should_match": 1
+                    }
+                })
+
+
+
+        # Handle seniority levels
+        if persona.get('seniority_levels'):
+            seniority_levels = persona['seniority_levels'] if isinstance(persona['seniority_levels'], list) else [persona['seniority_levels']]
+            if seniority_levels:
+                if len(seniority_levels) == 1:
+                    nested_must.append({
+                        "match_phrase": {
+                            "experience.management_level": seniority_levels[0]
+                        }
+                    })
+                else:
+                    nested_must.append({
+                        "bool": {
+                            "should": [
+                                {"match_phrase": {"experience.management_level": level}} for level in seniority_levels
+                            ],
+                            "minimum_should_match": 1
+                        }
+                    })
+
+
+        # Handle company description
+#        if company_description and company_description.get('description'):
+#            description = company_description['description']
+#            nested_must.append({
+#                "query_string": {
+#                    "query": description,
+#                    "default_field": "experience.company_categories_and_keywords",
+#                    "default_operator": "AND"
+#                }
+#            })
+        
+        # Handle industries
+        if icp.get('industries'):
+            industries = icp['industries'] if isinstance(icp['industries'], list) else []
+            if industries:
+                if len(industries) == 1:
+                    nested_must.append({
+                        "match": {
+                            "experience.company_industry": industries[0]
+                        }
+                    })
+                else:
+                    expanded_queries = []
+                    for industry in industries:
+                        expanded_query = self._expand_industry_keywords(industry)
+                        expanded_queries.append(expanded_query)
+                    
+                    combined_query = " OR ".join(expanded_queries)
+                    
+                    nested_must.append({
+                        "bool": {
+                            "should": [
+                                {
+                                    "query_string": {
+                                        "query": combined_query,
+                                        "default_field": "experience.company_categories_and_keywords",
+                                        "default_operator": "OR"
+                                    }
+                                },
+                                {
+                                    "query_string": {
+                                        "query": combined_query,
+                                        "default_field": "experience.company_industry",
+                                        "default_operator": "OR"
+                                    }
+                                }
+                            ],
+                            "minimum_should_match": 1
+                        }
+                    })
+
+
+        # Handle locations - Using experience.location with potential partial matches
+        if icp.get('location'):
+            locations = icp['location'] if isinstance(icp['location'], list) else [icp['location']]
+            if locations:
+                location_should = []
+                for location in locations:
+                    location_should.append({
+                        "match_phrase": {
+                            "experience.location": location
+                        }
+                    })
+                if location_should:
+                    nested_must.append({
+                        "bool": {
+                            "should": location_should,
+                            "minimum_should_match": 1  # OR logic for multiple locations
+                        }
+                    })
+
+
+        # Handle technologies - search keywords inside long text fields
+        if icp.get('technologies'):
+            technologies = icp['technologies'] if isinstance(icp['technologies'], list) else [icp['technologies']]
+            if technologies:
+                tech_should = []
+                for technology in technologies:
+                    tech_should.append({
+                        "multi_match": {
+                            "query": technology,
+                            "fields": ["summary", "active_experience_description"],
+                            "operator": "or"
+                        }
+                    })
+                if tech_should:
+                    # top-level must (not nested)
+                    query["query"]["bool"]["must"].append({
+                        "bool": {
+                            "should": tech_should,
+                            "minimum_should_match": 1
+                        }
+                    })
+
+
+
+
+        # Employee size range
+        min_size = 0
+        max_size = 0
+        if icp.get('employee_size_range'):
+            size_ranges = icp['employee_size_range'] if isinstance(icp['employee_size_range'], list) else [icp['employee_size_range']]
+            if size_ranges:
+                min_size = float('inf')
+                max_size = 0
+                for size_range in size_ranges:
+                    if "-" in str(size_range):
+                        parts = str(size_range).split("-")
+                        if len(parts) == 2:
+                            try:
+                                range_min = int(parts[0])
+                                range_max = int(parts[1])
+                                min_size = min(min_size, range_min)
+                                max_size = max(max_size, range_max)
+                            except ValueError:
+                                print(f"Invalid size range format: {size_range}")
+                                continue
+                    elif str(size_range).endswith("+"):
+                        try:
+                            min_size = min(min_size, int(str(size_range).replace("+", "")))
+                            max_size = float('inf')
+                        except ValueError:
+                            print(f"Invalid size range format: {size_range}")
+                            continue
+                if min_size != float('inf'):
+                    Parameters['min_employee_size']=min_size
+                    range_filter = {
+                        "range": {
+                            "experience.company_employees_count": {
+                                "gte": min_size
+                            }
+                        }
+                    }
+                    if max_size != float('inf'):
+                        Parameters['max_employee_size']=max_size
+                        range_filter["range"]["experience.company_employees_count"]["lte"] = max_size
+                    nested_must.append(range_filter)
+                else:
+                    print("No valid employee size ranges provided; skipping range filter")
+
+        print(f"\n\nVVVVVVVVVVVVVVVVVVVVVV val of min size = |{min_size}| amd max size =|{max_size}|")    
+
+
+        # Handle revenue range
+        if icp.get('revenue_range'):
+            revenue_ranges = icp['revenue_range'] if isinstance(icp['revenue_range'], list) else []
+            if revenue_ranges:
+                min_revenue = float('inf')
+                max_revenue = 0
+                
+                for revenue_range in revenue_ranges:
+                    if "-" in str(revenue_range):
+                        parts = str(revenue_range).split("-")
+                        if len(parts) == 2:
+                            try:
+                                min_val = parts[0].replace("M", "").replace("$", "").strip()
+                                max_val = parts[1].replace("M", "").replace("$", "").strip()
+                                min_revenue = min(min_revenue, int(min_val) * 1000000)
+                                max_revenue = max(max_revenue, int(max_val) * 1000000)
+                            except ValueError:
+                                continue
+                    elif str(revenue_range).endswith("+"):
+                        try:
+                            val = str(revenue_range).replace("+", "").replace("M", "").replace("$", "").strip()
+                            min_revenue = min(min_revenue, int(val) * 1000000)
+                            max_revenue = float('inf')
+                        except ValueError:
+                            continue
+                
+                if min_revenue != float('inf'):
+                    range_filter = {
+                        "bool": {
+                            "should": [
+                                {
+                                    "range": {
+                                        "experience.company_annual_revenue_source_1": {
+                                            "gte": min_revenue
+                                        }
+                                    }
+                                },
+                                {
+                                    "range": {
+                                        "experience.company_annual_revenue_source_5": {
+                                            "gte": min_revenue
+                                        }
+                                    }
+                                }
+                            ],
+                            "minimum_should_match": 1
+                        }
+                    }
+                    
+                    if max_revenue != float('inf'):
+                        range_filter["bool"]["should"][0]["range"]["experience.company_annual_revenue_source_1"]["lte"] = max_revenue
+                        range_filter["bool"]["should"][1]["range"]["experience.company_annual_revenue_source_5"]["lte"] = max_revenue
+                    
+                    nested_must.append(range_filter)
+        
+        return query
+####################################################################################
+####################################################################################
+####################################################################################
+    
+    def _expand_industry_keywords(self, industry: str) -> str:
+        industry_lower = industry.lower().strip()
+        
+        industry_abbreviations = {
+            'saas': ['saas', 'software as a service'],
+            'ai': ['ai', 'artificial intelligence'],
+            'fintech': ['fintech', 'financial technology'],
+            'healthtech': ['healthtech', 'health technology'],
+            'edtech': ['edtech', 'education technology'],
+            'cybersecurity': ['cybersecurity', 'cyber security'],
+            'blockchain': ['blockchain', 'cryptocurrency'],
+            'ecommerce': ['ecommerce', 'e-commerce'],
+            'biotech': ['biotech', 'biotechnology'],
+            'cleantech': ['cleantech', 'clean technology'],
+            'martech': ['martech', 'marketing technology'],
+            'hrtech': ['hrtech', 'hr technology'],
+            'proptech': ['proptech', 'property technology'],
+            'agtech': ['agtech', 'agricultural technology'],
+            'telecom': ['telecom', 'telecommunications'],
+            'ml': ['ml', 'machine learning'],
+            'iot': ['iot', 'internet of things'],
+            'vr': ['vr', 'virtual reality'],
+            'ar': ['ar', 'augmented reality'],
+            'api': ['api', 'application programming interface'],
+            'crm': ['crm', 'customer relationship management'],
+            'erp': ['erp', 'enterprise resource planning'],
+            'hr': ['hr', 'human resources'],
+            'it': ['it', 'information technology'],
+            'ui': ['ui', 'user interface'],
+            'ux': ['ux', 'user experience'],
+            'seo': ['seo', 'search engine optimization'],
+            'sem': ['sem', 'search engine marketing'],
+            'ppc': ['ppc', 'pay per click'],
+            'cpa': ['cpa', 'cost per acquisition'],
+            'roi': ['roi', 'return on investment'],
+            'kpi': ['kpi', 'key performance indicator'],
+            'b2b': ['b2b', 'business to business'],
+            'b2c': ['b2c', 'business to consumer'],
+            'paas': ['paas', 'platform as a service'],
+            'iaas': ['iaas', 'infrastructure as a service']
+        }
+        
+        if industry_lower in industry_abbreviations:
+            variations = industry_abbreviations[industry_lower]
+            return ' OR '.join([f'"{var}"' for var in variations])
+        
+        return f'"{industry}"'
+    
+    def _is_city(self, location: str) -> bool:
+        countries = {
+            'United States', 'USA', 'US', 'Canada', 'United Kingdom', 'UK', 'Germany', 
+            'France', 'Italy', 'Spain', 'Netherlands', 'Belgium', 'Switzerland', 
+            'Austria', 'Sweden', 'Norway', 'Denmark', 'Finland', 'Poland', 'Japan', 
+            'China', 'India', 'Singapore', 'Australia', 'New Zealand', 
+            'Brazil', 'Mexico', 'Argentina', 'Chile', 'Colombia', 'South Africa', 
+            'Nigeria', 'Kenya', 'Egypt', 'Morocco', 'Tunisia', 'Russia', 'Ukraine', 
+            'Belarus', 'Kazakhstan', 'Turkey', 'Israel', 'Saudi Arabia', 'UAE', 
+            'Qatar', 'Kuwait', 'Bahrain', 'Thailand', 'Vietnam', 'Malaysia', 
+            'Indonesia', 'Philippines', 'Taiwan', 'Hong Kong', 'Macau'
+        }
+        return location not in countries
+    
+    #async def search_prospects(self, company_profiles: List[Dict], personas: List[Dict], company_description: Dict={}, limit: int) -> List[Dict]:
+    async def search_prospects(self, company_profiles: List[Dict], personas: List[Dict],  limit: int) -> List[Dict]:
+        try:
+            #query = self.build_search_query(company_profiles, personas, company_description)
+            query = self.build_search_query(company_profiles, personas)
+            
+            print(f"CoreSignal Search Query: {query}")
+            print(f"CoreSignal Headers: {self.headers}")
+            
+            response = requests.post(
+                f"{self.base_url}/cdapi/v2/employee_multi_source/search/es_dsl",
+                headers=self.headers,
+                json=query,
+                timeout=30
+            )
+            
+            if response.status_code != 200:
+                print(f"CoreSignal API error: {response.status_code} - {response.text}")
+                raise Exception(f"CoreSignal API returned {response.status_code}: {response.text}")
+            
+            data = response.json()
+            prospect_ids = data if isinstance(data, list) else []
+            print(f"Found {len(prospect_ids)} prospect IDs from CoreSignal API")
+            #print(f"Prospect IDs: {prospect_ids}")
+            if len(prospect_ids) > limit:
+                selected_prospect_ids = random.sample(prospect_ids, limit)
+            else:
+                selected_prospect_ids = prospect_ids
+            
+            transformed_prospects = []
+            prospects_list = []
+            for prospect_id in selected_prospect_ids:
+                try:
+                    prospect_data = await self.get_prospect_details(prospect_id)
+                    prospects_list.append(prospect_data)
+                    with open('test_data2.json', 'a') as file:
+                        json.dump(prospect_data, file, indent=4)
+                    #if prospect_data:
+                        #transformed_prospect = self.transform_prospect_data(prospect_data)
+                        #transformed_prospects.append(transformed_prospect)
+                except Exception as e:
+                    print(f"Failed to get details for prospect {prospect_id}: {str(e)}")
+                    continue
+            
+            print(f"Successfully transformed {len(prospects_list)} prospects from CoreSignal")
+            #return transformed_prospects
+            return data, prospects_list
+            
+        except Exception as e:
+            print(f"Error searching CoreSignal prospects: {str(e)}")
+            raise Exception(f"Failed to search CoreSignal prospects: {str(e)}")
+    
+    async def get_prospect_details(self, prospect_id: int) -> Optional[Dict]:
+        try:
+            response = requests.get(
+                f"{self.base_url}/cdapi/v2/employee_multi_source/collect/{prospect_id}",
+                headers=self.headers,
+                timeout=30
+            )
+            
+            if response.status_code != 200:
+                print(f"CoreSignal prospect details error: {response.status_code} - {response.text}")
+                return None
+            return response.json()
+            
+        except Exception as e:
+            print(f"Error getting prospect details for {prospect_id}: {str(e)}")
+            return None
+    
+    def transform_prospect_data(self, prospect_data: Dict) -> Dict:
+        active_experience = None
+        for exp in prospect_data.get('experience', []):
+            if exp.get('active_experience') == 1:
+                active_experience = exp
+                break
+        
+        if not active_experience:
+            active_experience = prospect_data.get('experience', [{}])[0] if prospect_data.get('experience') else {}
+        
+        return prospect_data
+
+
+
+
+
+
+
+#########################################################################################
+# now my funcitons here...............
+#
+def get_full_prospects_list(vendorname):
+    """
+    Retrieves a list of all vendorid values from the prospects table for a specific vendor.
+
+    Args:
+        vendorname (str): The name of the vendor to filter by.
+
+    Returns:
+        list: A list of all vendorid values (as strings) from the prospects table for the given vendor.
+    """
+    try:
+        # Use the database connection details from the provided script
+        connection = psycopg2.connect(
+            host=POSTGRES_HOST,
+            port=POSTGRES_PORT,
+            user=POSTGRES_USER,
+            password=POSTGRES_PWD,
+            database=POSTGRES_DB
+        )
+        
+        # Create a cursor to execute the query
+        cursor = connection.cursor()
+        
+        # Query to select all vendorid values from the prospects table for the given vendorname
+        cursor.execute("SELECT vendorid FROM prospects WHERE vendorname = %s", (vendorname,))
+        
+        # Fetch all results and extract vendorids into a list
+        prospect_vendorids = [row[0] for row in cursor.fetchall()]
+        
+        return prospect_vendorids
+    
+    except Error as e:
+        print(f"Error connecting to PostgreSQL or executing query: {e}")
+        return []
+    
+    finally:
+        # Close cursor and connection if they were created
+        if cursor:
+            cursor.close()
+        if connection:
+            connection.close()
+
+######################################################################
+######################################################################
+def insert_or_update_prospects(vendorname, prospects_list, existing_ids):
+    """
+    Inserts or updates prospect records in the prospects table based on vendorid.
+
+    Args:
+        vendorname (str): Name of the vendor providing the data.
+        prospects_list (list): List of dictionaries, each representing a prospect.
+        existing_ids (list): List of vendorid values already in the prospects table.
+
+    Returns:
+        dict: Summary of operations performed, e.g., {'inserted': count, 'updated': count, 'errors': count}.
+    """
+    summary = {'inserted': 0, 'updated': 0, 'errors': 0}
+
+    print(f"\n\ntype of parameters = |{type(Parameters)}|")
+    print(f"keys of parameters = |{Parameters.keys()}|")
+    print(f"value of pam MAX SIZE = |{Parameters['max_employee_size']}|")
+    print(f"value of pam MIN SIZE = |{Parameters['min_employee_size']}|")
+    print(f"value of list titole keywords = |{Parameters['personas']}|\n\n")
+    
+    try:
+        # Connect to the database
+        connection = psycopg2.connect(
+            host=POSTGRES_HOST,
+            port=POSTGRES_PORT,
+            user=POSTGRES_USER,
+            password=POSTGRES_PWD,
+            database=POSTGRES_DB
+        )
+        cursor = connection.cursor()
+
+        for prospect_data in prospects_list:
+            try:
+                # Extract fields
+                vendorid = str(prospect_data.get('id'))  # Assuming 'id' maps to vendorid
+                full_name = prospect_data.get('full_name')
+                first_name = prospect_data.get('first_name')
+                last_name = prospect_data.get('last_name')
+                linkedin_url = prospect_data.get('linkedin_url')
+                is_deleted = prospect_data.get('is_deleted')
+                
+                # Handle date fields
+                def parse_timestamp(timestamp_str):
+                    if timestamp_str:
+                        try:
+                            return datetime.strptime(timestamp_str, '%Y-%m-%dT%H:%M:%S.%fZ')
+                        except ValueError:
+                            return None
+                    return None
+                
+                created_at = parse_timestamp(prospect_data.get('created_at'))
+                updated_at = parse_timestamp(prospect_data.get('updated_at'))
+                checked_at = parse_timestamp(prospect_data.get('checked_at'))
+                changed_at = parse_timestamp(prospect_data.get('changed_at'))
+                
+                phone_number = prospect_data.get('phone_number')
+                email_address = prospect_data.get('primary_professional_email')
+                vendordata = json.dumps(prospect_data)
+
+                print(f"\n\nPPPPPPPPPPPPPFULL Name = |{full_name}|")
+                print(f"type of vendordata = |{type(vendordata)}|")
+                print(f"value of positin title = |{prospect_data.get('experience', [])[0].get('position_title', '').lower()}|")
+                print(f"value of emp count = |{prospect_data.get('experience', [])[0].get('company_employees_count', 0)}|\n\n")
+
+                #test if title has at least one teh defined keyword, otherwise "continue"
+                # same for employee count
+                if(Parameters['max_employee_size'] !=0):
+                    emp_count = (prospect_data.get('experience', [])[0].get('company_employees_count', 0))
+
+                    print(f"CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC EP CUNT = |{emp_count}|")
+
+                    if( (emp_count < Parameters['min_employee_size']) or (emp_count > Parameters['max_employee_size']) ):
+                        continue
+                emp_position_title = prospect_data.get('experience', [])[0].get('position_title', '').lower()
+                list_titles = Parameters['personas']
+                       
+                # Check if any title keyword is in emp_position_title
+                is_valid_title = any(keyword.lower() in emp_position_title for keyword in list_titles)
+
+                # Output result
+                if not (is_valid_title):
+                    continue
+                    
+                #print(f"AAAAAAAAAAAA  CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC EP CUNT = |{emp_count}|")
+                
+
+                # Common fields for both insert and update
+                params = (
+                    vendorname,
+                    vendorid,
+                    is_deleted,
+                    created_at,
+                    updated_at,
+                    checked_at,
+                    changed_at,
+                    linkedin_url,
+                    full_name,
+                    first_name,
+                    last_name,
+                    phone_number,
+                    email_address,
+                    vendordata,
+                    updated_at,  # vendor_last_updated
+                    'active'     # status
+                )
+
+                if vendorid in existing_ids:
+                    # Update existing record
+                    cursor.execute("""
+                        SELECT nb_duplicate_received FROM prospects
+                        WHERE vendorname = %s AND vendorid = %s
+                    """, (vendorname, vendorid))
+                    current_count = cursor.fetchone()[0] or 0
+                    new_count = current_count + 1
+
+                    update_query = """
+                        UPDATE prospects
+                        SET is_deleted = %s,
+                            updated_at = %s,
+                            checked_at = %s,
+                            changed_at = %s,
+                            linkedin_url = %s,
+                            full_name = %s,
+                            first_name = %s,
+                            last_name = %s,
+                            phone_number = %s,
+                            email_address = %s,
+                            vendordata = %s,
+                            vendor_last_updated = %s,
+                            status = %s,
+                            nb_duplicate_received = %s
+                        WHERE vendorname = %s AND vendorid = %s
+                    """
+                    update_params = (
+                        is_deleted,
+                        updated_at,
+                        checked_at,
+                        changed_at,
+                        linkedin_url,
+                        full_name,
+                        first_name,
+                        last_name,
+                        phone_number,
+                        email_address,
+                        vendordata,
+                        updated_at,
+                        'active',
+                        new_count,
+                        vendorname,
+                        vendorid
+                    )
+                    cursor.execute(update_query, update_params)
+                    summary['updated'] += 1
+                else:
+                    # Insert new record
+                    print(f"inserting new record |{full_name}|")
+                    insert_query = """
+                        INSERT INTO prospects (
+                            vendorname, vendorid, is_deleted, created_at, updated_at,
+                            checked_at, changed_at, linkedin_url, full_name, first_name,
+                            last_name, phone_number, email_address, vendordata,
+                            vendor_last_updated, status, nb_duplicate_received
+                        )
+                        VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+                    """
+                    insert_params = params + (0,)  # Append nb_duplicate_received
+                    cursor.execute(insert_query, insert_params)
+                    summary['inserted'] += 1
+
+            except Exception as e:
+                print(f"Error processing prospect data: {e}")
+                summary['errors'] += 1
+                continue
+
+        # Commit the transaction
+        connection.commit()
+        return summary
+
+    except Error as e:
+        print(f"Database error: {e}")
+        summary['errors'] += len(prospects_list)
+        return summary
+
+    finally:
+        if cursor:
+            cursor.close()
+        if connection:
+            connection.close()
+
+######################################################################
+######################################################################
+
+
+
+
+def main():
+    # Section 1: Define the parameters
+    print("Defining Parameters")
+    
+####################################################################
+####################################################################
+# company profiles (Washington Software / AI ICP)
+
+
+
+    company_profiles = [{
+     #   "industries": [
+     #      "Information Technology & Services",
+     #       "Financial Services",
+     #       "Insurance",
+     #       "Hospital & Health Care",
+     #       "Biotechnology",
+     #       "Computer Software",
+     #       "Information Services",
+     #       "Defense & Space",
+     #       "Government Administration",
+     #       "Utilities",
+     #       "Oil & Energy",
+     #       "Higher Education",
+     #       "Education Management",
+     #       "Electrical & Electronic Manufacturing",
+     #       "Retail",
+     #       "Legal Services",            
+     #       "Accounting"
+     #   ],
+
+#        'technologies': [
+#            "Microsoft E5 Security",
+#            "Microsoft E5",
+#            "Microsoft 365 E5",
+#            "Microsoft 365"
+#        ],
+        #'employee_size_range': ['100-200000'], #within ['1-10 ', '11-50 ', '51-200', 201-500, 501-1000, 1001-5000, 5001-10,000, '10,001+ ']
+        #'revenue_range': ['1M-10M', '2M-20M'],
+
+        'location': ['United States'],
+         
+    }]
+
+    # personas
+    personas = [{
+        'title_keywords': [
+        "mssp_decision_maker_titles",
+        "Chief Information Officer (CIO)",
+        "Chief Technology Officer (CTO)",
+        "Chief Information Security Officer (CISO)",
+        "Chief Security Officer (CSO)",
+        "Chief Risk Officer (CRO)",
+        "Chief Compliance Officer (CCO)",
+        "VP of Information Technology",
+        "VP of IT Security",
+        "VP of Security",
+        "VP of Risk",
+        "VP of Compliance",
+        "Director of IT",
+        "Director of Information Security",
+        "Director of Cybersecurity",
+        "Director of Security Operations",
+        "Director of Risk Management",
+        "Director of Compliance",
+        "Director of Network Security",
+        "Director of Infrastructure"
+        "VP of Security",
+        "Director of Security",
+         "Head of Security"
+         "CISO",
+         "Chief Information Security Officer"
+         "CIO",
+         "CTO",
+         "VP of IT",
+         "Director of IT"
+        ],
+
+        #'seniority_levels': ["cxo", "vp", "director"]
+        #'buying_roles': ['Decision Maker', 'Influencer']
+    }]
+
+
+#        'title_keywords': [
+#            "VP of Security",
+#            "Director of Security",
+#            "Head of Security"
+#            "CISO",
+#            "Chief Information Security Officer"
+#            ],
+
+
+
+
+
+#    company_description = {
+#        'description': ''
+#    }
+
+
+
+    #personas = [{
+    #    'title_keywords': [
+    #        "CISO",
+    #        "Chief Information Security Officer",
+    #        "CIO",
+    #        "CTO",
+    #        "VP of IT",
+    #        "VP of Security",
+    #        "Director of IT",
+    #        "Director of Security",
+    #        "Head of Security"
+    #        ],
+
+
+
+    """
+    company_profiles = [{
+        'industries': [
+            "Professional Services",
+            "Construction",
+            "Retail",
+            "Hospitality",
+            "Healthcare",
+            "Manufacturing",
+            "Logistics"
+        ],
+        'employee_size_range': ['11-50', '51-200', '201-500'], #within ['1-10 ', '11-50 ', '51-200', 201-500, 501-1000, 1001-5000, 5001-10,000, '10,001+ ']
+        #'revenue_range': ['1M-10M', '2M-20M'],
+
+        'location': ['Los Angeles'],
+         
+    }]
+
+    # personas
+    personas = [{
+        'title_keywords': [
+            "Owner",
+            "President",
+            "Founder",
+            "CEO",
+            "COO",
+            "IT Manager",
+            "Head of IT",
+            "Director of IT"            
+            ],
+        'seniority_levels': ["owner", "cxo", "vp", "director", "manager"],
+        'buying_roles': ['Decision Maker', 'Influencer']
+    }]
+
+    company_description = {
+        'description': ''
+    }
+    """
+
+
+
+
+
+        #'description': 'local services OR retail OR construction OR hospitality OR healthcare OR professional services OR manufacturing OR logistics'
+
+
+    """
+    company_description = {
+        'description': ''
+    }
+
+    company_profiles = [{
+        'industries': [
+            'Computer Software',
+            'Information Technology & Services',
+            'Computer Software',
+            'Artificial Intelligence',
+            'Cybersecurity'
+        ],
+
+
+        'location': [
+            'Washington D.C. Metro Area',
+            'Seattle, Washington, United States',
+            'Washington, United States',
+            'Bothell, Washington, United States',
+            'North Bend, Washington, United States',
+            'Bellingham, Washington, United States',
+            'Burlington, Washington, United States',
+            'Tacoma, Washington, United States'            
+        ]        
+#        'City': ['Seattle'],
+         
+    }]
+
+    personas = [{
+        'position_title': ['Software Engineer']
+    }]
+
+#    personas = [{
+#        'title_keywords': [
+#            'Software Engineer'
+#            'Software Developer',
+#            'AI Engineer',
+#            'Director of Engineering',
+#            'Project Manager',
+#            'Chief Talent Officer',
+#            'Hiring Manager',
+#            'Director of HR',
+#            'L&D Lead',
+#            'CIO',
+#            'CTO'
+#        ]
+
+
+            #'Software Engineer'
+    """
+
+
+
+
+####################################################################
+####################################################################
+
+    # search limit
+    #limit = 2
+    #limit = 5
+    #limit = 50
+    #limit = 100
+    limit = 1000
+    #limit = 10000
+    #limit = 2500
+    #limit = 200
+
+####################################################################
+
+
+    # Section 2: Initialize the CoreSignal service
+    print("Initializing Service")
+    try:
+        coresignal_service = CoreSignalService()
+        print("Service initialized")
+    except ValueError as e:
+        print(f"Error: {e}")
+        print("Make sure to set CORESIGNAL_API_KEY environment variable")
+        return
+    
+    # Section 3: Build the Elasticsearch DSL query
+    print("Building Search Query")
+    try:
+        #query = coresignal_service.build_search_query(company_profiles=company_profiles, personas=personas, company_description=company_description)
+        query = coresignal_service.build_search_query(company_profiles=company_profiles, personas=personas )
+        print("Query built successfully")
+        print(f"Query preview: {json.dumps(query, indent=2)[:300]}...")
+    except Exception as e:
+        print(f"Error building query: {e}")
+        return
+    print()
+    
+    # Section 4: Call the API and get results
+    print("Calling CoreSignal API")
+    try:
+        async def search_prospects():
+            return await coresignal_service.search_prospects(
+                company_profiles=company_profiles,
+                personas=personas,
+                limit=limit
+            )
+        
+        #company_description=company_description,
+        idlist, prospects_json_list = asyncio.run(search_prospects())
+        
+        print(f"API call successful!")
+        #print(f"Found {len(prospects)} prospects")
+        print(f"Found |{len(prospects_json_list)}| in prospects JSON LIST")
+        
+
+        #get the full list of existing prospects
+        existing_prospects_list = get_full_prospects_list("coresignal")
+
+
+        insert_or_update_prospects("coresignal", prospects_json_list, existing_prospects_list)
+
+
+        ## Display results
+        #print("\nResults")
+        #for i, prospect in enumerate(prospects_json_list, 1):
+        #    print(f"\nProspect {i}:")
+        #    print(f"  Name: {prospect.get('first_name', '')} {prospect.get('last_name', '')}")
+        #    print(f"  Title: {prospect.get('job_title', '')}")
+        #    print(f"  Company: {prospect.get('company_name', '')}")
+        #    print(f"  Email: {prospect.get('email', '')}")
+        #    print(f"  LinkedIn: {prospect.get('linkedin_url', '')}")
+        
+        ## Save to JSON file
+        #with open("coresignal_results.json", 'w') as f:
+        #    json.dump(prospects, f, indent=2)
+        #print(f"\nResults saved to: coresignal_results.json")
+        
+    except Exception as e:
+        print(f"Error calling API: {e}")
+        return
+    
+    print("\nExample completed")
+
+
+def main2():
+    #test the get list from database 
+    id_list = get_full_prospects_list("coresignal")
+    print(f"size of id_list = |{len(id_list)}|")    
+
+if __name__ == "__main__":
+    main()
+    #main2()
+
+

@@ -1,0 +1,8 @@
+
+
+POSTGRES_ENDPOINT = "funnel-prospects.c9cu68eyszlt.us-west-2.rds.amazonaws.com"
+POSTGRES_PORT =  "5432"
+POSTGRES_DBNAME = "prospects_master"
+POSTGRES_IAM_USER =  "app_ext_dev"
+POSTGRES_REGION = "us-west-2"
+

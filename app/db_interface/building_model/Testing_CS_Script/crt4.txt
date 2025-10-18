@@ -1,0 +1,21 @@
+Type of response = |<class 'list'>|
+
+|2025-03-18T20:54:29.568| || |NB: 2025-03-18T00:00:00| || |vpn.camsic.commerce.gov| --- |vpn.camsic.commerce.gov|
+|2025-03-18T19:44:13.534| || |NB: 2025-03-18T00:00:00| || |vpn.camsic.commerce.gov| --- |vpn.camsic.commerce.gov|
+|2025-02-26T06:08:51.377| || |NB: 2024-02-06T00:00:00| || |vpn.camsic.commerce.gov| --- |vpn.camsic.commerce.gov|
+|2024-02-06T15:56:28.007| || |NB: 2024-02-06T00:00:00| || |vpn.camsic.commerce.gov| --- |vpn.camsic.commerce.gov|
+|2023-02-02T19:45:48.684| || |NB: 2023-02-02T00:00:00| || |vpn.camsic.commerce.gov| --- |vpn.camsic.commerce.gov|
+|2023-02-02T19:41:54.182| || |NB: 2023-02-02T00:00:00| || |vpn.camsic.commerce.gov| --- |vpn.camsic.commerce.gov|
+|2022-02-09T03:50:50.116| || |NB: 2022-02-01T00:00:00| || |vpn.camsic.commerce.gov| --- |vpn.camsic.commerce.gov|
+|2022-02-01T14:59:47.745| || |NB: 2022-02-01T00:00:00| || |vpn.camsic.commerce.gov| --- |vpn.camsic.commerce.gov|
+|2021-04-11T23:03:48.093| || |NB: 2021-02-16T00:00:00| || |vpn.camsic.commerce.gov| --- |vpn.camsic.commerce.gov|
+|2021-02-16T16:22:20.503| || |NB: 2021-02-16T00:00:00| || |vpn.camsic.commerce.gov| --- |vpn.camsic.commerce.gov|
+|2019-02-26T08:31:08.092| || |NB: 2019-02-15T00:00:00| || |vpn.camsic.commerce.gov| --- |vpn.camsic.commerce.gov|
+|2019-02-15T17:25:22.74| || |NB: 2019-02-15T00:00:00| || |vpn.camsic.commerce.gov| --- |vpn.camsic.commerce.gov|
+|2019-02-15T16:16:26.817| || |NB: 2019-02-15T00:00:00| || |vpn.camsic.commerce.gov| --- |vpn.camsic.commerce.gov|
+|2018-09-25T19:38:40.057| || |NB: 2018-09-25T00:00:00| || |vpn.camsic.commerce.gov| --- |vpn.camsic.commerce.gov|
+|2018-01-05T13:19:12.461| || |NB: 2017-09-28T00:00:00| || |vpn.camsic.commerce.gov| --- |vpn.camsic.commerce.gov|
+|2017-12-05T13:02:58.098| || |NB: 2016-01-21T00:00:00| || |vpn.camsic.commerce.gov| --- |vpn.camsic.commerce.gov|
+|2017-09-28T19:00:03.992| || |NB: 2017-09-28T00:00:00| || |vpn.camsic.commerce.gov| --- |vpn.camsic.commerce.gov|
+|2016-10-02T08:16:57.921| || |NB: 2013-02-27T00:00:00| || |vpn.camsic.commerce.gov| --- |vpn.camsic.commerce.gov|
+|2016-01-21T19:20:01.686| || |NB: 2016-01-21T00:00:00| || |vpn.camsic.commerce.gov| --- |vpn.camsic.commerce.gov|

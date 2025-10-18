@@ -1,0 +1,577 @@
+bucket,company_domain,company_host,provider,ip,port,asn,country,product,timestamp,hostnames
+fortinet,csd49.org,vpn.csd49.org,Washington School Information Processing Cooperative,169.204.239.34,443,AS10430,US,FortiGate,2025-10-06T21:31:26.483312,vpn.csd49.org
+fortinet,servercentral.net,unknown.servercentral.net,DEFT.COM,50.31.130.189,443,AS23352,US,CSRF,2025-10-06T21:29:36.350380,unknown.servercentral.net
+fortinet,linodeusercontent.com,192-155-88-81.ip.linodeusercontent.com,Linode,192.155.88.81,7788,AS63949,US,FortiGate,2025-10-06T21:26:44.104602,192-155-88-81.ip.linodeusercontent.com
+fortinet,metronetinc.net,1639540-v116.1429-static.wsfdindl.metronetinc.net,Metronet,208.38.246.241,443,AS30600,US,Fortinet FortiGate-60F,2025-10-06T21:22:54.271098,1639540-v116.1429-static.wsfdindl.metronetinc.net
+fortinet,spectrum.com,syn-098-144-060-177.res.spectrum.com,Charter Communications Inc,98.144.60.177,541,AS10796,US,Fortinet FortiGate,2025-10-06T21:22:36.148471,syn-098-144-060-177.res.spectrum.com
+fortinet,comcastbusiness.net,75-151-180-57-Philadelphia.hfc.comcastbusiness.net,"Comcast Cable Communications, LLC",75.151.180.57,8009,AS7922,US,FortiGate Endpoint Control httpd,2025-10-06T21:22:34.238157,75-151-180-57-Philadelphia.hfc.comcastbusiness.net
+fortinet,midco.net,24-111-44-114-static.midco.net,Midcontinent Communications,24.111.44.114,443,AS11232,US,Fortinet FortiGate-60E-POE,2025-10-06T21:22:06.444974,24-111-44-114-static.midco.net
+fortinet,ussignalcom.net,customer-64-141-169-162.host.ussignalcom.net,"US Signal Company, L.L.C.",64.141.169.162,443,AS26554,US,FortiGate,2025-10-06T21:21:08.931676,customer-64-141-169-162.host.ussignalcom.net
+fortinet,naturalwireless.com,178.88.119.52.naturalwireless.com,"Natural Wireless, LLC",52.119.88.178,443,AS18616,US,FortiGate,2025-10-06T21:20:55.684924,178.88.119.52.naturalwireless.com
+fortinet,sbcglobal.net,45-16-101-161.lightspeed.sntcca.sbcglobal.net,"AT&T Enterprises, LLC",45.16.101.161,443,AS7018,US,FortiGate,2025-10-06T21:20:48.327075,45-16-101-161.lightspeed.sntcca.sbcglobal.net
+fortinet,grandenetworks.net,66-90-173-53.static.grandenetworks.net,"Grande Communications Networks, LLC",66.90.173.53,443,AS7459,US,FortiGate,2025-10-06T21:20:22.884431,66-90-173-53.static.grandenetworks.net
+fortinet,centurylink.net,209-201-26-194.dia.static.centurylink.net,"CenturyLink Communications, LLC",209.201.26.194,443,AS209,US,FortiGate,2025-10-06T21:20:10.240656,209-201-26-194.dia.static.centurylink.net
+fortinet,cox.net,wsip-184-187-100-137.hr.hr.cox.net,Cox Communications Inc.,184.187.100.137,443,AS22773,US,Fortinet FortiGate-61E,2025-10-06T21:20:03.917462,wsip-184-187-100-137.hr.hr.cox.net
+fortinet,frontiernet.net,47-146-170-82.fdr01.hnbh.ca.ip.frontiernet.net,"Frontier Communications of America, Inc.",47.146.170.82,8443,AS5650,US,FortiGate,2025-10-06T21:19:40.742734,47-146-170-82.fdr01.hnbh.ca.ip.frontiernet.net
+microsoft,kennedykrieger.org,kennedykrieger.org,Kennedy Krieger,160.72.44.109,443,AS46887,US,Microsoft IIS httpd,2025-10-06T21:19:38.559031,160.72.44.109.lightower.net;kennedykrieger.org
+fortinet,bestline.net,h216-16-192-206.bestline.net,"Bestline Communications, L.P.",216.16.192.206,541,AS11430,US,Fortinet FortiGate,2025-10-06T21:18:52.484637,h216-16-192-206.bestline.net
+fortinet,tulsa-health.org,tulsa-health.org,Cox Communications Inc.,174.76.251.217,443,AS22773,US,FortiGate,2025-10-06T21:18:35.000403,wsip-174-76-251-217.tu.ok.cox.net;tulsa-health.org
+fortinet,cspire.com,136.239.53.76.static.cspire.com,C Spire Fiber,136.239.53.76,541,AS11272,US,Fortinet FortiGate,2025-10-06T21:17:53.975693,136.239.53.76.static.cspire.com
+fortinet,hesenergy.net,115-125-129-38.hesenergy.net,Hopkinsville Electric System,38.129.125.115,541,AS13781,US,Fortinet FortiGate,2025-10-06T21:17:44.760051,115-125-129-38.hesenergy.net
+fortinet,unitedway-thurston.org,remote.unitedway-thurston.org,"Comcast Cable Communications, LLC",70.89.134.45,541,AS7922,US,Fortinet FortiGate,2025-10-06T21:17:28.512299,remote.unitedway-thurston.org;mail.stjosephparish.org
+fortinet,starwoodbroadband.com,1433bhost98.starwoodbroadband.com,"AT&T Enterprises, LLC",12.9.184.98,4443,AS7018,US,Fortinet FortiGate-100E,2025-10-06T21:17:14.466886,1433bhost98.starwoodbroadband.com
+fortinet,skybest.com,69-77-157-static.bb.skybest.com,SkyBest Communications INC.,69.77.157.118,443,AS23118,US,FortiGate,2025-10-06T21:15:28.723677,69-77-157-static.bb.skybest.com
+fortinet,nextleveltpx.com,ngfw.nextleveltpx.com,TPx Communications,64.60.44.227,8443,AS14265,US,FortiGate,2025-10-06T21:15:22.752705,ngfw.nextleveltpx.com;remote.kernwooley.com
+fortinet,buckeyecom.net,cm-72-240-70-178.buckeyecom.net,"Buckeye Cablevision, Inc.",72.240.70.178,443,AS13490,US,Fortinet FortiGate-30E,2025-10-06T21:15:03.224660,cm-72-240-70-178.buckeyecom.net
+fortinet,zoominternet.net,static-acs-24-101-22-188.zoominternet.net,Armstrong,24.101.22.188,443,AS27364,US,FortiGate,2025-10-06T21:13:35.523964,static-acs-24-101-22-188.zoominternet.net
+fortinet,illinois.net,static-209-174-98-50.illinois.net,MALDEN GRADE SCHOOL,209.174.98.50,443,AS6325,US,Fortinet FortiGate-60E,2025-10-06T21:13:28.158853,static-209-174-98-50.illinois.net
+fortinet,northstate.net,184-75-238-210-static.northstate.net,"North State Telephone, LLC",184.75.238.210,443,AS22709,US,Fortinet FortiGate-200F,2025-10-06T21:13:02.208352,184-75-238-210-static.northstate.net
+fortinet,windstream.net,h66.36.16.72.static.ip.windstream.net,Windstream Communications LLC,72.16.36.66,443,AS7029,US,FortiGate,2025-10-06T21:12:45.343825,h66.36.16.72.static.ip.windstream.net
+fortinet,mchsi.com,64-237-26-34.client.mchsi.com,Mediacom Communications Corporation,64.237.26.34,4444,AS30036,US,FortiGate,2025-10-06T21:11:42.695379,64-237-26-34.client.mchsi.com
+fortinet,wabash.net,206-83-24-187.ftth.wabash.net,"Wabash Telephone Coop, Inc",206.83.24.187,443,AS23188,US,Fortinet FortiGate-60D,2025-10-06T21:11:23.064545,206-83-24-187.ftth.wabash.net
+fortinet,veroxity.net,host-131-239-239-8.customer.veroxity.net,Smartlabs,131.239.239.8,443,AS46887,US,FortiGate,2025-10-06T21:09:46.530091,host-131-239-239-8.customer.veroxity.net
+fortinet,fortidyndns.com,kfelgin.fortidyndns.com,"Comcast Cable Communications, LLC",50.149.35.219,443,AS7922,US,FortiGate,2025-10-06T21:09:34.230681,c-50-149-35-219.hsd1.pa.comcast.net;kfelgin.fortidyndns.com
+fortinet,googleusercontent.com,185.167.238.35.bc.googleusercontent.com,Google LLC,35.238.167.185,10443,AS396982,US,FortiGate,2025-10-06T21:08:49.683791,185.167.238.35.bc.googleusercontent.com
+fortinet,ennov.com,ennov.com,ENNOV,51.81.196.193,9443,AS16276,US,FortiGate,2025-10-06T21:08:32.770797,ennov.com;ip193.ip-51-81-196.us
+fortinet,i95.net,208-118-183-242.i95.net,"Allied Telecom Group, LLC",208.118.183.242,541,AS22925,US,Fortinet FortiGate,2025-10-06T21:08:02.512543,208-118-183-242.i95.net
+fortinet,in-addr.arpa,140.175.252.162.in-addr.arpa,EDIS Global LLC,162.252.175.140,3559,AS9009,US,,2025-10-06T21:07:07.851010,140.175.252.162.in-addr.arpa
+fortinet,telepacific.net,72-11-232-222.static-ip.telepacific.net,TPx Communications,72.11.232.222,10443,AS14265,US,Fortinet FortiGate-100F,2025-10-06T21:07:05.392945,72-11-232-222.static-ip.telepacific.net
+fortinet,rcncustomer.com,209-122-187-9.s8967.c3-0.nwb-e6k1.evnv.in.cable.rcncustomer.com,RCN,209.122.187.9,541,AS6079,US,Fortinet FortiGate,2025-10-06T21:06:28.347588,209-122-187-9.s8967.c3-0.nwb-e6k1.evnv.in.cable.rcncustomer.com
+fortinet,optonline.net,ool-185990cd.static.optonline.net,Cablevision Systems Corp.,24.89.144.205,443,AS6128,US,FortiGate,2025-10-06T21:05:41.032396,ool-185990cd.static.optonline.net
+fortinet,netatlantic.com,pr1-35.netatlantic.com,Net Atlantic Inc,69.25.194.35,8020,AS14742,US,Web Filter Block Override,2025-10-06T21:05:31.169154,pr1-35.netatlantic.com
+fortinet,level3.net,mc-realty-g.bar2.kansascity1.level3.net,"Level 3 Parent, LLC",4.7.66.58,443,AS3356,US,FortiGate,2025-10-06T21:05:28.704760,MC-REALTY-G.bar2.KansasCity1.Level3.net
+fortinet,premieronline.net,48.11.31.96.cable.dyn.premieronline.net,Premier Communications,96.31.11.48,541,AS53347,US,Fortinet FortiGate,2025-10-06T21:04:52.292436,48.11.31.96.cable.dyn.premieronline.net
+fortinet,fibercom.org,fibercom.org,City of Cartersville,104.36.136.30,443,AS64261,US,CSRF,2025-10-06T21:04:49.108271,fibercom.org
+fortinet,qwest.net,72-164-150-74.dia.static.qwest.net,METRO OPTICAL SOLUTIONS INC,72.164.150.74,443,AS209,US,FortiGate,2025-10-06T21:04:47.636089,72-164-150-74.dia.static.qwest.net
+fortinet,atlanticbb.net,static-209-196-164-38.paw.cpe.atlanticbb.net,Breezeline,209.196.164.38,10443,AS11776,US,Fortinet FortiGate-60F,2025-10-06T21:04:30.542281,static-209-196-164-38.paw.cpe.atlanticbb.net
+fortinet,nctc.net,207-68-218-128.nctc.net,Hamilton Telecommunications,207.68.218.128,443,AS13765,US,FortiGate,2025-10-06T21:03:13.745945,207-68-218-128.nctc.net
+fortinet,loretel.net,74-127-142-75.loretel.net,Arvig Enterprises Inc.,74.127.142.75,541,AS16904,US,Fortinet FortiGate,2025-10-06T21:02:30.965331,74-127-142-75.loretel.net
+fortinet,becloudit.com,imsjxnfw.becloudit.com,"AT&T Enterprises, LLC",12.182.214.226,443,AS7018,US,FortiGate,2025-10-06T21:02:30.773580,imsjxnfw.becloudit.com
+fortinet,regus.net,regus.net,Charter Communications Inc,108.176.121.254,541,AS11351,US,Fortinet FortiGate,2025-10-06T21:01:53.727217,regus.net
+fortinet,cgtrust.com,hqfirewall1.cgtrust.com,Cogent Communications - IPENG,38.104.222.19,443,AS174,US,FortiGate,2025-10-06T21:01:11.197602,hqfirewall1.cgtrust.com
+fortinet,verizon.net,static-173-49-24-244.phlapa.fios.verizon.net,Verizon Business,173.49.24.244,4434,AS701,US,Fortinet FortiGate-60E,2025-10-06T21:01:10.961015,static-173-49-24-244.phlapa.fios.verizon.net
+fortinet,zayo.com,128.177.144.197.IDIA-405556-ZYO.zip.zayo.com,Zayo Bandwidth,128.177.144.197,443,AS6461,US,Fortinet FortiGate-60F,2025-10-06T21:00:35.573066,128.177.144.197.IDIA-405556-ZYO.zip.zayo.com
+fortinet,cogentco.com,gi0-0-0-2.nr11.b038841-0.day03.atlas.cogentco.com,Cogent Communications,38.88.192.73,443,AS174,US,FortiGate,2025-10-06T21:00:26.902760,gi0-0-0-2.nr11.b038841-0.day03.atlas.cogentco.com
+fortinet,comcast.net,c-174-176-130-160.hsd1.fl.comcast.net,"Comcast Cable Communications, LLC",174.176.130.160,8443,AS7922,US,Fortinet FortiGate-60D,2025-10-06T21:00:15.236030,c-174-176-130-160.hsd1.fl.comcast.net
+fortinet,unitasglobal.net,78-104-146-156.static.unitasglobal.net,"Consolidated Asset Management Services, LLC",156.146.104.78,443,AS1828,US,Fortinet FortiGate-60F,2025-10-06T21:00:05.440650,78-104-146-156.static.unitasglobal.net
+fortinet,sohnen.com,sdm3.sohnen.com,"IP Matrix, S.A. de C.V.",201.174.174.42,443,AS32098,US,FortiGate,2025-10-06T20:59:50.536319,sdm3.sohnen.com;201-174-174-42.transtelco.net
+fortinet,transtelco.net,harinas.c.transtelco.net,"IP Matrix, S.A. de C.V.",201.174.25.26,10443,AS32098,US,Fortinet FortiGate-300E,2025-10-06T20:59:12.285920,harinas.c.transtelco.net
+fortinet,co.uk,usa-67-224-98-225.sohonet.co.uk,Sohonet Inc.,67.224.98.225,443,AS5555,US,Fortinet FortiGate-401F,2025-10-06T20:59:02.077759,usa-67-224-98-225.sohonet.co.uk
+fortinet,henhudschools.org,henhudschools.org,BOCES Southern Westchester Lower Hudson Regional Information Center,166.109.30.69,443,AS18481,US,CSRF,2025-10-06T20:58:59.666077,henhudschools.org
+fortinet,pidi.com,host76.pidi.com,public interst data,208.253.70.76,541,AS701,US,Fortinet FortiGate,2025-10-06T20:58:45.513799,host76.pidi.com
+fortinet,knology.net,static-24-96-174-81.knology.net,"KNOLOGY,  Inc.",24.96.174.81,541,AS12083,US,Fortinet FortiGate,2025-10-06T20:58:36.651207,static-24-96-174-81.knology.net
+fortinet,twlakes.net,host-69-55-122-219.twlakes.net,Twin Lakes Telephone Cooperative Corporation,69.55.122.219,8443,AS19331,US,Fortinet FortiGate-40F,2025-10-06T20:58:20.537103,host-69-55-122-219.twlakes.net
+fortinet,netnitco.net,66-11-98-153.wireless.static.netnitco.net,Northwestern Indiana Telephone Co.,66.11.98.153,443,AS6368,US,FortiGate,2025-10-06T20:57:45.873660,66-11-98-153.wireless.static.netnitco.net
+fortinet,ca.us,user178x193.rosemead.k12.ca.us,Los Angeles County Office of Education,156.3.178.193,443,AS2920,US,Fortinet FortiGate-601E,2025-10-06T20:57:18.936375,user178x193.rosemead.k12.ca.us
+fortinet,firstlight.net,216-107-197-36.static.firstlight.net,"FirstLight Fiber, Inc.",216.107.197.36,8009,AS11524,US,FortiGate Endpoint Control httpd,2025-10-06T20:57:02.633902,216-107-197-36.static.firstlight.net
+fortinet,switchnap.com,cust-216.115.85.100.switchnap.com,M-Theory Group,216.115.85.100,444,AS23005,US,Fortinet FortiGate-201E,2025-10-06T20:56:48.871527,cust-216.115.85.100.switchnap.com
+fortinet,gci.net,150-249-237-24.gci.net,"GENERAL COMMUNICATION, INC.",24.237.249.150,443,AS8047,US,FortiGate,2025-10-06T20:56:38.317801,150-249-237-24.gci.net
+fortinet,edlink18.net,uc-mcmy-annex.net.edlink18.net,"AT&T Enterprises, LLC",12.43.98.146,443,AS7018,US,FortiGate,2025-10-06T20:56:11.983155,uc-mcmy-annex.net.edlink18.net
+fortinet,maplarge.com,maplarge.com,"Handy Networks, LLC",173.248.146.42,443,AS30475,US,FortiGate,2025-10-06T20:56:01.397315,maplarge.com
+fortinet,lapwai.org,firewall.lapwai.org,Verizon Business,67.109.224.89,9443,AS23492,US,FortiGate,2025-10-06T20:55:24.791761,firewall.lapwai.org
+fortinet,cgsnc.org,mail.cgsnc.org,MCNC,152.26.173.226,443,AS81,US,FortiGate,2025-10-06T20:55:13.998718,mail.cgsnc.org
+fortinet,vultrusercontent.com,208.83.238.82.vultrusercontent.com,"Vultr Holdings, LLC",208.83.238.82,12416,AS20473,US,,2025-10-06T20:54:47.854686,208.83.238.82.vultrusercontent.com
+fortinet,hge.net,hge6-186.hge.net,HGE.net Business INET,216.19.229.186,443,AS19323,US,FortiGate,2025-10-06T20:54:33.665987,hge6-186.hge.net
+fortinet,ercbroadband.org,host-72-27-227-194.ercbroadband.org,ERC Broadband,72.27.227.194,8009,AS27446,US,FortiGate Endpoint Control httpd,2025-10-06T20:54:12.222654,host-72-27-227-194.ercbroadband.org
+fortinet,teamgecu.org,teamgecu.org,Charter Communications Inc,98.123.25.250,8443,AS10796,US,FortiGate,2025-10-06T20:54:05.786565,syn-098-123-025-250.biz.spectrum.com;teamgecu.org
+fortinet,expedient.com,iqs-vpn01.expedient.com,Expedient,207.54.159.204,443,AS17054,US,Pulse Secure,2025-10-06T20:53:54.981012,iqs-vpn01.expedient.com;expedient.com;iqs-sslvpn.expedient.com
+fortinet,lightpath.net,18261fdd.cst.lightpath.net,UNIVERSITY DIAGNOSTICS,24.38.31.221,443,AS6128,US,FortiGate,2025-10-06T20:53:45.310932,18261fdd.cst.lightpath.net
+fortinet,webpass.net,136-24-166-195.cab.webpass.net,Webpass Inc.,136.24.166.195,4433,AS19165,US,Fortinet FortiGate-60F,2025-10-06T20:53:32.329059,136-24-166-195.cab.webpass.net
+fortinet,clearwave.com,157-185-64-30.clearwave.com,Clearwave Communications,157.185.64.30,443,AS40702,US,Fortinet FortiGate-100F,2025-10-06T20:53:31.938510,157-185-64-30.clearwave.com
+fortinet,bellsouth.net,host-209-215-22-98.bgk.bellsouth.net,"AT&T Enterprises, LLC",209.215.22.98,443,AS7018,US,FortiGate,2025-10-06T20:53:11.960225,host-209-215-22-98.bgk.bellsouth.net
+fortinet,commercialleasingllc.com,mail.commercialleasingllc.com,Charter Communications LLC,24.247.236.158,541,AS20115,US,Fortinet FortiGate,2025-10-06T20:53:07.463672,mail.commercialleasingllc.com
+fortinet,lensrentals.net,fw-8150.lensrentals.net,Cogent Communications,38.32.73.218,443,AS174,US,FortiGate,2025-10-06T20:53:01.191380,fw-8150.lensrentals.net
+fortinet,netrouting.net,ip4-199-71-233-83.rdns.netrouting.net,ADYLNET TELECOM,199.71.233.83,443,AS47869,US,FortiGate,2025-10-06T20:52:42.608791,ip4-199-71-233-83.rdns.netrouting.net
+fortinet,centex.net,fiber-209-55-76-243.centex.net,Central Texas Telecommunications,209.55.76.243,541,AS18618,US,Fortinet FortiGate,2025-10-06T20:52:03.901136,fiber-209-55-76-243.centex.net
+fortinet,universalassurors.com,mail.universalassurors.com,Cox Communications,174.78.69.227,4444,AS22773,US,FortiGate,2025-10-06T20:51:56.299271,mail.universalassurors.com
+fortinet,imoncommunications.net,192-199-183-202.dhcp.imoncommunications.net,"ImOn Communications, LLC",192.199.183.202,443,AS393238,US,FortiGate,2025-10-06T20:51:40.385693,192-199-183-202.dhcp.imoncommunications.net
+fortinet,googlefiber.net,136-41-2-72.mci.googlefiber.net,Google Fiber Inc.,136.41.2.72,541,AS16591,US,Fortinet FortiGate,2025-10-06T20:51:30.324629,136-41-2-72.mci.googlefiber.net
+fortinet,sdnet.net,dsl.valley.sxflsdch39r.sdnet.net,Valley Telephone Company,66.128.168.185,8009,AS13576,US,FortiGate Endpoint Control httpd,2025-10-06T20:51:19.448550,dsl.valley.sxflsdch39r.sdnet.net
+fortinet,kramercapitalllc.com,mail.kramercapitalllc.com,Cablevision Systems Corp.,69.74.230.170,443,AS54004,US,FortiGate,2025-10-06T20:51:06.592842,mail.kramercapitalllc.com
+fortinet,netins.net,schl-99-208-126-234-121.dsl.netins.net,Aureon Network Services,208.126.234.121,541,AS5056,US,Fortinet FortiGate,2025-10-06T20:50:51.177806,schl-99-208-126-234-121.dsl.netins.net
+fortinet,thrivehosted.com,thrivehosted.com,"Thrive Operations, LLC",198.168.31.98,443,AS55189,US,Login,2025-10-06T20:50:47.227477,198.168.31.98.thrivecloud.io;thrivehosted.com
+fortinet,wubc.org,remote.wubc.org,WEST UNIVERSITY BAPTIST CHURCH,12.185.245.58,443,AS7018,US,Fortinet FortiGate-100F,2025-10-06T20:50:23.917324,remote.wubc.org
+fortinet,sc.us,astaro.flo5.k12.sc.us,Spirit Communications,165.166.57.90,443,AS2711,US,Fortinet FortiGate-200F,2025-10-06T20:50:06.082583,astaro.flo5.k12.sc.us
+fortinet,bfcma.com,fc-250-6.bfcma.com,Green Apple,216.19.250.6,443,AS19323,US,Fortinet FortiGate-60F,2025-10-06T20:50:04.789549,fc-250-6.bfcma.com
+fortinet,skytap.com,206-198-153-155.cloud.skytap.com,Kyndryl,206.198.153.155,443,AS46160,US,FortiGate,2025-10-06T20:49:52.758806,206-198-153-155.cloud.skytap.com
+fortinet,123.net,unknown.static.123.net,2020 Communications LLC,152.160.28.118,443,AS12129,US,FortiGate,2025-10-06T20:49:44.405273,unknown.static.123.net
+fortinet,prairiefarms.com,prairiefarms.com,Prairie Farms Dairy,71.14.246.134,443,AS20115,US,Sign in,2025-10-06T20:49:37.053002,prairiefarms.com;syn-071-014-246-134.biz.spectrum.com
+fortinet,vivecard.net,vivecard.net,Dent-A-Med Inc DBA The HelpCard,128.177.76.90,443,AS6461,US,Untrusted host name,2025-10-06T20:49:25.077270,128.177.76.90.IDIA-170296-ZYO.zip.zayo.com;vivecard.net
+fortinet,bcacademy.com,ussat2.bcacademy.com,Ziply Fiber,50.47.15.34,4443,AS20055,US,FortiGate,2025-10-06T20:48:42.205470,ussat2.bcacademy.com;50-47-15-34.evrt.wa.ptr.ziplyfiber.com
+fortinet,ses-admin.net,ses-admin.net,Citizens First Bank,207.30.98.154,9443,AS2379,US,FortiGate,2025-10-06T20:48:34.687023,207-30-98-154.static.citizensfb.com;ses-admin.net
+fortinet,ntelos.net,206-248-249-62.unassigned.ntelos.net,"LUMOS Networks, Inc.",206.248.249.62,541,AS7795,US,Fortinet FortiGate,2025-10-06T20:47:37.243388,206-248-249-62.unassigned.ntelos.net
+fortinet,comcast.com,phfac.mes.comcast.com,"Comcast Cable Communications, LLC",50.225.249.59,443,AS396021,US,Warning,2025-10-06T20:47:22.264278,phfac.mes.comcast.com
+fortinet,opsmgmt.net,cid9539-hwt-fw0.hwt.opsmgmt.net,"Somerset Capital Group, LTD",207.45.166.60,443,AS17378,US,Fortinet FortiGate-80F,2025-10-06T20:47:16.904915,cid9539-hwt-fw0.hwt.opsmgmt.net
+fortinet,netdepot.com,netdepot.com,NETWORK TRANSIT HOLDINGS LLC,74.81.94.170,443,AS11042,US,FortiGate,2025-10-06T20:47:16.180972,netdepot.com;server3r.jiffynet.net
+fortinet,masergy.com,host-64-47-35-58.masergy.com,"RMF Engineering, Inc.",64.47.35.58,8009,AS19855,US,FortiGate Endpoint Control httpd,2025-10-06T20:46:45.290776,host-64-47-35-58.masergy.com
+fortinet,sparklight.net,64-20-157-64-20-157-127.cpe.sparklight.net,"Hargray Communications Group, Inc.",64.20.157.127,541,AS22646,US,Fortinet FortiGate,2025-10-06T20:46:42.764677,64-20-157-64-20-157-127.cpe.sparklight.net
+fortinet,northland.net,216-171-177-14.northland.net,Northland Communications,216.171.177.14,444,AS7828,US,Fortinet FortiGate-60E,2025-10-06T20:46:38.798636,216-171-177-14.northland.net
+fortinet,bigleaf.net,192.248.230.162.bigleaf.net,"Bigleaf Networks, Inc.",192.248.230.162,443,AS62642,US,FortiGate,2025-10-06T20:46:06.674866,192.248.230.162.bigleaf.net
+fortinet,fusionnetworks.net,148-170-228-114.zone1.ny.fusionnetworks.net,Fusion Voice and Data Corp.,148.170.228.114,443,AS393731,US,Fortinet FortiGate-100F,2025-10-06T20:45:49.725309,148-170-228-114.zone1.ny.fusionnetworks.net
+fortinet,cutcom.net,69.51.103-102.cutcom.net,"Blackfoot Telephone Cooperative, Inc.",69.51.103.102,443,AS21947,US,Fortinet FortiGate-60F,2025-10-06T20:45:22.362416,69.51.103-102.cutcom.net
+fortinet,crevoshay.com,mail.crevoshay.com,"Comcast Cable Communications, LLC",23.31.118.145,443,AS7922,US,FortiGate,2025-10-06T20:45:20.283659,mail.crevoshay.com
+fortinet,fortimailcloud.com,smtpsjc20.fortimailcloud.com,"Fortinet, Inc.",154.52.4.149,443,AS40934,US,FortiGate,2025-10-06T20:45:06.253170,smtpsjc20.fortimailcloud.com
+fortinet,wghawks.school,wghawks.school,Mediacom Communications Corp,108.178.251.102,8443,AS30036,US,FortiGate,2025-10-06T20:45:02.187889,wghawks.school;108-178-251-102.client.mchsi.com
+fortinet,sccoast.net,226.67-212-59-net.sccoast.net,"Horry Telephone Cooperative, Inc.",67.212.59.226,443,AS21565,US,FortiGate,2025-10-06T20:44:48.161460,226.67-212-59-net.sccoast.net
+fortinet,utahdanceartists.com,sj1.utahdanceartists.com,"Comcast Cable Communications, LLC",50.208.255.105,8081,AS7922,US,FortiGate,2025-10-06T20:44:18.868793,sj1.utahdanceartists.com;50-208-255-105-static.hfc.comcastbusiness.net
+fortinet,newpinc.com,me.newpinc.com,"Comcast Cable Communications, LLC",70.91.194.81,443,AS7922,US,FortiGate,2025-10-06T20:44:10.057258,70-91-194-81-BusName-NewEngland.hfc.comcastbusiness.net;me.newpinc.com;vpn.newpinc.com;mk.newpinc.com;newpinc.com;ga.newpinc.com;ns.newpinc.com
+fortinet,bigriver.net,host174-24-195-69.bigriver.net,Ritter Communications,69.195.24.174,443,AS23404,US,FortiGate,2025-10-06T20:44:07.860440,host174-24-195-69.bigriver.net
+fortinet,as63182.net,98-168-119-55.as63182.net,"RapidScale, Inc",98.168.119.55,443,AS63182,US,Fortinet FortiGate-VM,2025-10-06T20:44:06.847117,98-168-119-55.as63182.net
+fortinet,comlink.net,mdoc.comlink.net,"Great Lakes Comnet, Inc.",209.165.247.5,443,AS30517,US,Invalid Connection,2025-10-06T20:44:04.180667,mdoc.comlink.net
+fortinet,avalon.net,lcapc-1-eth.xdsl.avalon.net,LightEdge Solutions,216.137.67.97,443,AS11320,US,Fortinet FortiGate-100F,2025-10-06T20:43:42.123770,lcapc-1-eth.xdsl.avalon.net
+fortinet,fortiweb-cloud.com,azure.fortiweb-cloud.com,Google LLC,35.190.50.195,443,AS15169,US,FortiWeb on Azure | Try Free,2025-10-06T20:42:44.001467,195.50.190.35.bc.googleusercontent.com;azure.fortiweb-cloud.com
+fortinet,onsitehd.com,onsitehd.com,Charter Communications Inc,67.78.102.227,8443,AS11427,US,FortiGate,2025-10-06T20:42:34.964557,onsitehd.com;syn-067-078-102-227.biz.spectrum.com
+fortinet,atlashosting.com,sweb1-22.atlashosting.com,Atlas Hosting,66.203.93.114,443,AS17378,US,Fortinet FortiGate-200E,2025-10-06T20:42:26.317722,sweb1-22.atlashosting.com
+fortinet,gvtc.com,216-177-186-52.block0.gvtc.com,"Guadalupe Valley Telephone Cooperative, Inc.",216.177.186.52,7443,AS16527,US,Fortinet FortiGate-100D,2025-10-06T20:42:12.979960,216-177-186-52.block0.gvtc.com
+fortinet,statuslights.com,statuslights.com,"Comcast Cable Communications, LLC",107.0.114.17,443,AS7922,US,Apache httpd,2025-10-06T20:42:12.619181,statuslights.com;www.statuslights.com
+fortinet,carondelet-mpls.org,www.ccslc.carondelet-mpls.org,Arvig Enterprises Inc.,209.237.100.58,443,AS16904,US,FortiGate,2025-10-06T20:42:11.436647,www.ccslc.carondelet-mpls.org;ccslc.carondelet-mpls.org
+fortinet,google.com,cache.google.com,Ziply Fiber,63.135.48.146,443,AS13370,US,Fortinet FortiGate-40F,2025-10-06T20:42:09.002376,cache.google.com
+fortinet,firstfrisco.org,vpn.firstfrisco.org,Charter Communications Inc,67.48.33.186,443,AS11427,US,SSL VPN Remote Access Web Portal,2025-10-06T20:42:05.648669,vpn.firstfrisco.org;syn-067-048-033-186.biz.spectrum.com
+fortinet,rcn.com,jaysuites51.j.subnet.rcn.com,RCN,207.237.167.114,443,AS6079,US,Fortinet FortiGate-40F,2025-10-06T20:41:12.059318,jaysuites51.j.subnet.rcn.com
+fortinet,wideopenwest.com,d27-96-138-64.nap.wideopenwest.com,WideOpenWest,96.27.64.138,443,AS12083,US,FortiGate,2025-10-06T20:41:07.415396,d27-96-138-64.nap.wideopenwest.com
+fortinet,fristoeandcompany.com,rwp.fristoeandcompany.com,"Comcast Cable Communications, LLC",75.150.18.133,443,AS7922,US,Fortinet FortiGate-60F,2025-10-06T20:41:01.057500,rwp.fristoeandcompany.com
+fortinet,sonic.net,157-131-139-68.dedicated.static.sonic.net,"Sonic.net, Inc.",157.131.139.68,10443,AS46375,US,Fortinet FortiGate-40F,2025-10-06T20:40:58.505959,157-131-139-68.dedicated.static.sonic.net
+fortinet,myfairpoint.net,pool-71-169-135-186.burl.east.myfairpoint.net,"Consolidated Communications, Inc.",71.169.135.186,443,AS13977,US,Fortinet FortiGate-80F,2025-10-06T20:40:58.036716,pool-71-169-135-186.burl.east.myfairpoint.net
+fortinet,elevatefiber.com,66-65-10-170.static.in-addr.arpa.elevatefiber.com,Region 10,170.10.65.66,541,AS395555,US,Fortinet FortiGate,2025-10-06T20:40:35.515812,66-65-10-170.static.in-addr.arpa.elevatefiber.com
+fortinet,iowabank.com,ip89.iowabank.com,LightEdge Solutions,216.81.137.89,443,AS11320,US,Fortinet FortiGate-100F,2025-10-06T20:40:13.188358,ip89.iowabank.com
+fortinet,conterra.com,static-69-194-179-250.conterra.com,Conterra,69.194.179.250,443,AS32505,US,FortiGate,2025-10-06T20:40:13.098866,static-69-194-179-250.conterra.com
+fortinet,mcleodusa.net,64-196-168-119.ip.mcleodusa.net,Windstream Communications LLC,64.196.168.119,443,AS7029,US,FortiGate,2025-10-06T20:39:46.613935,64-196-168-119.ip.mcleodusa.net
+fortinet,codero.net,146-180-150-64.dedicated.codero.net,CyberCloud Professionals LLC,64.150.180.146,443,AS18501,US,Fortinet FortiGate-61E,2025-10-06T20:39:16.398034,146-180-150-64.dedicated.codero.net
+fortinet,eaglecable.net,dhcp-94-f3-92-48-16-82.cpe.eaglecable.net,"Eagle Communications, Inc.",24.72.212.144,541,AS35986,US,Fortinet FortiGate,2025-10-06T20:39:15.284884,dhcp-94-f3-92-48-16-82.cpe.eaglecable.net
+fortinet,teklinks.com,71_122_212_162.colo.teklinks.com,"TekLinks, Inc.",162.212.122.71,9443,AS33606,US,FortiGate,2025-10-06T20:39:09.643166,71_122_212_162.colo.teklinks.com
+fortinet,highlinefast.com,209-236-92-118.dnvr.co.ip.highlinefast.com,The Rye Telephone Company,209.236.92.118,541,AS32798,US,Fortinet FortiGate,2025-10-06T20:39:08.738684,209-236-92-118.dnvr.co.ip.highlinefast.com
+fortinet,durhamlibrary.org,durham.durhamlibrary.org,Connecticut Education Network,64.251.60.59,4444,AS22742,US,FortiGate,2025-10-06T20:39:07.494775,durham.durhamlibrary.org
+fortinet,rushmemorial.com,www.auth.rushmemorial.com,Hancock Internet,74.112.112.149,443,AS11525,US,CSRF,2025-10-06T20:38:30.398064,74-112-112-149.static.hrtc.net;www.auth.rushmemorial.com;auth.rushmemorial.com
+fortinet,hvvc.us,23-111-138-182.static.hvvc.us,"HIVELOCITY, Inc.",23.111.138.182,443,AS29802,US,FortiGate,2025-10-06T20:38:14.070648,23-111-138-182.static.hvvc.us
+fortinet,agiledatasites.com,68.64.56.196.static.dca1.net.agiledatasites.com,"DataBridge Sites, LLC",68.64.56.196,443,AS19528,US,Fortinet FortiGate-300E,2025-10-06T20:37:27.321070,68.64.56.196.static.dca1.net.agiledatasites.com
+fortinet,syndeonetwork.com,customer-162-220-157-202.syndeonetwork.com,"Syndeo Networks, Inc",162.220.157.202,443,AS54240,US,Fortinet FortiGate-60D,2025-10-06T20:37:17.561193,customer-162-220-157-202.syndeonetwork.com
+fortinet,hba-cpa.com,www.vpn.hba-cpa.com,Charter Communications LLC,137.26.26.70,443,AS20115,US,SSL VPN Remote Access Web Portal,2025-10-06T20:37:08.079588,www.vpn.hba-cpa.com;vpn.hba-cpa.com;syn-137-026-026-070.biz.spectrum.com
+fortinet,myregisteredsite.com,innuitymail.myregisteredsite.com,"Web.com Group, Inc.",64.69.216.70,443,AS19871,US,FortiGate,2025-10-06T20:36:55.868515,innuitymail.myregisteredsite.com
+microsoft,refinitiv.com,stg-demo.iwealth.refinitiv.com,Refinitiv US LLC,199.224.156.47,443,AS32067,US,Microsoft IIS httpd,2025-10-06T20:36:52.849712,stg-demo.iwealth.refinitiv.com
+fortinet,servpac.com,a.60.237.29.23.servpac.com,Servpac Inc.,23.29.237.60,541,AS36315,US,Fortinet FortiGate,2025-10-06T20:36:47.382307,a.60.237.29.23.servpac.com
+fortinet,507269766174654e6574776f726b.com,507269766174654e6574776f726b.com,"AT&T Enterprises, LLC",172.124.81.227,443,AS7018,US,FortiGate,2025-10-06T20:36:28.312402,172-124-81-227.lightspeed.dybhfl.sbcglobal.net;507269766174654e6574776f726b.com
+fortinet,he.net,meijer-great-lakes-lp.e0-33.switch6.chi1.he.net,Hurricane Electric LLC,184.105.95.242,443,AS6939,US,FortiGate,2025-10-06T20:36:18.807020,meijer-great-lakes-lp.e0-33.switch6.chi1.he.net
+fortinet,dobsontechnologies.net,static16-64-137-179.dobsontechnologies.net,"Dobson Technologies - Transport and Telecom Solutions, LLC",64.137.179.16,541,AS30029,US,Fortinet FortiGate,2025-10-06T20:36:10.126137,static16-64-137-179.dobsontechnologies.net
+fortinet,nc.us,alleghany.k12.nc.us,MCNC,152.26.241.49,443,AS81,US,Fortinet FortiGate-600E,2025-10-06T20:36:07.336885,alleghany.k12.nc.us
+fortinet,longlines.com,static.longlines.com,Long Lines Internet,66.172.195.49,443,AS32867,US,FortiGate,2025-10-06T20:35:58.700082,static.longlines.com
+fortinet,barri.com,barri.com,"Level 3 Parent, LLC",4.15.6.161,443,AS3356,US,CSRF,2025-10-06T20:35:53.200228,barri.com
+fortinet,parkregion.net,64-118-8-197.parkregion.net,The Park Region Mutual Telephone Co,64.118.8.197,443,AS25637,US,FortiGate,2025-10-06T20:35:50.882412,64-118-8-197.parkregion.net
+microsoft,morningstar.com,morningstar.com,"Morningstar, Inc.",216.228.236.125,443,AS11227,US,Microsoft IIS httpd,2025-10-06T20:35:46.881929,morningstar.com
+fortinet,eatel.net,ip-209-124-192-118.eatel.net,REV,209.124.192.118,443,AS5009,US,FortiGate,2025-10-06T20:35:39.290334,ip-209-124-192-118.eatel.net
+fortinet,fortiddns.com,dwellrecovery.fortiddns.com,Charter Communications Inc,24.136.127.138,443,AS12271,US,FortiGate,2025-10-06T20:35:25.753258,dwellrecovery.fortiddns.com;syn-024-136-127-138.biz.spectrum.com
+fortinet,psychemedics.com,psychemedics.com,Logix,216.201.144.94,443,AS11215,US,FortiGate,2025-10-06T20:35:25.532920,psychemedics.com
+fortinet,microporeinc.com,mail2.microporeinc.com,"Comcast Cable Communications, LLC",162.17.218.185,443,AS7922,US,Fortinet FortiGate-60F,2025-10-06T20:35:23.970480,mail2.microporeinc.com
+fortinet,pnrcon.net,149-137-186-209.dynamic.pnrcon.net,Pioneer Connect,149.137.186.209,541,AS398777,US,Fortinet FortiGate,2025-10-06T20:34:38.336569,149-137-186-209.dynamic.pnrcon.net
+fortinet,oskielaw.com,oskielaw.com,OSKIE HAMILTON & SOFIO PA,173.11.45.129,443,AS7922,US,FortiGate,2025-10-06T20:34:28.355617,oskielaw.com
+fortinet,goengineer.com,www.goe-adminfac01.goex.goengineer.com,"DataBank Holdings, Ltd.",216.194.127.230,443,AS13767,US,CSRF,2025-10-06T20:33:48.780893,www.goe-adminfac01.goex.goengineer.com;goe-adminfac01.goex.goengineer.com;216-194-127-230.c7dc.com
+fortinet,townisp.com,cpe-2-12.scpe.townisp.com,Shrewsbury Electric and Cable Operations,216.195.2.12,443,AS26292,US,Fortinet FortiGate-60D,2025-10-06T20:33:45.820866,cpe-2-12.scpe.townisp.com
+fortinet,netegrityconsultants.com,asterisk1.netegrityconsultants.com,The North-Eastern Pennsylvania Telephone Company,23.235.16.69,8009,AS26724,US,FortiGate Endpoint Control httpd,2025-10-06T20:33:39.941458,asterisk1.netegrityconsultants.com
+fortinet,coresite.com,208.74.77.5.static.coresite.com,"U.S. COLO, LLC",208.74.77.5,443,AS2734,US,FortiGate,2025-10-06T20:33:35.373258,208.74.77.5.static.coresite.com
+fortinet,tds.net,h135-135-155-166.abdlwi.dedicated.static.tds.net,TDS TELECOM,135.135.155.166,10443,AS4181,US,Fortinet FortiGate-60F,2025-10-06T20:33:32.284263,h135-135-155-166.abdlwi.dedicated.static.tds.net
+fortinet,motleyrice.com,motleyrice.com,"Comcast Cable Communications, LLC",96.68.248.213,443,AS7922,US,FortiGate,2025-10-06T20:33:30.058749,motleyrice.com
+fortinet,mallplaza.com,caicaivilu.mallplaza.com,Microsoft Limited,130.213.203.24,443,AS8075,US,FortiGate,2025-10-06T20:33:26.994729,caicaivilu.mallplaza.com
+fortinet,pangaea.us,user175.pangaea.us,PANGAEA,199.59.75.175,4444,AS27631,US,FortiGate,2025-10-06T20:33:25.497910,user175.pangaea.us
+fortinet,sdcoe.net,out222-2.sdcoe.net,San Diego County Office of Education,209.66.222.2,443,AS21708,US,FortiGate,2025-10-06T20:33:21.425236,out222-2.sdcoe.net;mycusd.org
+fortinet,brescobroadband.com,69-58-122-14.brescobroadband.com,Bresco Broadband,69.58.122.14,443,AS32899,US,FortiGate,2025-10-06T20:33:07.785355,69-58-122-14.brescobroadband.com
+fortinet,kodiakhealthcare.org,kodiakhealthcare.org,"GENERAL COMMUNICATION, INC.",206.174.46.23,443,AS8047,US,FortiGate,2025-10-06T20:33:07.415236,kodiakhealthcare.org;23-46-174-206.static.gci.net
+fortinet,newmilfordps.org,spam1.newmilfordps.org,New Milford Public Schools,72.10.101.6,443,AS22742,US,Untrusted host name,2025-10-06T20:32:58.578416,spam1.newmilfordps.org;newmilfordps.org
+fortinet,ziplyfiber.com,static-50-126-81-46.nwbr.or.ptr.ziplyfiber.com,Ziply Fiber,50.126.81.46,10443,AS20055,US,Fortinet FortiGate-40F,2025-10-06T20:32:58.166538,static-50-126-81-46.nwbr.or.ptr.ziplyfiber.com
+fortinet,pbtcomm.net,206-253-146-30.dsl-4.g01.scpeli.pbtcomm.net,Saluda County Government,206.253.146.30,443,AS14615,US,Fortinet FortiGate-40F,2025-10-06T20:32:33.836810,206-253-146-30.dsl-4.g01.scpeli.pbtcomm.net
+fortinet,gpcom.net,gpc-64-64-145-129-ne.gpcom.net,Omaha Storm Chasers,64.64.145.129,443,AS13807,US,Fortinet FortiGate-80F,2025-10-06T20:32:26.542340,gpc-64-64-145-129-ne.gpcom.net
+fortinet,telefonica.com,us.telefonica.com,"Telefonica Global Solutions USA, INC",216.177.206.209,443,AS22364,US,Sign in,2025-10-06T20:32:19.814438,us.telefonica.com
+fortinet,sh-stchil.net,sh-stchil.net,Charter Communications LLC,137.26.16.238,443,AS20115,US,FortiGate,2025-10-06T20:32:19.751221,sh-stchil.net;syn-137-026-016-238.biz.spectrum.com
+fortinet,psci.net,dbba212-psci.psci.net,"Perry-Spencer Communications, Inc.",216.49.114.212,4443,AS19008,US,FortiGate,2025-10-06T20:32:15.720912,dbba212-psci.psci.net
+fortinet,lightower.net,144.121.91.182.lightower.net,Crown Castle Fiber LLC,144.121.91.182,443,AS46887,US,FortiGate,2025-10-06T20:32:11.982962,144.121.91.182.lightower.net
+fortinet,forticloud.com,fortiedge.forticloud.com,"Fortinet, Inc.",154.52.5.169,443,AS40934,US,FortiEdge Cloud,2025-10-06T20:31:48.719557,fortiedge.forticloud.com;fortiextender.forticloud.com;fortilan.forticloud.com;fortiswitch.forticloud.com
+fortinet,jallis.net,jallis.net,"T-Mobile USA, Inc.",162.191.161.109,8443,AS21928,US,FortiGate,2025-10-06T20:31:36.967979,jallis.net
+microsoft,massgeneralbrigham.org,bwhav.media.massgeneralbrigham.org,Mass General Brigham Incorporated,170.223.157.148,443,AS40831,US,Microsoft IIS httpd,2025-10-06T20:31:33.212017,bwhav.media.massgeneralbrigham.org
+fortinet,polarcomm.com,walsh-office-40f.bng.polarcomm.com,Polar Communications,66.231.105.168,443,AS14511,US,Fortinet FortiGate-40F,2025-10-06T20:31:32.099726,WALSH-OFFICE-40F.bng.polarcomm.com
+fortinet,kaydist.com,mail.kaydist.com,Charter Communications Inc,67.53.150.154,4443,AS10796,US,Fortinet FortiGate-81E,2025-10-06T20:31:31.396070,mail.kaydist.com
+fortinet,longislandfiberexchange.net,host-65-254-25-98.longislandfiberexchange.net,Sanhua International,65.254.25.98,443,AS46887,US,FortiGate,2025-10-06T20:31:23.468886,host-65-254-25-98.longislandfiberexchange.net
+fortinet,c-sgroup.com,c-sgroup.com,"AT&T Enterprises, LLC",12.9.58.187,4443,AS7018,US,FortiGate,2025-10-06T20:31:22.501052,c-sgroup.com;www.c-sgroup.com
+fortinet,swbell.net,ppp-70-253-85-57.dsl.austtx.swbell.net,Private Customer - AT&T Internet Services,70.253.85.57,443,AS7018,US,FortiGate,2025-10-06T20:31:19.201061,ppp-70-253-85-57.dsl.austtx.swbell.net
+fortinet,srcaccess.net,HSKL-DSL-69-49-220-116.srcaccess.net,SANTA ROSA TELEPHONE COOPERATIVE INC,69.49.220.116,443,AS32391,US,Fortinet FortiGate-60D,2025-10-06T20:31:07.089463,HSKL-DSL-69-49-220-116.srcaccess.net
+fortinet,highland.net,165-166-217-180.ftth.onda.highland.net,Spirit Communications,165.166.217.180,541,AS2711,US,Fortinet FortiGate,2025-10-06T20:31:02.070906,165-166-217-180.ftth.onda.highland.net
+fortinet,trans-overseas.com,trans-overseas.com,"Metro Wireless International, Inc.",64.237.98.130,8443,AS63251,US,FortiGate,2025-10-06T20:30:58.730941,trans-overseas.com;trucks.trans-overseas.com;reports.trans-overseas.com
+fortinet,casair.net,1.198.225.173.casair.net,"Point Broadband Fiber Holding, LLC",173.225.198.1,443,AS19310,US,FortiGate,2025-10-06T20:30:54.530011,1.198.225.173.casair.net
+fortinet,alter.net,globaltel-linkcorporationd-b-aviapath.customer.alter.net,Verizon Business,152.193.29.106,541,AS701,US,Fortinet FortiGate,2025-10-06T20:30:52.399871,GLOBALTEL-LINKCORPORATIOND-B-AVIAPATH.customer.alter.net
+fortinet,isgok.com,nfuse.isgok.com,Cox Communications Inc.,24.248.33.13,443,AS22773,US,FortiGate,2025-10-06T20:30:48.655405,nfuse.isgok.com
+fortinet,ameritech.net,68-74-217-201.dsl.applwi.ameritech.net,Private Customer - AT&T Internet Services,68.74.217.201,443,AS7018,US,FortiGate,2025-10-06T20:30:43.252117,68-74-217-201.dsl.applwi.ameritech.net
+fortinet,keilanifarms.com,keilanifarms.com,Optimum,208.180.232.121,8009,AS19108,US,FortiGate Endpoint Control httpd,2025-10-06T20:30:30.162764,keilanifarms.com
+fortinet,zacktech.com,management.zacktech.com,Verizon Business,71.183.86.178,443,AS701,US,FortiGate,2025-10-06T20:30:20.371729,management.zacktech.com
+fortinet,southernlightfiber.com,69-85-199-124.static.southernlightfiber.com,Uniti Fiber Holdings Inc.,69.85.199.124,443,AS13760,US,FortiGate,2025-10-06T20:30:12.557184,69-85-199-124.static.southernlightfiber.com
+microsoft,sms.com,mytech.sms.com,Verizon Business,63.100.3.37,443,AS701,US,Microsoft IIS httpd,2025-10-06T20:30:09.236736,mytech.sms.com;myhelp.sms.com;smssd01.sms.com
+fortinet,pmwpaper.com,mail.pmwpaper.com,"Comcast Cable Communications, LLC",66.208.242.149,10443,AS7922,US,Fortinet FortiGate-60F,2025-10-06T20:30:02.938237,mail.pmwpaper.com
+fortinet,hsta.org,fgt-drf.hsta.org,"DR Fortress, LLC",205.172.2.113,443,AS40300,US,FortiGate,2025-10-06T20:30:02.407236,fgt-drf.hsta.org
+microsoft,atcassociates.com,atcassociates.com,"ATC Group Services, LLC",206.127.14.203,443,AS23005,US,Microsoft IIS httpd,2025-10-06T20:29:43.029914,atcassociates.com;206-127-14-203.fwd.datafoundry.com
+fortinet,mqifloors.com,vpn.mqifloors.com,Ziply Fiber,50.54.240.125,443,AS20055,US,SSL VPN Remote Access Web Portal,2025-10-06T20:29:28.686130,vpn.mqifloors.com;www.vpn.mqifloors.com;50-54-240-125.evrt.wa.ptr.ziplyfiber.com
+fortinet,thewesleycommunity.org,support.thewesleycommunity.org,"FirstLight Fiber, Inc.",216.59.74.42,4444,AS13536,US,FortiGate,2025-10-06T20:29:23.356828,support.thewesleycommunity.org;www.support.thewesleycommunity.org
+fortinet,sohonet.com,usa-173-0-162-208.sohonet.com,Sohonet Inc.,173.0.162.208,443,AS5555,US,Fortinet FortiGate-200E,2025-10-06T20:29:16.943001,usa-173-0-162-208.sohonet.com
+fortinet,gtt.net,ip4.gtt.net,GTT,208.97.207.42,4444,AS3257,US,FortiGate,2025-10-06T20:28:57.140200,ip4.gtt.net
+fortinet,ptd.net,207.44.13.232.res-cmts.poc1.ptd.net,PenTeleData Inc.,207.44.13.232,10443,AS3737,US,Fortinet FortiGate-40F,2025-10-06T20:28:56.714841,207.44.13.232.res-cmts.poc1.ptd.net
+fortinet,forticonverter.com,service-dev.forticonverter.com,Amazon Data Services NoVa,184.73.31.14,443,AS14618,US,nginx,2025-10-06T20:28:40.038038,service-dev.forticonverter.com;ec2-184-73-31-14.compute-1.amazonaws.com
+fortinet,duggal.com,wilson.duggal.com,"Comcast Cable Communications, LLC",96.95.132.50,443,AS7922,US,FortiGate,2025-10-06T20:28:35.356268,wilson.duggal.com
+fortinet,allophone.net,209-50-8-88.lnk.ne.static.allophone.net,Allo Communications LLC,209.50.8.88,443,AS15108,US,FortiGate,2025-10-06T20:28:30.333075,209-50-8-88.lnk.ne.static.allophone.net
+fortinet,pldi.net,64-250-213-80.stat.north.pldi.net,Pioneer Long Distance Inc.,64.250.213.80,10443,AS11650,US,Fortinet FortiGate-60F,2025-10-06T20:28:18.034606,64-250-213-80.stat.north.pldi.net
+fortinet,titantv.com,titantv.com,Aureon Network Services,66.43.219.206,443,AS5056,US,Sign in,2025-10-06T20:28:03.333701,titantv.com;entr-18026-01-206.dsl.netins.net
+fortinet,mgagolf.org,mail.mgagolf.org,Simex Trading,69.74.230.194,443,AS54004,US,Fortinet FortiGate-60D,2025-10-06T20:27:49.979293,mail.mgagolf.org
+fortinet,shadowmountain.org,shadowmountain.org,Shadow Mountain Community Church,160.72.29.218,4444,AS46887,US,FortiGate,2025-10-06T20:27:36.891391,160.72.29.218.lightower.net;shadowmountain.org
+fortinet,servehttp.com,fl-20906.servehttp.com,Charter Communications Inc,72.186.81.231,443,AS33363,US,FortiGate,2025-10-06T20:27:13.145979,fl-20906.servehttp.com;syn-072-186-081-231.res.spectrum.com
+fortinet,wi.us,co.trempealeau.wi.us,"Airstream Communications, LLC",208.157.187.150,443,AS11796,US,CSRF,2025-10-06T20:26:17.831291,208-157-187-150.direct.tcc.airstreamcomm.net;co.trempealeau.wi.us
+fortinet,dupageroe.org,dupageroe.org,"Comcast Cable Communications, LLC",50.205.60.218,443,AS7922,US,FortiGate,2025-10-06T20:26:01.199866,dupageroe.org
+fortinet,ptsrehab.com,barracuda.ptsrehab.com,HUB PLASTICS,162.155.79.140,8443,AS10796,US,FortiGate,2025-10-06T20:25:58.078498,barracuda.ptsrehab.com
+fortinet,younghouse.org,harmony.younghouse.org,Local Internet Service Company,69.18.14.129,443,AS12133,US,FortiGate,2025-10-06T20:25:47.581671,harmony.younghouse.org
+fortinet,wa.us,wahksd.k12.wa.us,Wahkiakum School District,216.186.100.13,443,AS10430,US,Sign in,2025-10-06T20:25:44.857088,wahksd.k12.wa.us
+fortinet,machlink.com,cbl-static-81-082.machlink.com,Muscatine Power and Water,69.49.81.82,541,AS33734,US,Fortinet FortiGate,2025-10-06T20:25:42.285841,cbl-static-81-082.machlink.com
+fortinet,com.pe,acity.com.pe,Microsoft Corporation,52.170.84.37,443,AS8075,US,Sign in,2025-10-06T20:25:29.280517,acity.com.pe
+fortinet,riggsdistler.com,vpn01.riggsdistler.com,"Comcast Cable Communications, LLC",50.220.57.193,443,AS7922,US,FortiGate,2025-10-06T20:25:18.580873,vpn01.riggsdistler.com
+fortinet,syringanetworks.net,ip-209-141-116-202.syringanetworks.net,"Syringa Networks, LLC",209.141.116.202,443,AS15305,US,Fortinet FortiGate-60F,2025-10-06T20:25:17.857103,ip-209-141-116-202.syringanetworks.net
+fortinet,starlinkisp.net,customer.nwyynyx1.pop.starlinkisp.net,"SpaceX Services, Inc.",129.222.230.45,443,AS14593,US,Fortinet FortiGate-60F,2025-10-06T20:24:50.247364,customer.nwyynyx1.pop.starlinkisp.net
+fortinet,co.us,plutus3.rfsd.k12.co.us,Glenwood Springs Community Broadband Network,208.72.71.105,8015,AS40284,US,Web Filter Block Override,2025-10-06T20:24:34.059242,plutus3.rfsd.k12.co.us
+fortinet,qsghosting.com,static.qsghosting.com,"Quantum Services Group, LLC.",204.10.32.114,443,AS19224,US,Fortinet FortiGate-40F,2025-10-06T20:24:30.738740,static.qsghosting.com
+fortinet,ameco.com,ty-fg.ameco.com,"AT&T Enterprises, LLC",12.6.227.202,443,AS7018,US,FortiGate,2025-10-06T20:24:17.984464,ty-fg.ameco.com
+fortinet,beaconmutual.com,beaconmutual.com,METRO TERMINALS OF LONG ISLAND LLC,65.198.72.226,4433,AS701,US,FortiGate,2025-10-06T20:24:02.718221,beaconmutual.com
+fortinet,hvdata.net,host116-hvcfi.customer.hvdata.net,Crown Castle Fiber LLC,64.72.84.243,443,AS46887,US,Fortinet FortiGate-101F,2025-10-06T20:24:00.973295,host116-hvcfi.customer.hvdata.net
+fortinet,inlandfiber.com,vpn.inlandfiber.com,"Alternative Choice Wireless, LLC",199.83.140.166,443,AS63264,US,Fortinet FortiGate-101F,2025-10-06T20:23:58.375858,vpn.inlandfiber.com
+fortinet,ny.us,town.ithaca.ny.us,Town of Ithaca,216.107.231.179,443,AS11524,US,CSRF,2025-10-06T20:23:26.066694,town.ithaca.ny.us;216-107-231-179.static.firstlight.net
+fortinet,consolidated.net,71-169-134-182.static.vt.consolidated.net,"Consolidated Communications, Inc.",71.169.134.182,9443,AS13977,US,Fortinet FortiGate-60F,2025-10-06T20:23:13.603964,71-169-134-182.static.vt.consolidated.net
+fortinet,soukupbush.com,www.fac.soukupbush.com,"Comcast Cable Communications, LLC",74.93.225.90,443,AS7922,US,CSRF,2025-10-06T20:22:55.720253,www.fac.soukupbush.com;fac.soukupbush.com;mail.soukupbush.com
+microsoft,itctransco.com,itcsecexternalresources-dev.itctransco.com,"AT&T Services, Inc.",12.106.168.199,443,AS7018,US,Microsoft IIS httpd,2025-10-06T20:22:28.782651,ITCSecExternalResources-Dev.itctransco.com
+fortinet,pt-sd.org,mail.pt-sd.org,DQE Communications LLC,164.52.228.34,443,AS33154,US,Fortinet FortiGate-201F,2025-10-06T20:22:13.903632,mail.pt-sd.org;mail.ptsd.k12.pa.us
+fortinet,oakgrovelutheran.com,mail.oakgrovelutheran.com,IdeaOne Telecom,64.21.234.100,443,AS12042,US,Fortinet FortiGate-100F,2025-10-06T20:22:12.718194,mail.oakgrovelutheran.com
+fortinet,fortinet.com,ctap.fortinet.com,Fortinet Inc.,96.45.36.62,443,AS53928,US,Apache httpd,2025-10-06T20:21:02.451974,ctap.fortinet.com
+microsoft,jenzabarcloud.com,jenzabarcloud.com,IBM Cloud,52.116.153.55,443,AS36351,US,Microsoft IIS httpd,2025-10-06T20:20:09.043882,jenzabarcloud.com;37.99.7434.ip4.static.sl-reverse.com
+fortinet,triminsystems.com,vpn.triminsystems.com,TRIMIN SYSTEMS,173.11.60.49,443,AS7922,US,SSL VPN Remote Access Web Portal,2025-10-06T20:19:28.072340,vpn.triminsystems.com;173-11-60-49-Minnesota.hfc.comcastbusiness.net
+fortinet,e2go.biz,e2go-1.e2go.biz,"Level 3 Parent, LLC",64.132.81.254,10443,AS3549,US,Fortinet FortiGate-60F,2025-10-06T20:19:05.330418,e2go-1.e2go.biz
+fortinet,simplemachines.org,io.simplemachines.org,Performive LLC,66.71.247.155,443,AS46562,US,Cisco ASA Firewall HTTP Config,2025-10-06T20:18:41.841245,io.simplemachines.org
+microsoft,fldfs.com,refs.fldfs.com,Florida Department of Insurance,158.229.243.49,443,AS8103,US,Microsoft IIS httpd,2025-10-06T20:18:37.040025,refs.fldfs.com;aka-origin-refs.fldfs.com
+fortinet,shlglobal.com,shlglobal.com,"Edge Technology Group, LLC",76.8.87.105,443,AS53922,US,Pulse Secure,2025-10-06T20:18:05.724734,shlglobal.com;76.8.87.105.lightower.net
+microsoft,nouriaenergy.com,nouriaenergy.com,"Markley Network Services, LLC",185.165.212.107,443,AS398427,US,Microsoft IIS httpd,2025-10-06T20:16:38.088108,nouriaenergy.com
+fortinet,neweratech.com,neweratech.com,"AT&T Enterprises, LLC",12.161.111.130,443,AS7018,US,SSL VPN Remote Access Web Portal,2025-10-06T20:14:39.590780,111-130.fiber.parallax.ws;neweratech.com
+microsoft,archokc.org,archokc.org,Cogent Communications,38.122.25.29,443,AS174,US,Microsoft IIS httpd,2025-10-06T20:14:04.193286,archokc.org
+microsoft,northbranfordschools.org,nbvideo.northbranfordschools.org,North Branford Public Schools,72.10.103.181,443,AS22742,US,Microsoft IIS httpd,2025-10-06T20:14:01.251840,nbvideo.northbranfordschools.org;northbranfordschools.org
+fortinet,k12tech.net,fac.k12tech.net,"Metro Communications Company, Inc.",199.116.81.122,443,AS53610,US,Sign in,2025-10-06T20:13:03.588561,fac.k12tech.net;www.fac.k12tech.net;cpe-199-116-81-122.conxxus.net
+fortinet,4xindustrial.com,vpn.4xindustrial.com,CIRIS ENERGY,23.24.153.81,443,AS7922,US,SSL VPN Remote Access Web Portal,2025-10-06T20:10:31.161594,vpn.4xindustrial.com;www.vpn.4xindustrial.com
+fortinet,questivity.com,questivity.com,"DigitalOcean, LLC",209.38.172.48,443,AS14061,US,Apache httpd,2025-10-06T20:09:12.546499,questivity.com;www.questivity.com
+fortinet,focaccess.net,focaccess.net,Cox Communications Inc.,64.58.184.71,443,AS22773,US,CSRF,2025-10-06T20:08:37.770860,focaccess.net;wsip-64-58-184-71.oc.oc.cox.net
+fortinet,willowvalley.org,mail.willowvalley.org,"Comcast Cable Communications, LLC",50.201.229.40,443,AS7922,US,Outlook Web App,2025-10-06T20:08:10.805458,mail.willowvalley.org;mail.mosaiclancaster.com;outbound.willowvalley.org;www.owa.willowvalley.org;autodiscover.southernmarketlancaster.com;owa.willowvalley.org;mail.connectionsathome.org;autodiscover.connectionsathome.org;autodiscover.smartlifewv.org;mail.smartlifewv.org;autodiscover.willowvalley.org;autodiscover.mosaiclancaster.com;mail.southernmarketlancaster.com
+fortinet,lhtot.com,static-78.lhtot.com,LAUREL HIGHLAND TELEPHONE COMPANY,64.201.88.78,10443,AS21555,US,Fortinet FortiGate-40F,2025-10-06T20:07:53.520184,static-78.lhtot.com
+microsoft,theneolight.com,connect.theneolight.com,Microsoft Corporation,52.230.229.133,443,AS8075,US,Microsoft IIS httpd,2025-10-06T20:07:49.690701,connect.theneolight.com;www.connect.theneolight.com;connect-dev.theneolight.com;connect-demo.theneolight.com
+fortinet,loesche.com,loesche.com,Private Customer - AT&T Internet Services,104.55.252.97,443,AS7018,US,SSL VPN Remote Access Web Portal,2025-10-06T20:07:36.138663,loesche.com;104-55-252-97.lightspeed.miamfl.sbcglobal.net
+fortinet,berexco.com,mail.berexco.com,"Berexco, Inc",70.248.196.130,8443,AS7018,US,Fortinet FortiGate-100F,2025-10-06T20:05:56.527927,mail.berexco.com
+fortinet,andorix.com,andorix.com,Crown Castle Fiber LLC,144.121.189.26,443,AS46887,US,SSL VPN Remote Access Web Portal,2025-10-06T20:05:37.194438,andorix.com;144.121.189.26.lightower.net
+fortinet,mea.coop,autodiscover.mea.coop,"Matanuska Telecom Association, Incorporated",216.137.203.166,443,AS11090,US,"
+      The URL you requested has been blocked
+    ",2025-10-06T20:05:00.307939,autodiscover.mea.coop;mail.mea.coop;www.mail.mea.coop;mea.coop;166-203-137-216.mtaonline.net;silt.mea.coop
+fortinet,matalco.com,matalco.com,Adamswells Internet,66.18.187.141,443,AS16564,US,SSL VPN Remote Access Web Portal,2025-10-06T20:02:26.529380,matalco.com;static7-141.adamswells.com
+fortinet,firstareacu.com,www.vpn2.firstareacu.com,Charter Communications LLC,71.13.89.10,10443,AS20115,US,SSL VPN Remote Access Web Portal,2025-10-06T20:01:59.416752,www.vpn2.firstareacu.com;vpn2.firstareacu.com;syn-071-013-089-010.biz.spectrum.com
+fortinet,johnbtitle.com,vpn.johnbtitle.com,"Smithville Digital, LLC",66.244.74.145,443,AS11550,US,SSL VPN Remote Access Web Portal,2025-10-06T20:01:32.071448,145.74.244.66.sycamore.smithvilledigital.net;vpn.johnbtitle.com;www.vpn.johnbtitle.com
+fortinet,pvhme.org,fac.pvhme.org,New England Telehealth Consortium,192.159.150.60,443,AS33422,US,Sign in,2025-10-06T20:01:07.017977,fac.pvhme.org;www.fac.pvhme.org;mail.pvhme.org
+fortinet,earlywarning.com,saw.earlywarning.com,Early Warning Services,104.200.218.20,443,AS40342,US,Pulse Secure,2025-10-06T20:00:38.593097,saw.earlywarning.com;san.earlywarning.com;sa.earlywarning.com
+fortinet,nu-z.net,static-74-51-97-16.nu-z.net,"Classic South Communications, L.L.C.",74.51.97.16,8000,AS33067,US,BarracudaHTTP,2025-10-06T20:00:22.917489,static-74-51-97-16.nu-z.net
+microsoft,whschools.org,whschools.org,Connecticut Education Network,64.251.49.103,443,AS22742,US,Microsoft IIS httpd,2025-10-06T19:59:45.196877,whschools.org
+fortinet,pangeamade.com,pangeamade.com,Crown Castle Fiber LLC,144.121.189.78,443,AS46887,US,CSRF,2025-10-06T19:58:49.134742,144.121.189.78.lightower.net;pangeamade.com
+fortinet,gogloc.com,mail.gogloc.com,Charter Communications LLC,47.44.153.182,10443,AS20115,US,Fortinet FortiGate-100E,2025-10-06T19:58:35.053834,mail.gogloc.com
+fortinet,secretcitytech.com,id.secretcitytech.com,WideOpenWest Finance LLC,143.59.5.130,443,AS12083,US,CSRF,2025-10-06T19:58:33.690761,id.secretcitytech.com;static-5-59-143-130.knology.net
+microsoft,devosvideo.com,devosvideo.com,Amazon Technologies Inc.,34.201.46.181,443,AS14618,US,Microsoft IIS httpd,2025-10-06T19:58:15.481176,ec2-34-201-46-181.compute-1.amazonaws.com;devosvideo.com
+fortinet,slocity.org,slocity.org,California Polytechnic State University,198.188.159.89,443,AS7960,US,Pulse Secure,2025-10-06T19:58:00.872281,slocity.org
+fortinet,ubiquityfiber.net,ubiquityfiber.net,NetEffect Technologies,66.129.118.89,443,AS13649,US,CSRF,2025-10-06T19:57:26.293831,ubiquityfiber.net
+fortinet,arvig.net,206-188-227-116.arvig.net,Arvig Enterprises Inc.,206.188.227.116,443,AS16904,US,Untrusted host name,2025-10-06T19:56:50.383015,206-188-227-116.arvig.net
+fortinet,motive.com,d-cluster.saas.motive.com,Nokia of America Corporation,68.235.21.35,10443,AS13993,US,Fortinet FortiGate-1500D,2025-10-06T19:55:54.403399,d-cluster.saas.motive.com
+fortinet,nh-g.com,nh-g.com,"Comcast Cable Communications, LLC",162.17.233.209,443,AS7922,US,SSL VPN Remote Access Web Portal,2025-10-06T19:55:26.632684,nh-g.com
+fortinet,florenceco.org,baracuda.florenceco.org,Charter Communications Inc,24.172.39.146,443,AS11426,US,Sign in,2025-10-06T19:55:05.426929,baracuda.florenceco.org
+fortinet,welcompanies.com,welcompanies.com,W E L COMPANIES,12.233.77.217,443,AS7018,US,CSRF,2025-10-06T19:54:13.422599,welcompanies.com
+fortinet,gbod.org,vpn2.gbod.org,C I HOST,199.227.80.135,443,AS3549,US,SSL VPN Remote Access Web Portal,2025-10-06T19:53:55.021966,vpn2.gbod.org
+fortinet,cet.com,ip-64-85-2-242-spk.cet.com,"ActiveServers, Inc",64.85.2.242,10443,AS20271,US,Fortinet FortiGate-100F,2025-10-06T19:50:49.225396,ip-64-85-2-242-spk.cet.com
+fortinet,isgwoodinville.com,mail.isgwoodinville.com,"Comcast Cable Communications, LLC",173.160.164.57,10443,AS7922,US,Fortinet FortiGate-40F,2025-10-06T19:48:54.521223,mail.isgwoodinville.com
+fortinet,n2newdirection.org,www.vpn.n2newdirection.org,"Comcast Cable Communications, LLC",50.205.212.122,8443,AS7922,US,SSL VPN Remote Access Web Portal,2025-10-06T19:48:15.225417,www.vpn.n2newdirection.org;vpn.n2newdirection.org
+fortinet,united.net,host-74-51-3-33.united.net,United Telephone Company,74.51.3.33,10443,AS40237,US,Fortinet FortiGate-60F,2025-10-06T19:45:41.700071,host-74-51-3-33.united.net
+fortinet,aldtt.net,aldtt.net,"AT&T Enterprises, LLC",12.250.184.174,443,AS7018,US,SSL VPN Remote Access Web Portal,2025-10-06T19:41:22.131196,aldtt.net
+fortinet,paulbunyan.net,fl50.ips.paulbunyan.net,Paul Bunyan Communications,205.149.155.50,10443,AS14371,US,Fortinet FortiGate-60E,2025-10-06T19:39:36.876160,fl50.ips.PaulBunyan.net
+fortinet,alchemy.net,66-171-242-90.alchemy.net,"Dynascale Technologies, Inc.",66.171.242.90,8443,AS7296,US,Fortinet FortiGate-100F,2025-10-06T19:38:46.272108,66-171-242-90.alchemy.net
+fortinet,vtc.net,206-128-67-131.vtc.net,Valley Connections LLC,206.128.67.131,10443,AS19881,US,Fortinet FortiGate-100F,2025-10-06T19:38:38.556061,206-128-67-131.vtc.net
+fortinet,pleh.net,tomato.pleh.net,"Comcast Cable Communications, LLC",173.10.74.1,10443,AS7922,US,Fortinet FortiGate-60F,2025-10-06T19:29:02.662497,tomato.pleh.net
+fortinet,musfiber.com,63.246.242.100.static.musfiber.com,Advanced Communications,63.246.242.100,10443,AS40128,US,Fortinet FortiGate-60E,2025-10-06T19:17:00.762776,63.246.242.100.static.musfiber.com
+fortinet,forest.net,unused-216-168-48-236.forest.net,"Digital Fortress, Inc.",216.168.48.236,10443,AS3361,US,Fortinet FortiGate-40F,2025-10-06T19:12:56.693266,unused-216-168-48-236.forest.net
+fortinet,covfab.com,mail.covfab.com,"West Carolina Communications, LLC",206.74.128.118,10443,AS10279,US,Fortinet FortiGate-60E,2025-10-06T19:11:24.672535,mail.covfab.com
+fortinet,magicmicro.com,mail.magicmicro.com,Charter Communications Inc,74.219.115.246,443,AS10796,US,SSL VPN Remote Access Web Portal,2025-10-06T19:09:18.633611,mail.magicmicro.com;vpn.magicmicro.com
+microsoft,goeaston.net,24.130.72.76.cable.dhcp.goeaston.net,Easton Utilities Commission,76.72.130.24,80,AS21981,US,Microsoft IIS httpd,2025-10-06T19:04:48.144641,24.130.72.76.cable.dhcp.goeaston.net
+fortinet,plateautel.net,064-090-155-206.plateautel.net,Plateau Telecommunications Incorporated,64.90.155.206,10443,AS21782,US,Fortinet FortiGate-30E,2025-10-06T18:51:30.568645,064-090-155-206.plateautel.net
+fortinet,fdtnet.net,66-60-96-67.ip.fdtnet.net,"FirstDigital Communications, LLC",66.60.96.67,10443,AS13415,US,Fortinet FortiGate-200E,2025-10-06T18:47:26.564315,66-60-96-67.ip.fdtnet.net
+fortinet,wwest.net,skamokawa-17.wwest.net,"WAHKIAKUM WEST TELEVISION, INC.",134.195.19.17,10443,AS400686,US,Fortinet FortiGate-61E,2025-10-06T18:47:14.165289,Skamokawa-17.wwest.net
+fortinet,cpinternet.com,198-144-13-66.ips.cpinternet.com,CP Internet,198.144.13.66,10443,AS12042,US,Fortinet FortiGate-70F,2025-10-06T18:47:07.493747,198-144-13-66.ips.cpinternet.com
+fortinet,mapscloud.com,mapscloud.com,Linode,198.58.117.141,443,AS63949,US,nginx,2025-10-06T18:46:02.220119,mapscloud.com
+fortinet,mi-connection.com,sub-68-71-165-144.mi-connection.com,TDS TELECOM,68.71.165.144,10443,AS4181,US,Fortinet FortiGate-40F,2025-10-06T18:39:55.101433,sub-68-71-165-144.mi-connection.com
+fortinet,beckandhofer.com,mail.beckandhofer.com,Midcontinent Communications,24.111.7.154,8443,AS11232,US,Fortinet FortiGate-60F,2025-10-06T18:37:30.157421,mail.beckandhofer.com
+fortinet,nibegroup.us,nibegroup.us,Tekify Broadband,170.178.141.206,443,AS46886,US,SSL VPN Remote Access Web Portal,2025-10-06T18:37:01.317509,cust.HAY.THEX.tekify.net;nibegroup.us
+fortinet,finalto.com,finalto.com,"AT&T Enterprises, LLC",12.26.234.138,8443,AS7018,US,SSL VPN Remote Access Web Portal,2025-10-06T18:34:49.572265,finalto.com
+fortinet,bluebirdpears.com,mailx.bluebirdpears.com,Ziply Fiber,166.113.38.156,8443,AS13370,US,Cyberoam SSL VPN Portal,2025-10-06T18:34:18.742369,mailx.bluebirdpears.com
+fortinet,matthewsandpierce.com,mail.matthewsandpierce.com,"Comcast Cable Communications, LLC",173.166.133.241,10443,AS7922,US,Fortinet FortiWiFi-40F,2025-10-06T18:32:59.185643,mail.matthewsandpierce.com
+microsoft,intermedia.net,intermedia.net,"Intermedia.net, Inc.",64.78.48.112,80,AS16406,US,Microsoft IIS httpd,2025-10-06T18:26:15.544542,intermedia.net
+fortinet,mtaonline.net,184-250-137-216.mtaonline.net,"Matanuska Telecom Association, Incorporated",216.137.250.184,10443,AS11090,US,Fortinet FortiGate-40F,2025-10-06T18:23:03.648525,184-250-137-216.mtaonline.net
+microsoft,first5shasta.org,lf.first5shasta.org,Amazon Technologies Inc.,34.215.123.228,443,AS16509,US,Microsoft IIS httpd,2025-10-06T18:21:24.093034,lf.first5shasta.org;ec2-34-215-123-228.us-west-2.compute.amazonaws.com;www.lf.first5shasta.org
+fortinet,thrivecloud.io,198.168.31.189.thrivecloud.io,"Thrive Operations, LLC",198.168.31.189,10443,AS55189,US,Fortinet FortiGate-1800F,2025-10-06T18:07:05.434551,198.168.31.189.thrivecloud.io
+fortinet,tamcotools.com,vpn.tamcotools.com,"Comcast Cable Communications, LLC",96.69.87.20,10443,AS7922,US,SSL VPN Remote Access Web Portal,2025-10-06T18:05:09.149101,vpn.tamcotools.com
+fortinet,prosws.com,prosws.com,Cox Communications Inc.,64.253.188.230,10443,AS22773,US,Fortinet FortiGate-201F,2025-10-06T18:01:59.313355,prosws.com
+microsoft,csbs.org,iservices.csbs.org,Amazon Technologies Inc.,34.206.102.246,443,AS14618,US,Microsoft IIS httpd,2025-10-06T17:57:51.813886,iservices.csbs.org;portal.csbs.org;imis.csbs.org;www.imis.csbs.org;ec2-34-206-102-246.compute-1.amazonaws.com
+fortinet,monkeybrains.net,nextdoor.static.monkeybrains.net,Sound of Hope Radio Network,199.241.202.133,443,AS32329,US,Fortinet FortiGate-60F,2025-10-06T17:56:08.364592,nextdoor.static.monkeybrains.net
+fortinet,rmmechanical.net,mail.rmmechanical.net,RM MECHANICAL INC.,65.144.71.42,10443,AS209,US,Fortinet FortiGate-80F,2025-10-06T17:56:06.797088,mail.rmmechanical.net
+microsoft,in-sightonline.com,in-sightonline.com,"Software Information Systems, LLC",199.127.191.8,443,AS22728,US,Microsoft IIS httpd,2025-10-06T17:53:38.021579,in-sightonline.com
+fortinet,viawest.net,dyn123.pnas03.las01.viawest.net,Flexential Colorado Corp.,209.170.209.123,8443,AS13649,US,PLM Host SSL VPN Portal,2025-10-06T17:39:03.400333,dyn123.pnas03.las01.viawest.net
+microsoft,allina.com,allina.com,"Allina Health System, Inc.",167.177.40.61,443,AS7800,US,Microsoft IIS httpd,2025-10-06T17:36:00.877518,allina.com;allinahealth.org
+fortinet,globalccs.net,FTTX-204-8-176-32.globalccs.net,Stratford Mutual Telephone Company,204.8.176.32,10443,AS399378,US,Fortinet FortiGate-50E,2025-10-06T17:35:22.136883,FTTX-204-8-176-32.globalccs.net
+fortinet,cryotech.com,vpn.cryotech.com,Local Internet Service Company,69.18.14.212,443,AS12133,US,SonicWALL SSL-VPN http proxy,2025-10-06T17:33:38.621244,69-18-14-212.lisco.net;vpn.cryotech.com
+fortinet,hillercompanies.net,hillercompanies.net,HILLER COMPANIES,12.23.93.23,443,AS7018,US,CSRF,2025-10-06T17:29:12.233702,hillercompanies.net
+fortinet,tailormadeservers.com,72.249.79.148.tailormadeservers.com,"TierPoint, LLC",72.249.79.148,10443,AS17378,US,Fortinet FortiGate-200E,2025-10-06T17:25:23.023403,72.249.79.148.tailormadeservers.com
+fortinet,3sitracking.com,dev.3sitracking.com,Geotrax,65.74.157.197,443,AS17018,US,,2025-10-06T17:20:08.503692,dev.3sitracking.com;3sitracking.com
+fortinet,putnamcounty911.org,mail.putnamcounty911.org,H.O.P. Communications DBA airHOP,208.79.172.27,10443,AS36521,US,Fortinet FortiGate-80F,2025-10-06T17:19:56.641648,mail.putnamcounty911.org
+microsoft,cableone.net,180-181-36-191.cpe.cableone.net,"CABLE ONE, INC.",180.181.36.191,80,AS11492,US,Microsoft IIS httpd,2025-10-06T17:19:35.268271,180-181-36-191.cpe.cableone.net
+fortinet,dbsintl.net,user-162-220-107-164.dbsintl.net,IntegraOne,162.220.107.164,80,AS17378,US,Unauthorized Access,2025-10-06T17:18:48.794601,user-162-220-107-164.dbsintl.net
+fortinet,myflorida.com,ra.fdc.myflorida.com,Florida Department of Management Services,199.250.31.121,443,AS8103,US,Pulse Secure,2025-10-06T17:18:34.053004,ra.fdc.myflorida.com;www.ra.fdc.myflorida.com;199-250-31-121.ip.state.fl.us
+microsoft,sl-reverse.com,b6.6e.3ea9.ip4.static.sl-reverse.com,"SoftLayer Technologies, Inc.",169.62.110.182,80,AS36351,US,Microsoft IIS httpd,2025-10-06T17:15:58.672519,b6.6e.3ea9.ip4.static.sl-reverse.com
+fortinet,ccunet.org,thing1.ccunet.org,COMMUNITY CREDIT UNION OF FLO,12.51.242.37,443,AS7018,US,SSL VPN Remote Access Web Portal,2025-10-06T17:14:00.540109,thing1.ccunet.org;www.thing1.ccunet.org
+fortinet,adsi-fm.com,adsi-fm.com,"Consolidated Communications, Inc.",216.70.25.46,443,AS12042,US,CSRF,2025-10-06T16:57:05.819340,adsi-fm.com;46.25.70.216.in-addr.arpa
+microsoft,vote-usa.org,admin.vote-usa.org,Amazon Technologies Inc.,52.44.46.82,443,AS14618,US,Microsoft IIS httpd,2025-10-06T16:55:54.542700,admin.vote-usa.org;ec2-52-44-46-82.compute-1.amazonaws.com
+fortinet,com.gt,57-4-33-186.ufinet.com.gt,IFX Networks Argentina S.R.L.,186.33.4.57,10443,AS18747,US,Fortinet FortiGate-80F,2025-10-06T16:55:19.596676,57-4-33-186.ufinet.com.gt
+microsoft,admin-ops.com,host2.admin-ops.com,"Liquid Web, L.L.C",69.16.238.74,80,AS32244,US,Microsoft IIS httpd,2025-10-06T16:54:55.563219,host2.admin-ops.com
+microsoft,bright.net,wabash-rvisions-106.ded.bright.net,Wabash Communications,209.143.2.106,80,AS7106,US,Microsoft IIS httpd,2025-10-06T16:54:50.736929,wabash-rvisions-106.ded.bright.net
+fortinet,oxya.com,ip-64-27-70-220.oxya.com,"DataPipe, Inc.",64.27.70.220,10443,AS14492,US,Fortinet FortiGate-101F,2025-10-06T16:54:19.276572,ip-64-27-70-220.oxya.com
+fortinet,ozarksgo.net,resi-170-199-189-56.isp.ozarksgo.net,"OzarksGo, LLC",170.199.189.56,10443,AS395662,US,Fortinet FortiGate-40F,2025-10-06T16:54:00.528130,resi-170-199-189-56.isp.ozarksgo.net
+fortinet,com.py,www.technoma.com.py,Amazon Data Services NoVa,98.83.60.28,443,AS14618,US,Apache httpd,2025-10-06T16:50:36.919397,www.technoma.com.py;technoma.com.py;mail.technoma.com.py
+microsoft,vernonct.org,rhs-nvr5.vernonct.org,Connecticut Education Network,64.251.59.156,80,AS22742,US,Microsoft IIS httpd,2025-10-06T16:49:27.877411,rhs-nvr5.vernonct.org;live.vernonct.org
+fortinet,rifp.com,rifp.com,"RICHMOND INTERNATIONAL FOREST PRODUCTS, LLC",63.88.123.2,10443,AS701,US,Fortinet FortiGate-100F,2025-10-06T16:48:56.690828,rifp.com
+fortinet,cei-1.com,mail.cei-1.com,Verizon Business,71.185.246.5,10443,AS701,US,Fortinet FortiGate-60E,2025-10-06T16:48:09.339308,mail.cei-1.com
+microsoft,polarbackup.com,polarbackup.com,Amazon Technologies Inc.,52.43.32.190,443,AS16509,US,Microsoft IIS httpd,2025-10-06T16:45:25.244617,polarbackup.com;ec2-52-43-32-190.us-west-2.compute.amazonaws.com
+fortinet,lrc.ninja,162-246-204-50.cpe.lrc.ninja,"LR Communications, Inc.",162.246.204.50,10443,AS55044,US,Fortinet FortiGate-60E,2025-10-06T16:43:53.194419,162-246-204-50.cpe.lrc.ninja
+fortinet,hydrotechco.com,htsmacmini01.hydrotechco.com,Verizon Business,173.48.85.37,10443,AS701,US,Fortinet FortiWiFi-60E,2025-10-06T16:42:30.553572,htsmacmini01.hydrotechco.com
+microsoft,rtchex.com,rtchex.com,Microsoft Corporation,20.109.202.16,443,AS8075,US,Microsoft IIS httpd,2025-10-06T16:41:47.313639,rtchex.com
+microsoft,pro-group.com,pro-group.com,"Comcast Cable Communications, LLC",96.78.27.161,443,AS7922,US,Microsoft IIS httpd,2025-10-06T16:33:58.735877,pro-group.com
+fortinet,hwccustomers.com,162.251.177.245.hwccustomers.com,Hotwire Communications,162.251.177.245,10443,AS62622,US,Fortinet FortiGate-60E,2025-10-06T16:30:51.226453,162.251.177.245.hwccustomers.com
+fortinet,protouchpainting.com,protouchpainting.com,PROTOUCH PAINTING INC,50.78.224.129,8443,AS7922,US,Fortinet FortiGate-60F,2025-10-06T16:30:00.962414,protouchpainting.com
+fortinet,databank.com,63.164.99.databank.com,"DATABANK, INC.",63.164.99.110,8443,AS13767,US,Fortinet FortiGate-200F,2025-10-06T16:29:26.227861,63.164.99.databank.com
+fortinet,iqep.com,tamamx2.iqep.com,Taunton Municipal Lighting Plant,69.64.101.59,8443,AS22018,US,Fortinet FortiGate-201F,2025-10-06T16:27:05.513173,tamamx2.iqep.com
+microsoft,i-car.com,admin.info.i-car.com,"NETWORK INNOVATIONS, LLC",64.63.146.116,443,AS53828,US,Microsoft IIS httpd,2025-10-06T16:26:42.536014,admin.info.i-car.com
+fortinet,gobrightspeed.net,static-9-144-168-33.gobrightspeed.net,Brightspeed,9.144.168.33,8009,,US,Endpoint Security Required,2025-10-06T16:25:36.928606,static-9-144-168-33.gobrightspeed.net
+fortinet,brookings.net,66-17-96-152-swiftel.brookings.net,SWIFTEL COMMUNICATIONS,66.17.96.152,8443,AS26860,US,Fortinet FortiGate-40F,2025-10-06T16:21:39.443383,66-17-96-152-swiftel.brookings.net
+fortinet,naritosm.com,mail.naritosm.com,HAWAIIAN TELCOM,72.235.245.132,8443,AS36149,US,Fortinet FortiGate-60E,2025-10-06T16:19:07.549871,mail.naritosm.com
+fortinet,cptelecom.net,218.132.23.209.lan.static.cptelecom.net,"Consolidated Communications, Inc.",209.23.132.218,8443,AS12042,US,Fortinet FortiGate-60F,2025-10-06T16:18:19.338221,218.132.23.209.lan.static.cptelecom.net
+fortinet,airstreamcomm.net,68-65-34-200.static.lakeland.airstreamcomm.net,"Airstream Communications, LLC",68.65.34.200,8443,AS11796,US,Fortinet FortiGate-60F,2025-10-06T16:17:55.861897,68-65-34-200.static.lakeland.airstreamcomm.net
+fortinet,dataside.com,66-205-177-84.dataside.com,"Flexential Dataside, LLC",66.205.177.84,8443,AS13649,US,Fortinet FortiGate-100F,2025-10-06T16:17:11.232127,66-205-177-84.dataside.com
+fortinet,belwave.net,98-247-171-216.belwave.net,"BELWAVE COMMUNICATIONS, INC.",216.171.247.98,8443,AS33481,US,Fortinet FortiGate-500E,2025-10-06T16:16:31.973390,98-247-171-216.belwave.net
+fortinet,lisco.net,69-18-14-181.lisco.net,Local Internet Service Company,69.18.14.181,8443,AS12133,US,Fortinet FortiGate-40F,2025-10-06T16:15:30.326792,69-18-14-181.lisco.net
+fortinet,smithvilledigital.net,65.93.244.66.chriss.smithvilledigital.net,"Smithville Digital, LLC",66.244.93.65,8443,AS11550,US,Fortinet FortiGate-60F,2025-10-06T16:13:58.993283,65.93.244.66.chriss.smithvilledigital.net
+fortinet,dsci-net.com,34.ne.business.static.dsci-net.com,Southwick Police,209.104.252.34,8443,AS33748,US,Fortinet FortiGate-100F,2025-10-06T16:13:12.248260,34.ne.business.static.dsci-net.com
+fortinet,com.sv,191-24-33-186.ufinet.com.sv,IFX Networks Argentina S.R.L.,186.33.24.191,10443,AS18747,US,Fortinet FortiGate-60F,2025-10-06T16:06:39.836445,191-24-33-186.ufinet.com.sv
+fortinet,stellarllc.net,216-168-91-254.gctel.stellarllc.net,Gardonville Coop Telephone Association,216.168.91.254,8443,AS36374,US,Fortinet FortiGate-40F,2025-10-06T15:59:33.684214,216-168-91-254.gctel.stellarllc.net
+microsoft,dmidras.com,test.dmidras.com,Microsoft Corporation,13.90.84.181,443,AS8075,US,Microsoft IIS httpd,2025-10-06T15:58:50.520925,test.dmidras.com
+fortinet,metrosales.com,metrosales.com,"Consolidated Communications, Inc.",216.70.39.41,443,AS12042,US,CSRF,2025-10-06T15:54:17.824961,metrosales.com;41.39.70.216.in-addr.arpa
+fortinet,com.mx,customer-187-216-80-174.uninet-ide.com.mx,UNINET,187.216.80.174,10443,AS8151,US,Fortinet FortiGate-200F,2025-10-06T15:53:59.617346,customer-187-216-80-174.uninet-ide.com.mx
+fortinet,brainerd.net,ascend7-isdn-42.brainerd.net,CONSOLIDATED TELEPHONE COMPANY,64.90.75.93,10443,AS20283,US,Fortinet FortiGate-40F,2025-10-06T15:52:24.374687,ascend7-isdn-42.brainerd.net
+microsoft,secureserver.net,174.126.62.166.host.secureserver.net,"GoDaddy.com, LLC",166.62.126.174,8080,AS26496,US,Microsoft IIS httpd,2025-10-06T15:42:12.637144,174.126.62.166.host.secureserver.net
+fortinet,bvunet.net,library-81-91.bvunet.net,"Point Broadband Fiber Holding, LLC",216.184.81.91,10443,AS17310,US,Fortinet FortiGate-40F,2025-10-06T15:41:13.373125,library-81-91.bvunet.net
+microsoft,hamiltonservices.com,hamiltonservices.com,Microsoft Corporation,104.45.186.47,443,AS8075,US,Microsoft IIS httpd,2025-10-06T15:38:18.132086,hamiltonservices.com;www.hamiltonservices.com
+microsoft,brokerintouch.com,www.brokerintouch.com,"GoDaddy.com, LLC",192.169.136.79,443,AS26496,US,Microsoft IIS httpd,2025-10-06T15:34:42.536638,79.136.169.192.host.secureserver.net;www.brokerintouch.com;brokerintouch.com
+fortinet,wiline.com,67-207-119-22.static.wiline.com,WiLine Networks Inc.,67.207.119.22,10443,AS33544,US,Fortinet FortiGate-40F,2025-10-06T15:34:06.286929,67-207-119-22.static.wiline.com
+fortinet,mybluepeak.net,dhcp-149.64-179-181.mybluepeak.net,Clarity Telecom LLC,64.179.181.149,10443,AS20412,US,Fortinet FortiGate-60F,2025-10-06T15:30:41.643841,dhcp-149.64-179-181.mybluepeak.net
+fortinet,cfjmfg.com,cfjmfg.com,CFJ Manufacturing,65.68.217.143,443,AS7018,US,Invalid Connection,2025-10-06T15:29:14.220128,cfjmfg.com;serviceawardcenter.com
+fortinet,ntegrated.net,76-10-236-113.ntegrated.net,Ntegrated Solutions,76.10.236.113,8443,AS19223,US,Fortinet FortiGate-401E,2025-10-06T15:25:57.308016,76-10-236-113.ntegrated.net
+fortinet,conxxus.net,cpe-108-59-178-211.conxxus.net,Metro Communications Company,108.59.178.211,10443,AS53610,US,Fortinet FortiGate-100F,2025-10-06T15:24:35.186232,cpe-108-59-178-211.conxxus.net
+fortinet,t6b.com,cust-66-163-103-226.wireless.t6b.com,"JAB Wireless, INC.",66.163.103.226,10443,AS17306,US,Fortinet FortiWiFi-40F,2025-10-06T15:22:25.656190,cust-66-163-103-226.wireless.t6b.com
+fortinet,russellsurveying.com,russellsurveying.com,"CenturyLink Communications, LLC",67.42.201.93,10443,AS209,US,Fortinet FortiGate-40F,2025-10-06T15:21:33.399000,russellsurveying.com
+microsoft,intracloudexchange.com,gpmon.intracloudexchange.com,Microsoft Corporation,13.92.237.248,443,AS8075,US,Microsoft IIS httpd,2025-10-06T15:20:27.077598,gpmon.intracloudexchange.com;www.gpmon.intracloudexchange.com
+microsoft,tandjprintingsupply.com,tandjprintingsupply.com,"Comcast Cable Communications, LLC",50.198.46.51,443,AS7922,US,Microsoft IIS httpd,2025-10-06T15:16:00.657314,tandjprintingsupply.com;50-198-46-51-static.hfc.comcastbusiness.net
+microsoft,mba.org,mba.org,Amazon Technologies Inc.,34.236.4.82,443,AS14618,US,Microsoft IIS httpd,2025-10-06T15:01:13.983028,mba.org;ec2-34-236-4-82.compute-1.amazonaws.com
+fortinet,nuvisions.net,cust162-248-78-64-ny.nuvisions.net,Nuvisions,64.78.248.162,10443,AS19689,US,Fortinet FortiGate-40F,2025-10-06T14:59:22.831134,cust162-248-78-64-ny.nuvisions.net
+fortinet,race.com,66-218-62-204.race.com,"Race Tech, LLC",66.218.62.204,8443,AS30041,US,Fortinet FortiGate-70D-POE,2025-10-06T14:59:18.440617,66-218-62-204.race.com
+fortinet,5x5tele.com,162-255-180-202.5x5tele.com,5x5 Telecom,162.255.180.202,10443,AS63430,US,Fortinet FortiGate-101E,2025-10-06T14:56:23.952852,162-255-180-202.5x5tele.com
+fortinet,grid4.com,216-105-60-18.sfld.grid4.com,"Grid4 Communications, Inc",216.105.60.18,10443,AS36394,US,Fortinet FortiGate-201F,2025-10-06T14:55:59.837570,216-105-60-18.sfld.grid4.com
+microsoft,reviewyourleads.com,www.reviewyourleads.com,"Ntirety, Inc.",65.182.222.152,443,AS20021,US,Microsoft IIS httpd,2025-10-06T14:54:09.325942,www.reviewyourleads.com;reviewyourleads.com
+fortinet,sumnersd.org,library.sumnersd.org,Washington School Information Processing Cooperative,168.212.252.61,8008,AS10430,US,Sumner School District - Firewall Authentication,2025-10-06T14:54:05.374127,library.sumnersd.org
+fortinet,sdncommunications.com,158.169.128.66.static.sdncommunications.com,SDN Communications Inc.,66.128.169.158,8443,AS13576,US,Fortinet FortiGate-200E,2025-10-06T14:54:03.436020,158.169.128.66.static.sdncommunications.com
+fortinet,oh.us,www.rossford.lib.oh.us,Ohio Public Library Information Network (OPLIN),66.213.123.201,10443,AS26923,US,Fortinet FortiGate-60E,2025-10-06T14:42:29.705059,www.rossford.lib.oh.us
+fortinet,speakuhb0x.org,knight.speakuhb0x.org,SCRA,66.219.26.4,10443,AS15085,US,Fortinet FortiGate-VM,2025-10-06T14:34:19.015560,knight.speakuhb0x.org
+fortinet,rockport.com,esmtp.rockport.com,"Thrive Operations, LLC",198.168.31.137,10443,AS55189,US,Fortinet FortiGate-1800F,2025-10-06T14:31:20.426369,esmtp.rockport.com
+fortinet,liveoakfiber.net,216-150-10-171.ptr.liveoakfiber.net,LiveOak Fiber,216.150.10.171,10443,AS395035,US,Fortinet FortiGate-60F,2025-10-06T14:18:50.514006,216-150-10-171.ptr.liveoakfiber.net
+fortinet,campuscommunicationsgroup.com,host-68-180-95-74.ilbmi.clients.campuscommunicationsgroup.com,PAVLOV MEDIA INC,68.180.95.74,10443,AS23473,US,Fortinet FortiGate-30E,2025-10-06T14:16:44.353547,host-68-180-95-74.ilbmi.clients.campuscommunicationsgroup.com
+microsoft,gruv.com,www.admin-gruv.gruv.com,IONOS Inc.,198.251.74.246,443,AS8560,US,Microsoft IIS httpd,2025-10-06T14:13:52.062809,www.admin-gruv.gruv.com;admin-gruv.gruv.com
+fortinet,ctl.one,64-132-244-115.static.ctl.one,"Level 3 Parent, LLC",64.132.244.115,8009,AS3549,US,Endpoint Security Required,2025-10-06T14:12:58.763876,64-132-244-115.static.ctl.one
+fortinet,mecalux.com,mecalux.com,Alliance Consulting Group,208.204.252.166,443,AS701,US,CSRF,2025-10-06T14:11:34.758769,mecalux.com;user166.alliance-consulting.com
+fortinet,dflytech.com,mail01.dflytech.com,HUNT UTILITIES GROUP,23.30.234.25,10443,AS7922,US,Fortinet FortiGate-40F,2025-10-06T14:10:28.698516,mail01.dflytech.com
+fortinet,primebank.com,77.31.31.96.primebank.com,Primebank,96.31.31.77,10443,AS53347,US,Fortinet FortiGate-301E,2025-10-06T14:02:33.959297,77.31.31.96.primebank.com
+fortinet,jagcom.net,209-131-230-78.ip.jagcom.net,Jaguar Communications,209.131.230.78,10443,AS15011,US,Fortinet FortiGate-60E,2025-10-06T14:01:29.819823,209-131-230-78.ip.jagcom.net
+fortinet,cdelightband.net,vo.cdelightband.net,CDE Lightband Corp,208.88.168.136,443,AS40749,US,Login,2025-10-06T13:22:46.512776,vo.cdelightband.net;vo.cdelightband.com;vo.cdelightband.tv
+fortinet,ma.us,mail.town.needham.ma.us,RCN,146.115.9.26,4433,AS6079,US,Sign in,2025-10-06T13:15:26.641601,mail.town.needham.ma.us;FortiAuthenticator-VM.needhamma.gov;mail.needhamma.gov
+fortinet,soctlaw.com,mail.soctlaw.com,"FirstLight Fiber, Inc.",216.27.114.149,8443,AS15320,US,Fortinet FortiGate-60F,2025-10-06T13:13:13.181956,mail.soctlaw.com
+microsoft,tecnoparque.mx,tecnoparque.mx,IBM Cloud,67.18.65.56,4433,AS36351,US,Microsoft IIS httpd,2025-10-06T13:08:28.588129,tecnoparque.mx;www.facturasdeprisa.com;facturasdeprisa.com
+fortinet,yellowbrick.com,yellowbrick.com,Microsoft Corporation,40.83.209.83,443,AS8075,US,CSRF,2025-10-06T13:05:57.884730,yellowbrick.com
+microsoft,biodensityapp.com,biodensityapp.com,Microsoft Corporation,13.89.141.59,443,AS8075,US,Microsoft IIS httpd,2025-10-06T13:00:36.738901,biodensityapp.com
+fortinet,maceykotax.com,remote.maceykotax.com,Charter Communications Inc,69.135.27.38,8443,AS10796,US,Fortinet FortiGate-60F,2025-10-06T12:59:53.723349,remote.maceykotax.com
+microsoft,dentalwriteronline.com,www.dentalwriteronline.com,Microsoft Corporation,13.68.152.141,443,AS8075,US,Microsoft IIS httpd,2025-10-06T12:29:56.962866,www.dentalwriteronline.com;dentalwriteronline.com
+microsoft,mbta-sv.com,mbta-sv.com,Amazon Technologies Inc.,54.81.1.228,443,AS14618,US,Microsoft IIS httpd,2025-10-06T12:03:56.552970,mbta-sv.com;ec2-54-81-1-228.compute-1.amazonaws.com;www.mbta-sv.com
+fortinet,sheakley.com,sheakley.com,Encore Technologies,208.92.68.133,443,AS395176,US,Login,2025-10-06T11:58:25.860563,sheakley.com
+microsoft,myvzw.com,host166.sub-63-43-80.myvzw.com,Verizon Business,63.43.80.166,80,AS6167,US,Microsoft IIS httpd,2025-10-06T11:51:22.726928,host166.sub-63-43-80.myvzw.com
+microsoft,mas-bd.com,mas-bd.com,"Amazon.com, Inc.",18.144.93.12,443,AS16509,US,Microsoft IIS httpd,2025-10-06T11:50:46.054164,ec2-18-144-93-12.us-west-1.compute.amazonaws.com;mas-bd.com
+fortinet,ccgedu.org,ccgedu.org,OARnet,199.218.254.30,443,AS600,US,Invalid Connection,2025-10-06T11:46:59.810887,ccgedu.org
+microsoft,hollanderparts.com,hollanderparts.com,"Solera Holdings, Inc.",170.76.175.168,443,AS32866,US,Microsoft IIS httpd,2025-10-06T11:43:27.522457,hollanderparts.com
+fortinet,midwestfibernetworks.com,207-110-225-3.rev.midwestfibernetworks.com,"Midwest Fiber Networks, LLC",207.110.225.3,8443,AS18683,US,Fortinet FortiGate-600E,2025-10-06T11:31:33.373141,207-110-225-3.rev.midwestfibernetworks.com
+microsoft,fairportny.com,generalcode.fairportny.com,"Frontier Communications of America, Inc.",65.37.125.233,443,AS5650,US,Microsoft IIS httpd,2025-10-06T11:16:44.186844,generalcode.fairportny.com;www.generalcode.fairportny.com;65-37-125-233.a8f5c28ec807aeda13ecb77ff9a1b41e.ip.frontiernet.net
+fortinet,venyu.com,242.62.venyu.com,REV,69.2.62.242,4443,AS20355,US,Warning,2025-10-06T11:11:43.747032,242.62.venyu.com;cybersec.dartpoints.io
+microsoft,diecasting.org,diecasting.org,"DLS Internet Services, Inc",209.242.8.154,443,AS10692,US,Microsoft IIS httpd,2025-10-06T11:04:17.364585,209-242-8-154.rev.dls.net;diecasting.org
+microsoft,j-forms.com,www.j-forms.com,SECURED SERVERS LLC,162.213.41.73,443,AS20454,US,Microsoft IIS httpd,2025-10-06T10:36:31.656221,www.j-forms.com
+fortinet,gwtc.net,64-251-177-136.ip4.gwtc.net,"Golden West Telecommunications Coop., Inc.",64.251.177.136,8443,AS6580,US,Fortinet FortiGate-60E,2025-10-06T10:29:07.659354,64-251-177-136.ip4.gwtc.net
+microsoft,commonlook.com,commonlook.com,Microsoft Corporation,20.121.150.14,443,AS8075,US,Microsoft IIS httpd,2025-10-06T10:21:01.530421,commonlook.com
+microsoft,freedomscientific.com,freedomscientific.com,Amazon Data Services NoVa,50.16.199.194,443,AS14618,US,Microsoft IIS httpd,2025-10-06T10:20:53.106893,ec2-50-16-199-194.compute-1.amazonaws.com;freedomscientific.com;internalsw.freedomscientific.com;internalsw-test.freedomscientific.com;internalsw-dev.freedomscientific.com
+fortinet,myqnapcloud.com,nas84e20a.myqnapcloud.com,Verizon Business,173.52.205.194,443,AS701,US,Invalid Connection,2025-10-06T10:16:25.013360,nas84e20a.myqnapcloud.com;static-173-52-205-194.nycmny.fios.verizon.net
+fortinet,lusfiber.net,74-80-13-167.mall.dyn.lusfiber.net,LUS Fiber,74.80.13.167,8443,AS25921,US,Fortinet FortiGate-60E,2025-10-06T09:58:53.196615,74-80-13-167.mall.dyn.lusfiber.net
+fortinet,fiber.net,host-114.91-90-209-980908-colocation.srv.fiber.net,Capital Community Bank,209.90.91.114,8443,AS5048,US,Fortinet FortiGate-200F,2025-10-06T09:54:39.779484,host-114.91-90-209-980908-colocation.srv.fiber.net
+fortinet,crhealthcare.org,ispprod.crhealthcare.org,COLUMBUS REGIONAL HEALTHCARE,24.106.208.18,4433,AS11426,US,Warning,2025-10-06T09:36:43.711831,syn-024-106-208-018.biz.spectrum.com;ispprod.crhealthcare.org;isptest.crhealthcare.org;webmail.crhealthcare.org;fac.crhealthcare.org;crhealthcare.org
+microsoft,monitoringtech.com,monitoringtechnologycorporatio.monitoringtech.com,Monitoring Technology Inc.,50.28.10.243,443,AS32244,US,Microsoft IIS httpd,2025-10-06T09:35:15.795819,monitoringtechnologycorporatio.monitoringtech.com;mtc19.monitoringtech.com;mt.monitoringtech.com;www.mt.monitoringtech.com
+fortinet,williamgeorge.net,williamgeorge.net,Net Atlantic Inc,69.25.192.96,8020,AS14742,US,Web Filter Block Override,2025-10-06T09:32:30.614069,williamgeorge.net
+microsoft,windsongwny.com,autodiscover.windsongwny.com,Flexential Corp.,128.136.245.36,443,AS13649,US,Microsoft IIS httpd,2025-10-06T09:00:06.582440,autodiscover.windsongwny.com;mail.windsongwny.com;autodiscover.windsongradiology.com;mail.windsongradiology.com
+fortinet,usasporks.com,usasporks.com,Cutco Corporation,198.203.222.136,4443,AS29701,US,Sign in,2025-10-06T08:52:13.462367,usasporks.com
+fortinet,fortinetcloudpartners.com,www.fortinetcloudpartners.com,Google LLC,34.36.11.172,443,AS396982,US,Secure Customers’ Cloud Journeys | Fortinet Cloud Partners,2025-10-06T08:51:34.904533,172.11.36.34.bc.googleusercontent.com;www.fortinetcloudpartners.com;fortinetcloudpartners.com
+fortinet,cityofnewberry.com,authentication.cityofnewberry.com,"West Carolina Communications, LLC",198.13.95.251,443,AS10279,US,CSRF,2025-10-06T08:39:01.246543,authentication.cityofnewberry.com;www.authentication.cityofnewberry.com
+fortinet,gates.ventures,auth.gates.ventures,Microsoft Corporation,20.51.122.234,443,AS8075,US,CSRF,2025-10-06T08:38:15.647040,auth.gates.ventures
+microsoft,awsglobalaccelerator.com,aa32b15b68eb1d355.awsglobalaccelerator.com,Amazon Technologies Inc.,35.71.163.81,80,AS16509,US,Microsoft IIS httpd,2025-10-06T08:12:13.482051,aa32b15b68eb1d355.awsglobalaccelerator.com
+fortinet,comporium.net,fmgh16-5.2wcm.comporium.net,Spirit Communications,207.144.71.5,8443,AS2711,US,Fortinet FortiGate-81E-POE,2025-10-06T07:49:45.549495,fmgh16-5.2wcm.comporium.net
+fortinet,diggerspecialties.com,diggerspecialties.com,"Fourway Computer Products, Inc.",74.118.115.196,443,AS46437,US,Sign in,2025-10-06T07:48:39.314866,74-118-115-196.fourway.net;diggerspecialties.com
+fortinet,iscintech.com,mail.iscintech.com,"AT&T Enterprises, LLC",45.16.235.65,8443,AS7018,US,Invalid Connection,2025-10-06T07:48:12.725149,mail.iscintech.com
+fortinet,breezeline.net,static-23-244-22-50.oh.cpe.breezeline.net,Breezeline,23.244.22.50,8443,AS11776,US,Fortinet FortiGate-60F,2025-10-06T07:48:02.591843,static-23-244-22-50.oh.cpe.breezeline.net
+fortinet,fuse.net,meyer-tool-incorporated-216-68-80-162.static.fuse.net,Cincinnati Bell Telephone Company LLC,216.68.80.162,8443,AS6181,US,Fortinet FortiGate-80F,2025-10-06T07:46:37.565399,meyer-tool-incorporated-216-68-80-162.static.fuse.net
+fortinet,csredhawks.org,tw.csredhawks.org,Kent Intermediate School District,64.49.124.90,8443,AS39987,US,Fortinet FortiGate-400E,2025-10-06T07:46:06.416602,tw.csredhawks.org
+fortinet,coxfiber.net,ip-216-54-18-169.coxfiber.net,Cox Communications Inc.,216.54.18.169,8443,AS22773,US,Fortinet FortiGate-60E,2025-10-06T07:45:37.900665,ip-216-54-18-169.coxfiber.net
+microsoft,power360web.com,power360web.com,Microsoft Corporation,40.86.162.62,443,AS8075,US,Microsoft IIS httpd,2025-10-06T07:28:55.307620,power360web.com
+microsoft,pbiaas.com,ip209-46-127-215.pbiaas.com,IONOS Inc.,209.46.127.215,8080,AS8560,US,Microsoft IIS httpd,2025-10-06T07:13:42.748723,ip209-46-127-215.pbiaas.com
+fortinet,ctitech.com,72.9.115.241.ctitech.com,CTI Fiber,72.9.115.241,8443,AS32160,US,Fortinet FortiGate-501E,2025-10-06T07:09:16.309944,72.9.115.241.ctitech.com
+microsoft,infinittna.com,smartbkp.infinittna.com,"Infinitt North America, Inc.",192.199.11.62,443,AS63468,US,Microsoft IIS httpd,2025-10-06T07:09:13.729072,smartbkp.infinittna.com;infinittna.com
+microsoft,businessics.com,customer.businessics.com,Contabo Inc,154.53.46.130,81,AS40021,US,Microsoft IIS httpd,2025-10-06T06:56:22.487421,customer.businessics.com
+microsoft,iaodapca.org,members.iaodapca.org,"Hanson Information Systems, Inc. / Family Net",216.8.73.34,443,AS14858,US,Microsoft IIS httpd,2025-10-06T06:36:48.331534,members.iaodapca.org
+fortinet,trans-video.net,CPE-STATIC-159.trans-video.net,"Trans-Video, Inc.",104.244.135.159,8443,AS25937,US,Fortinet FortiGate-40F,2025-10-06T06:27:46.070149,CPE-STATIC-159.trans-video.net
+fortinet,alliancecom.net,43-24-54-142.alliancecom.net,"Rock County Broadband Alliance, LLC",142.54.24.43,8443,AS401415,US,Fortinet FortiGate-80F,2025-10-06T06:11:55.709960,43-24-54-142.alliancecom.net
+fortinet,springerschools.org,mail.springerschools.org,Plateau Telecommunications Incorporated,68.66.89.194,8443,AS21782,US,Fortinet FortiGate-100E,2025-10-06T06:09:58.727450,mail.springerschools.org
+microsoft,alpha-vision.com,alpha-vision.com,Microsoft Corporation,13.84.185.144,443,AS8075,US,Microsoft IIS httpd,2025-10-06T05:50:35.352226,alpha-vision.com;zondavirtual.com
+fortinet,regusnet.com,americas.us.7457.ip7.regusnet.com,"Regus Business Centre, LLC",66.202.148.38,8443,AS3356,US,Fortinet FortiGate-50E,2025-10-06T05:10:37.498539,Americas.US.7457.IP7.regusnet.com
+microsoft,paisanopartners.com,paisanopartners.com,Amazon Technologies Inc.,3.130.52.78,443,AS16509,US,Microsoft IIS httpd,2025-10-06T04:40:17.336348,paisanopartners.com;ec2-3-130-52-78.us-east-2.compute.amazonaws.com
+fortinet,amaonline.com,ama-dhcp.20940178126.amaonline.com,"AMA Communications, LLC",209.40.178.126,8443,AS6620,US,Fortinet FortiGate-40F,2025-10-06T04:35:40.794137,ama-dhcp.20940178126.amaonline.com
+fortinet,dasia.net,69.163.187.66.static.Dasia.Net,"Dasia.Net, LLC",66.187.163.69,8443,AS11402,US,Fortinet FortiGate-60E,2025-10-06T04:17:59.260530,69.163.187.66.static.Dasia.Net
+fortinet,nnmt.net,ftth-199-47-207-7.nnmt.net,"WWLTH, Inc",199.47.207.7,8443,AS26196,US,Fortinet FortiGate-200E,2025-10-06T03:50:18.135628,ftth-199-47-207-7.nnmt.net
+microsoft,brewers.com,www.keg.brewers.com,"Level 3 Parent, LLC",8.28.167.14,443,AS397590,US,Microsoft IIS httpd,2025-10-06T03:45:04.244826,www.keg.brewers.com;keg.brewers.com
+microsoft,bmiradiology.com,bmiradiology.com,Amazon Data Services NoVa,3.234.57.67,443,AS14618,US,Microsoft IIS httpd,2025-10-06T03:37:36.634462,ec2-3-234-57-67.compute-1.amazonaws.com;bmiradiology.com
+fortinet,hwins.com,webmail.hwins.com,Google Fiber Inc.,23.228.142.8,8443,AS16591,US,Fortinet FortiGate-100E,2025-10-06T03:27:44.361378,webmail.hwins.com
+microsoft,epicservers.com,vm.epicservers.com,"Exigo Office, INC",108.59.45.181,444,AS32413,US,Microsoft IIS httpd,2025-10-06T03:11:33.608569,vm.epicservers.com
+microsoft,bcscertus.com,bcscertus.com,Amazon Data Services NoVa,3.219.125.217,443,AS14618,US,Microsoft IIS httpd,2025-10-06T02:59:19.166743,bcscertus.com;ec2-3-219-125-217.compute-1.amazonaws.com
+microsoft,activeinternational.com,travel.activeinternational.com,Active International,146.82.248.71,443,AS55252,US,Microsoft IIS httpd,2025-10-06T02:56:10.776464,travel.activeinternational.com
+microsoft,soullife.com,soullife.com,"Exigo Office, INC",108.59.45.174,444,AS32413,US,Microsoft IIS httpd,2025-10-06T02:38:15.568881,soullife.com
+microsoft,giawellness.com,giawellness.com,"Exigo Office, INC",108.59.44.21,444,AS32413,US,Microsoft IIS httpd,2025-10-06T02:37:26.828199,giawellness.com
+microsoft,fcagroupapps.com,apps.testspappstip.naspapps.fcagroupapps.com,Chrysler Group LLC,129.9.176.102,443,AS36067,US,Microsoft IIS httpd,2025-10-06T02:28:29.205318,apps.testspappstip.naspapps.fcagroupapps.com
+microsoft,allofiber.net,162-210-7-228.lnk01-oa02.lnk.ne.allofiber.net,Allo Communications LLC,162.210.7.228,80,AS15108,US,Microsoft IIS httpd,2025-10-06T02:24:57.888224,162-210-7-228.lnk01-oa02.lnk.ne.allofiber.net
+microsoft,mmedical.com,admin.mmedical.com,Microsoft Corporation,20.94.9.110,443,AS8075,US,Microsoft IIS httpd,2025-10-06T02:23:44.943647,admin.mmedical.com;synthes.mmedical.com;www.bookorderz.com;stage.libraryorderz.com;www.reporderz.com;www.libraryorderz.com;reports.mmedical.com;reporderz.com;stage.bookorderz.com;stage.medorderz.com;adminstage.mmedical.com;mmedical.com;stage.reporderz.com;www.mmedical.com;www.synthesorderz.com;www.medorderz.com;reportsstage.mmedical.com;ssrs.mmedical.com
+microsoft,seednutrition.com,seednutrition.com,Amazon Data Services NoVa,23.23.39.12,443,AS14618,US,Microsoft IIS httpd,2025-10-06T02:01:19.667684,seednutrition.com;ec2-23-23-39-12.compute-1.amazonaws.com
+fortinet,tncsvl.net,dhcp-247.charlestonpl.mastercorp.tncsvl.net,Spirit Communications,165.166.206.247,8443,AS2711,US,Fortinet FortiGate-100F,2025-10-06T01:56:54.450772,dhcp-247.charlestonpl.mastercorp.tncsvl.net
+microsoft,renovolive.com,renovolive.com,Amazon Technologies Inc.,54.175.0.236,443,AS14618,US,Microsoft IIS httpd,2025-10-06T01:49:54.482550,ec2-54-175-0-236.compute-1.amazonaws.com;renovolive.com
+microsoft,agc.org,agc.org,Microsoft Corporation,52.247.34.240,443,AS8075,US,Microsoft IIS httpd,2025-10-06T01:36:42.042031,agc.org
+fortinet,att-inc.com,12-50-224-98.att-inc.com,"AT&T Enterprises, LLC",12.50.224.98,8443,AS7018,US,Fortinet FortiGate-80F,2025-10-06T01:15:54.652172,12-50-224-98.att-inc.com
+fortinet,flavorfactory.net,mail.flavorfactory.net,Charter Communications LLC,47.51.17.218,8443,AS20115,US,Fortinet FortiGate-70D,2025-10-06T01:13:09.589237,mail.flavorfactory.net
+fortinet,soundmediagroup.com,soundmediagroup.com,"Dynascale Technologies, Inc.",209.132.210.242,8443,AS7296,US,Fortinet FortiGate-101F,2025-10-06T00:58:47.812084,soundmediagroup.com
+microsoft,dirhamonline.com,www.dirhamonline.com,IONOS Inc.,70.35.193.107,443,AS8560,US,Microsoft IIS httpd,2025-10-06T00:54:10.673349,www.dirhamonline.com;dirhamonline.com
+microsoft,shellpointmortgageservicing.com,insight.shellpointmortgageservicing.com,Caliber Home Loans,199.231.196.200,443,AS62,US,Microsoft IIS httpd,2025-10-06T00:47:46.227094,insight.shellpointmortgageservicing.com;mailhost.caliberhomeloans.com
+microsoft,tbcinc.us,tbcinc.us,Microsoft Corporation,40.76.120.70,444,AS8075,US,Microsoft IIS httpd,2025-10-06T00:27:52.157687,tbcinc.us
+microsoft,myadesa.com,myadesa.com,Amazon Technologies Inc.,54.227.82.25,443,AS14618,US,Microsoft IIS httpd,2025-10-06T00:25:48.220675,myadesa.com;ec2-54-227-82-25.compute-1.amazonaws.com
+microsoft,fidnet.com,64-251-150-81.fidnet.com,Fidelity Communication International Inc.,64.251.150.81,80,AS11976,US,Microsoft IIS httpd,2025-10-06T00:06:33.766045,64-251-150-81.fidnet.com
+fortinet,ctcinet.com,10G-N-Static-5-151.ctcinet.com,Consolidated Telcom,72.20.70.151,8443,AS400439,US,Fortinet FortiGate-60F,2025-10-05T23:54:42.759101,10G-N-Static-5-151.ctcinet.com
+fortinet,lv.net,ip-199-88-39-2.lv.net,LV.NET LLC,199.88.39.2,8443,AS27501,US,Fortinet FortiGate-80F,2025-10-05T23:54:13.215086,ip-199-88-39-2.lv.net
+microsoft,trancite.com,trancite.com,Microsoft Corporation,4.246.137.117,443,AS8075,US,Microsoft IIS httpd,2025-10-05T23:53:20.834016,trancite.com
+microsoft,abpsus.org,www.abpsus.org,"Frontier Communications of America, Inc.",47.206.204.84,443,AS5650,US,Microsoft IIS httpd,2025-10-05T23:49:00.035023,www.abpsus.org;membersdev.abpsus.org;members.abpsus.org;account.abpsus.org;abpsus.org;static-47-206-204-84.tamp.fl.frontiernet.net
+microsoft,allinahealth.org,account.allinahealth.org,"Allina Health System, Inc.",167.177.41.10,443,AS7800,US,Microsoft IIS httpd,2025-10-05T23:42:48.390875,account.allinahealth.org;allina.com;allinahealth.org
+microsoft,acspayroll.com,www.ess.acspayroll.com,"AT&T Enterprises, LLC",12.5.115.25,443,AS7018,US,Microsoft IIS httpd,2025-10-05T23:41:54.929164,www.ess.acspayroll.com;ess.acspayroll.com
+fortinet,colorado.net,vail-66-198-194-54.colorado.net,Visionary Communications LLC,66.198.194.54,8443,AS10835,US,Fortinet FortiGate-40F,2025-10-05T23:40:40.712534,vail-66-198-194-54.colorado.net
+microsoft,truenorthcloud.com,spla.truenorthcloud.com,"True North ITG, INC",139.138.49.52,443,AS23005,US,Microsoft IIS httpd,2025-10-05T23:15:15.223032,spla.truenorthcloud.com;www.spla.truenorthcloud.com
+microsoft,pattersoncompanies.com,pca.pattersoncompanies.com,Microsoft Corp,137.117.81.23,443,AS8075,US,Microsoft IIS httpd,2025-10-05T22:16:49.393151,pca.pattersoncompanies.com
+microsoft,btsus.com,bts26.btsus.com,Verizon Business,100.33.40.83,443,AS701,US,Microsoft IIS httpd,2025-10-05T21:43:22.816818,bts26.btsus.com;server4.btsus.com;www.autodiscover.btsus.com;rds2.btsus.com;bts70.btsus.com;rds.btsus.com;autodiscover.btsus.com;bts50.btsus.com;autodiscover.commodityfragrances.com;autodiscover.europarfum.com;bts28.btsus.com;bts60.netny.com
+microsoft,2futureresearch.com,2futureresearch.com,Amazon Technologies Inc.,34.194.173.171,443,AS14618,US,Microsoft IIS httpd,2025-10-05T21:05:10.404347,static.app.cooltool.com;ec2-34-194-173-171.compute-1.amazonaws.com;2futureresearch.com;cooltool.com;uxreality.com;ctopinions.com;surv.center;fdbk.online
+microsoft,sharp4vitas.com,sharp4vitas.com,"BroadbandONE, LLC",64.135.42.187,443,AS13645,US,Microsoft IIS httpd,2025-10-05T20:59:58.250124,64-135-42-187.wddx.net;sharp4vitas.com;www.sharp4vitas.com
+microsoft,264members.org,www.264members.org,Charter Communications Inc,98.100.99.254,443,AS11427,US,Microsoft IIS httpd,2025-10-05T20:36:53.025880,www.264members.org;264members.org;syn-098-100-099-254.biz.spectrum.com
+microsoft,theconcreteco.com,threadkore-test.theconcreteco.com,Amazon Technologies Inc.,34.231.53.15,443,AS14618,US,Microsoft IIS httpd,2025-10-05T20:04:49.750108,threadkore-test.theconcreteco.com;ec2-34-231-53-15.compute-1.amazonaws.com
+microsoft,345ipic.com,www.345ipic.com,Amazon Technologies Inc.,54.175.20.156,443,AS14618,US,Microsoft IIS httpd,2025-10-05T19:28:11.583962,ec2-54-175-20-156.compute-1.amazonaws.com;www.345ipic.com;345ipic.com
+microsoft,allyisapps.com,staffing.allyisapps.com,Microsoft Corporation,40.122.107.219,443,AS8075,US,Microsoft IIS httpd,2025-10-05T18:52:44.242172,staffing.allyisapps.com
+microsoft,as40244.net,173-198-251-57.static.as40244.net,Turnkey Internet Inc.,173.198.251.57,80,AS40244,US,Microsoft IIS httpd,2025-10-05T18:52:07.774264,173-198-251-57.static.as40244.net
+microsoft,hmsfirst.com,hmsfirst.com,Microsoft Corporation,20.3.216.58,443,AS8075,US,Microsoft IIS httpd,2025-10-05T18:30:58.398838,hmsfirst.com
+microsoft,acstechnologies.com,acstechnologies.com,McAngus Goudelock & Courie LLC,165.166.75.159,443,AS2711,US,Microsoft IIS httpd,2025-10-05T18:14:21.137141,acstechnologies.com
+microsoft,eccmod.com,mail.eccmod.com,Cox Communications Inc.,68.111.1.181,80,AS22773,US,Microsoft IIS httpd,2025-10-05T18:04:48.471438,mail.eccmod.com
+microsoft,marsair.com,portal.marsair.com,MARS AIR SYSTEMS,173.247.188.86,443,AS14265,US,Microsoft IIS httpd,2025-10-05T18:01:16.231131,173-247-188-86.static-ip.telepacific.net;portal.marsair.com;www.portal.marsair.com
+microsoft,ccisd.us,tscdnw1.ccisd.us,Corpus Christi ISD,192.149.91.59,443,AS20280,US,Microsoft IIS httpd,2025-10-05T16:45:46.374451,tscdnw1.ccisd.us;forms.ccisd.us
+microsoft,ovh.us,vps-c71620c2.vps.ovh.us,OVH US LLC,135.148.26.116,8001,AS16276,US,Microsoft IIS httpd,2025-10-05T16:37:44.169207,vps-c71620c2.vps.ovh.us
+microsoft,bluecrestinc.com,officemail.bluecrestinc.com,Microsoft Limited,172.177.189.239,9443,AS8075,US,Microsoft IIS httpd,2025-10-05T16:07:37.291203,officemail.bluecrestinc.com;www.officemail.bluecrestinc.com
+microsoft,hospicesj.org,hospicesj.org,TPx Communications,198.91.106.148,443,AS14265,US,Microsoft IIS httpd,2025-10-05T15:51:07.956556,198-91-106-148.static-ip.telepacific.net;hospicesj.org
+microsoft,cahospicenetwork.org,cahospicenetwork.org,Microsoft Corporation,40.112.183.184,443,AS8075,US,Microsoft IIS httpd,2025-10-05T14:19:43.424069,cahospicenetwork.org
+microsoft,suddenlink.net,173-218-17-99-grvl.mid.dyn.suddenlink.net,Optimum,173.218.17.99,80,AS19108,US,Microsoft IIS httpd,2025-10-05T13:59:01.926766,173-218-17-99-grvl.mid.dyn.suddenlink.net
+microsoft,1stiso.com,1stiso.com,"CASH DEPOT, LTD.",69.21.165.51,443,AS15285,US,Microsoft IIS httpd,2025-10-05T13:56:53.677616,1stiso.com;h69-21-165-51.applwi.dedicated.static.tds.net
+microsoft,disney.com,beourcastdev.disney.com,"Disney Worldwide Services, Inc.",139.104.36.21,443,AS54330,US,Microsoft IIS httpd,2025-10-05T13:48:35.196314,beourcastdev.disney.com;www.beourcastdev.disney.com
+microsoft,caredimensions.org,www.portal.caredimensions.org,"CommandLink, LLC",98.142.182.33,443,AS396970,US,Microsoft IIS httpd,2025-10-05T13:41:31.961918,www.portal.caredimensions.org;portal.caredimensions.org
+microsoft,ctepcollaboratorsite.com,train.ctepcollaboratorsite.com,Microsoft Corporation,13.92.130.40,443,AS8075,US,Microsoft IIS httpd,2025-10-05T13:37:02.258207,train.ctepcollaboratorsite.com
+microsoft,boscomp.net,firewall.boscomp.net,Verizon Business,96.230.49.34,80,AS701,US,Microsoft IIS httpd,2025-10-05T13:11:54.137146,firewall.boscomp.net
+microsoft,dsiglobal.com,kc1ptfmqad04.dsiglobal.com,"EPIC Alliance, Inc.",207.250.208.62,443,AS27195,US,Microsoft IIS httpd,2025-10-05T13:08:19.474368,kc1ptfmqad04.dsiglobal.com
+microsoft,liftengine.com,liftengine.com,Blue Hill Data Services,216.25.198.24,443,AS32674,US,Microsoft IIS httpd,2025-10-05T12:12:45.559214,liftengine.com;pub24.liftengine.com
+microsoft,t2bsolutions.com,ns3.t2bsolutions.com,"DigitalOcean, LLC",159.89.142.39,80,AS14061,US,Apache httpd,2025-10-05T11:38:11.326964,ns3.t2bsolutions.com
+microsoft,otsolved.com,otsolved.com,"Amazon.com, Inc.",107.20.172.149,443,AS14618,US,Microsoft IIS httpd,2025-10-05T11:13:38.215609,otsolved.com;ec2-107-20-172-149.compute-1.amazonaws.com
+microsoft,fl.us,sarasota.k12.fl.us,Sarasota County Schools,204.193.6.79,443,AS400776,US,Microsoft IIS httpd,2025-10-05T10:33:58.316966,sarasota.k12.fl.us
+microsoft,damarel.aero,dnata.damarel.aero,Amazon Technologies Inc.,52.223.6.91,443,AS16509,US,Microsoft IIS httpd,2025-10-05T09:53:58.134853,dnata.damarel.aero;aea1174034a684c89.awsglobalaccelerator.com
+microsoft,brightspeed.com,bmse.brightspeed.com,Google LLC,34.86.207.195,8009,AS396982,US,Microsoft IIS httpd,2025-10-05T09:48:05.404660,195.207.86.34.bc.googleusercontent.com;bmse.brightspeed.com
+microsoft,exp-inc.com,exp-inc.com,Iland Internet Solutions Corporation,69.64.166.86,443,AS14127,US,Microsoft IIS httpd,2025-10-05T09:39:49.006231,86-166-64-69-available.ilandcloud.com;exp-inc.com
+microsoft,myallylogin.com,myallylogin.com,"Interserver, Inc",206.72.200.21,443,AS19318,US,Microsoft IIS httpd,2025-10-05T09:38:32.312251,myallylogin.com
+microsoft,paya.com,paya.com,"Sage Payment Solutions, Inc.",209.10.121.3,443,AS20141,US,Microsoft IIS httpd,2025-10-05T09:12:14.697288,paya.com
+microsoft,whoswatching.tv,whoswatching.tv,Who's Watching TV LLC,209.208.34.197,443,AS6364,US,Microsoft IIS httpd,2025-10-05T09:02:32.959901,whoswatching.tv
+microsoft,mydoitbest.com,vendor.mydoitbest.com,DO IT BEST CORP.,192.34.106.145,443,AS26822,US,Microsoft IIS httpd,2025-10-05T08:34:43.077844,vendor.mydoitbest.com
+microsoft,unifiedlayer.com,192-185-6-60.unifiedlayer.com,HostGator.com LLC,192.185.6.60,80,AS19871,US,Microsoft IIS httpd,2025-10-05T08:21:43.732945,192-185-6-60.unifiedlayer.com
+microsoft,sgi.net,granite.hq.sgi.net,Expedient,209.166.162.121,80,AS17054,US,Microsoft IIS httpd,2025-10-05T07:54:16.913250,granite.hq.sgi.net
+microsoft,symetriuscloud.com,cisa.symetriuscloud.com,Microsoft Limited,172.174.81.153,443,AS8075,US,Microsoft IIS httpd,2025-10-05T07:29:33.916139,cisa.symetriuscloud.com;www.cisa.symetriuscloud.com
+microsoft,raymondallenit.com,az-dc01.raymondallenit.com,Microsoft Corporation,23.99.252.106,443,AS8075,US,Microsoft IIS httpd,2025-10-05T07:10:28.442440,az-dc01.raymondallenit.com;ndes.raymondallenit.com
+microsoft,mymarshallsoftware.com,www.mymarshallsoftware.com,Expedient,209.166.162.122,80,AS17054,US,Microsoft IIS httpd,2025-10-05T06:55:22.100467,www.mymarshallsoftware.com
+microsoft,woodward.com,woodward.com,"Woodward, Inc.",204.27.169.63,443,AS17223,US,Microsoft IIS httpd,2025-10-05T06:49:23.488488,woodward.com
+microsoft,ct.us,griswold.k12.ct.us,Griswold Senior High School,72.10.121.73,443,AS22742,US,Microsoft IIS httpd,2025-10-05T06:46:52.724346,griswold.k12.ct.us
+microsoft,westmichiganlumber.com,bt.westmichiganlumber.com,"Comcast Cable Communications, LLC",173.14.54.165,443,AS7922,US,Microsoft IIS httpd,2025-10-05T06:36:00.571913,bt.westmichiganlumber.com;www.bt.westmichiganlumber.com;173-14-54-165-Michigan.hfc.comcastbusiness.net
+microsoft,milesmediagroup.com,mdyoda.milesmediagroup.com,Rackspace Hosting,104.130.93.171,443,AS19994,US,Microsoft IIS httpd,2025-10-05T06:31:51.201345,mdyoda.milesmediagroup.com;www.mdyoda.milesmediagroup.com
+microsoft,emmersonlumber.com,emmersonlumber.com,Epicor Software Corporation,159.66.240.70,443,AS30175,US,Microsoft IIS httpd,2025-10-05T06:18:06.149590,emmersonlumber.com
+microsoft,usarecsstss.com,usarecsstss.com,Microsoft Corporation,20.185.224.181,443,AS8075,US,Microsoft IIS httpd,2025-10-05T05:51:41.450265,usarecsstss.com
+microsoft,4cability.com,staging.4cability.com,Amazon Data Services NoVa,3.224.155.138,443,AS14618,US,Microsoft IIS httpd,2025-10-05T04:58:50.633771,ec2-3-224-155-138.compute-1.amazonaws.com;staging.4cability.com;www.staging.4cability.com
+microsoft,ford.com,www-changepassword.app.ford.com,Ford Motor Company,19.12.96.191,443,AS3389,US,Microsoft IIS httpd,2025-10-05T03:49:40.661253,www-changepassword.app.Ford.com;changepassword-ext-vip-chiadc01-rprxy1-19.chi.ford.com;www.changepassword.ford.com;www-changepassword-ext.app.ford.com
+microsoft,webroot.com,account.webroot.com,Open Text Corporation,199.87.217.73,443,AS33459,US,Microsoft IIS httpd,2025-10-05T03:32:24.152747,account.webroot.com;account.carbonite.com
+microsoft,ip-15-204-168.us,ip18.ip-15-204-168.us,OVH US LLC,15.204.168.18,902,AS16276,US,Microsoft IIS httpd,2025-10-05T02:49:00.569058,ip18.ip-15-204-168.us
+microsoft,amwestfunding.com,amwestfunding.com,Microsoft Corporation,52.171.49.38,443,AS8075,US,Microsoft IIS httpd,2025-10-05T02:47:29.305604,amwestfunding.com
+microsoft,sodiacs.com,commscope.sodiacs.com,"ARRIS Technology, Inc.",199.48.215.66,443,AS10580,US,Microsoft IIS httpd,2025-10-05T02:45:22.096785,commscope.sodiacs.com;sodiacs.com;admin.sodiacs.com;www.sodiacs.com
+microsoft,dcrs.com,status.dcrs.com,Microsoft Corp,168.61.186.204,443,AS8075,US,Microsoft IIS httpd,2025-10-05T01:58:05.064840,status.dcrs.com;www.status.dcrs.com
+microsoft,sonetel.com,sonetel.com,Amazon Technologies Inc.,54.175.165.65,443,AS14618,US,Microsoft IIS httpd,2025-10-05T00:46:35.287455,ec2-54-175-165-65.compute-1.amazonaws.com;sonetel.com
+microsoft,pensoft.com,autodiscover.pensoft.com,Cox Communications Inc.,216.54.124.56,443,AS22773,US,Microsoft IIS httpd,2025-10-04T22:23:49.589207,autodiscover.pensoft.com;mail.pensoft.com;ip-216-54-124-56.coxfiber.net;pensoft.com
+microsoft,bna.com,convergenceapi.bna.com,Amazon Technologies Inc.,35.173.22.81,443,AS14618,US,Microsoft IIS httpd,2025-10-04T21:57:08.588265,convergenceapi.bna.com;myconvergence.bloombergindustry.com;myconvergence.bna.com;convergenceapi.bloombergindustry.com;convergencesocial.bloombergindustry.com;convergencesocial.bna.com;convergence.bna.com;convergence.bloombergindustry.com;ec2-35-173-22-81.compute-1.amazonaws.com
+microsoft,1sourcetax.com,1sourcetax.com,"GoDaddy.com, LLC",132.148.12.136,443,AS26496,US,Microsoft IIS httpd,2025-10-04T20:53:15.068840,136.12.148.132.host.secureserver.net;1sourcetax.com
+microsoft,hytipkms.net,www.hytipkms.net,Amazon Technologies Inc.,18.254.35.140,443,AS8987,US,Microsoft IIS httpd,2025-10-04T20:49:52.860740,www.hytipkms.net;www.hsstkms.net;ec2-18-254-35-140.us-gov-east-1.compute.amazonaws.com;www.hsst-hytipkms.net;hsst-hytipkms.net
+microsoft,mlspin.com,media.alpha.mlspin.com,Shrewsbury Electric and Cable Operations,216.195.14.84,443,AS26292,US,Microsoft IIS httpd,2025-10-04T20:49:32.291965,media.alpha.mlspin.com;pinergy.alpha.mlspin.com;h3a.beta.mlspin.com;media.dev.mlspin.com;dhcp-0-8-a1-f-77-b5.cpe.townisp.com;h3a.dev.mlspin.com;h3b.beta.mlspin.com;pinergy.dev.mlspin.com;h3a.alpha.mlspin.com;pinergy.beta.mlspin.com;media.beta.mlspin.com;h3b.alpha.mlspin.com;h3b.dev.mlspin.com
+microsoft,sbawebsite.com,sbawebsite.com,DataWagon LLC,104.245.104.13,80,AS27176,US,Microsoft IIS httpd,2025-10-04T20:25:54.146708,sbawebsite.com
+microsoft,mindshift.com,mindshift.com,"Ricoh USA, Inc.",63.210.44.176,443,AS21886,US,Microsoft IIS httpd,2025-10-04T19:17:22.583124,mindshift.com
+microsoft,fujifilmcloud.com,s3-den2.fujifilmcloud.com,"FUJIFILM Manufacturing USA, Inc",8.47.44.211,443,AS3356,US,Microsoft IIS httpd,2025-10-04T17:26:55.123072,s3-den2.fujifilmcloud.com;s3coden1.fujifilmcloud.com;s3-atl2.fujifilmcloud.com;fujifilmcloud.com;s3-region01.fujifilmcloud.com;s3coden2.fujifilmcloud.com;s3-region02.fujifilmcloud.com;s3-den.fujifilmcloud.com;s3gaatl2.fujifilmcloud.com;s3gaatl1.fujifilmcloud.com;s3-atl.fujifilmcloud.com;s3denver.fujifilmcloud.com
+microsoft,headquartergenesis.com,autodiscover.headquartergenesis.com,DATALINK INFORMATION TECHNOLOGIES INC.,192.65.231.228,443,AS25837,US,Microsoft IIS httpd,2025-10-04T15:44:36.001564,autodiscover.headquartergenesis.com;autodiscover.orcaholding.com;autodiscover.hqhyundai.com;autodiscover.hattonlaw.com;autodiscover.ccapeds.com;autodiscover.datalinkit.com;autodiscover.dgiteam.com;autodiscover.eximent.com;autodiscover.roberteichner.com;autodiscover.datalinkmail.com;autodiscover.njhlaw.com;autodiscover.concordeholdings.com;autodiscover.orpheumconsulting.com;autodiscover.orshanlaw.com;autodiscover.headquartermazda.com;autodiscover.headquarterauto.com;autodiscover.jeroesteve.com;autodiscover.headquarterhonda.com;autodiscover.eximlicensing.com;autodiscover.deelsales.com;autodiscover.jfausa.com;autodiscover.headquartertoyota.com;autodiscover.jksesq.com;autodiscover.sciontesting.com
+microsoft,cxc.org,studentportal.cxc.org,Amazon Data Services NoVa,3.218.185.166,443,AS14618,US,Microsoft IIS httpd,2025-10-04T15:17:48.014852,studentportal.cxc.org;magazine.cxc.org;cxc.org;cxc-dev4.cxc.org;ec2-3-218-185-166.compute-1.amazonaws.com;cdig.cxc.org;cxcmdm.cxc.org;esba.cxc.org;appstest.cxc.org;stats.cxc.org;webapps.cxc.org;apps.cxc.org;results.cxc.org
+microsoft,codealike.com,staging.codealike.com,Amazon Data Services NoVa,3.215.158.54,443,AS14618,US,Microsoft IIS httpd,2025-10-04T14:18:39.669321,staging.codealike.com;ec2-3-215-158-54.compute-1.amazonaws.com
+microsoft,sebastiancorp.net,108-160-67-59.sebastiancorp.net,Sebastian,108.160.67.59,8000,AS46867,US,Microsoft IIS httpd,2025-10-04T13:28:00.866342,108-160-67-59.sebastiancorp.net
+microsoft,cclco.com,webtrack.cclco.com,Epicor Software Corporation,159.66.240.66,443,AS30175,US,Microsoft IIS httpd,2025-10-04T11:13:52.601412,webtrack.cclco.com;www.webtrack.cclco.com
+microsoft,ridgidapps.com,360insight.ridgidapps.com,Emerson Electric Co.,144.191.146.99,443,AS36590,US,Microsoft IIS httpd,2025-10-04T09:27:11.481046,360insight.ridgidapps.com
+microsoft,fieldsurf.com,www.go.fieldsurf.com,"GoDaddy.com, LLC",72.167.33.232,443,AS26496,US,Microsoft IIS httpd,2025-10-04T08:53:52.442248,www.go.fieldsurf.com;go.fieldsurf.com;232.33.167.72.host.secureserver.net
+microsoft,doctusmrs.com,doctusmrs.com,Unitas Global,64.94.87.140,443,AS46071,US,Microsoft IIS httpd,2025-10-04T08:51:30.810126,doctusmrs.com;www.doctusmrs.com
+microsoft,simplestats.xyz,simplestats.xyz,Microsoft Corporation,4.242.40.190,443,AS8075,US,Microsoft IIS httpd,2025-10-04T08:39:12.335795,simplestats.xyz
+microsoft,wraimey.com,wraimey.com,Amazon Technologies Inc.,18.204.53.64,443,AS14618,US,Microsoft IIS httpd,2025-10-04T08:37:25.468572,wraimey.com;ec2-18-204-53-64.compute-1.amazonaws.com
+microsoft,sleepmeeting.org,my.sleepmeeting.org,"Comcast Cable Communications, LLC",50.230.31.92,443,AS7922,US,Microsoft IIS httpd,2025-10-04T08:11:53.199921,my.sleepmeeting.org
+microsoft,nylumber.com,nylumber.com,Nelson-Young Lumber,47.44.68.165,443,AS20115,US,Microsoft IIS httpd,2025-10-04T07:52:56.337678,syn-047-044-068-165.biz.spectrum.com;nylumber.com
+microsoft,dodgepipeline.com,dodgepipeline.com,Amazon Technologies Inc.,34.228.72.86,443,AS14618,US,Microsoft IIS httpd,2025-10-04T07:17:08.894893,ec2-34-228-72-86.compute-1.amazonaws.com;dodgepipeline.com
+microsoft,carelink.org,lf.carelink.org,"AT&T Enterprises, LLC",12.193.123.175,443,AS7018,US,Microsoft IIS httpd,2025-10-04T07:02:06.124195,lf.carelink.org;www.lf.carelink.org
+microsoft,afxinc.com,afxinc.com,AMERICAN FLUORESCENT CORP,12.216.82.245,443,AS7018,US,Microsoft IIS httpd,2025-10-04T07:01:25.161406,afxinc.com
+microsoft,parishdata.com,www.ess.parishdata.com,McAngus Goudelock & Courie LLC,165.166.75.161,443,AS2711,US,Microsoft IIS httpd,2025-10-04T06:52:28.163040,www.ess.parishdata.com;ess.parishdata.com
+microsoft,summustechnologies.com,test.pl.rs1.summustechnologies.com,Summus Industries,192.237.148.25,443,AS19994,US,Microsoft IIS httpd,2025-10-04T06:42:08.049257,test.pl.rs1.summustechnologies.com
+microsoft,data393.net,216.7.168-221.static.data393.net,"Latisys-Denver, LLC",216.7.168.221,80,AS29863,US,Microsoft IIS httpd,2025-10-04T02:57:51.838436,216.7.168-221.static.data393.net
+microsoft,unitas-inc.com,mx2.unitas-inc.com,Liberty House,207.144.143.141,80,AS2711,US,Microsoft IIS httpd,2025-10-04T02:34:50.293817,mx2.unitas-inc.com
+microsoft,focaldata.net,66-243-10-174.focaldata.net,"Level 3 Parent, LLC",66.243.10.174,80,AS3356,US,Microsoft IIS httpd,2025-10-03T12:47:18.975041,66-243-10-174.focaldata.net
+microsoft,mccooknet.com,autodiscover.mccooknet.com,McCookNet Internet Service,69.10.0.147,80,AS54326,US,Microsoft IIS httpd,2025-10-01T11:02:58.620822,autodiscover.mccooknet.com
+microsoft,helius.com,slot102.helius.com,Flexential Colorado Corp.,216.250.138.102,80,AS13649,US,Microsoft IIS httpd,2025-09-30T21:06:21.000614,slot102.helius.com
+microsoft,emmis.com,owa.emmis.com,Emmis Communications Corp.,65.211.179.16,80,AS16981,US,Microsoft IIS httpd,2025-09-30T11:16:15.103777,owa.emmis.com
+microsoft,sdinc.cc,autodiscover.sdinc.cc,Flexential Colorado Corp.,216.250.138.102,443,AS13649,US,Microsoft IIS httpd,2025-09-25T06:05:02.859058,autodiscover.sdinc.cc;slot102.helius.com;autodiscover.insuroratlas.com;autodiscover.impactfinance.com
+microsoft,ohmancorp.com,h-26.ohmancorp.com,Charter Communications Inc,74.87.119.26,80,AS10796,US,Microsoft IIS httpd,2025-09-25T01:46:29.018665,h-26.ohmancorp.com
+microsoft,gcmhosted.com,autodiscover.gcmhosted.com,"G. C. M. COMPUTERS, INC.",148.59.95.16,80,AS398193,US,Apache httpd,2025-09-22T14:05:00.399903,autodiscover.gcmhosted.com

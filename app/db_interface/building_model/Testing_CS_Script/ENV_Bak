@@ -1,0 +1,9 @@
+
+
+POSTGRES_HOST="funnel-prospects.c9cu68eyszlt.us-west-2.rds.amazonaws.com"
+POSTGRES_PORT="5432"
+POSTGRES_USER="postgres"
+POSTGRES_PWD="U+?}KHo!!M6r"
+POSTGRES_DB="prospects_master"
+
+
